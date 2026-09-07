@@ -1,0 +1,69 @@
+{
+  "results_dir": "results/nsclc_v3_stablesort",
+  "isi_beats_null_bh": 16,
+  "outcome_beats_null_uncorrected": 0,
+  "outcome_beats_null_bh": 0,
+  "rotation_null": {
+    "observed": 0.36409925337726395,
+    "null_family_mean": 0.08614285910633507,
+    "null_family_sd": 0.010982229114723518,
+    "ci_lo": 0.06526351522153592,
+    "ci_hi": 0.10829064957268746,
+    "p": 0.000999000999000999,
+    "B": 1000
+  },
+  "run_n_patients": 944,
+  "cohort_fingerprint": {
+    "status": "absent",
+    "recorded": null,
+    "observed_n": 944
+  },
+  "effective_tests": 5.000000000000006,
+  "n_signatures": 16,
+  "cohort_path": "data/interim/meta.parquet",
+  "cohort_scope": "run",
+  "cohort_n_patients_in_file": 7168,
+  "cohort_n_patients_used": 944,
+  "cohort_matches_run": true,
+  "label_site_variance_median_r2": 0.14533984970354008,
+  "control_c_calibrated_r2": 0.05377901696340637,
+  "control_c_perm_median": 0.0979620796308236,
+  "a6_n_patients": 944,
+  "small_panel_spearman": [
+    -0.9999999999999999,
+    1.4042654220543672e-24
+  ],
+  "small_panel_bracket": [
+    {
+      "k": 10,
+      "n_sets": 16,
+      "median_gap": 0.5052464444879067,
+      "mean_gap": 0.44913508923136947
+    },
+    {
+      "k": 20,
+      "n_sets": 16,
+      "median_gap": 0.36325589954567084,
+      "mean_gap": 0.34053944259163527
+    },
+    {
+      "k": 40,
+      "n_sets": 15,
+      "median_gap": 0.2637949587365138,
+      "mean_gap": 0.2652627263327708
+    },
+    {
+      "k": 80,
+      "n_sets": 14,
+      "median_gap": 0.1718810446133831,
+      "mean_gap": 0.16873518993305225
+    },
+    {
+      "k": 160,
+      "n_sets": 11,
+      "median_gap": 0.09716559346042897,
+      "mean_gap": 0.0970786463521731
+    }
+  ],
+  "stage_failures": []
+}

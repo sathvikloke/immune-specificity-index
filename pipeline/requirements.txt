@@ -1,0 +1,24 @@
+# Core — versions are lower bounds, verified against the environment this was
+# developed on (Python 3.13.9, macOS/anaconda).
+numpy>=1.26
+pandas>=2.0
+scikit-learn>=1.4
+scipy>=1.11
+statsmodels>=0.14
+pyarrow>=14.0          # parquet
+openpyxl>=3.1          # Carrot-Zhang Table S1 is .xlsx
+
+# Fetching
+huggingface_hub>=0.23
+requests>=2.31
+
+# Plotting / reporting
+matplotlib>=3.8
+
+# Tests
+pytest>=8.0
+
+# Optional
+# cvxpy>=1.4           # exact QP fold assignment in splits.preserved_site_split(exact=True)
+# neurocombat          # reference ComBat, to confirm the built-in location/scale version
+# torch>=2.0           # only if you extend to attention-MIL over patch-level features

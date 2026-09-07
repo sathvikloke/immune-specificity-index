@@ -1,0 +1,22 @@
+{
+  "primary_excess": {
+    "value": 0.2911443244377561,
+    "ci_lo": 0.2691517839720275,
+    "ci_hi": 0.31327569608397826,
+    "n": 16,
+    "method": "mean-immune-specific-excess-z-patient-clustered-bootstrap [null subsampled to 200 draws]"
+  },
+  "secondary_delta_mae": {
+    "value": 0.008819376917063226,
+    "ci_lo": 0.007825369388863765,
+    "ci_hi": 0.009810454268836503,
+    "n": 7168,
+    "method": "paired-cluster-bootstrap"
+  },
+  "runtime_s": 17115.625207901,
+  "notes": [
+    "Pooled ISI bootstrap: 19 of 7168 patients dropped as incomplete (non-finite residualised score or out-of-fold prediction in at least one signature or null draw).",
+    "Pooled ISI CI: patient-clustered bootstrap, 1000/1000 usable draws, 7149 complete-case patients resampled per draw (19 dropped), null subsampled to 200 draws per signature (of 1000).",
+    "Outcome arm stratified by cancer_type (31 levels): only within-type pairs are comparable. Pooling across types would measure tissue of origin, which alone reaches C=0.676 on pan-TCGA PFI."
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "primary_excess": {
+    "value": 0.318240180054566,
+    "ci_lo": 0.26138392827249185,
+    "ci_hi": 0.37633421961128716,
+    "n": 16,
+    "method": "mean-immune-specific-excess-z-patient-clustered-bootstrap [null subsampled to 200 draws]"
+  },
+  "secondary_delta_mae": {
+    "value": 0.005371329480485258,
+    "ci_lo": 0.002400835559898612,
+    "ci_hi": 0.008481536525115916,
+    "n": 944,
+    "method": "paired-cluster-bootstrap"
+  },
+  "runtime_s": 1739.6484110355377,
+  "notes": [
+    "ComBat: post-correction site AUROC is NOT interpretable (measured 0.005; the within-site zero-sum constraint makes the classifier anti-predictive). Report the RAW site AUROC as the confound measure. Deployment answer: under preserved-site folds ComBat is estimable for 0.0% of held-out samples (0/944).",
+    "Pooled ISI CI: patient-clustered bootstrap, 1000/1000 usable draws, 944 complete-case patients resampled per draw (0 dropped), null subsampled to 200 draws per signature (of 1000).",
+    "Outcome arm stratified by cancer_type (2 levels): only within-type pairs are comparable. Pooling across types would measure tissue of origin, which alone reaches C=0.676 on pan-TCGA PFI."
+  ]
+}

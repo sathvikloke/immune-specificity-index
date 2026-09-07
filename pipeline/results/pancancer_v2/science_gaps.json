@@ -1,0 +1,48 @@
+{
+  "results_dir": "results/pancancer_v2",
+  "isi_beats_null_bh": 16,
+  "outcome_beats_null_uncorrected": 10,
+  "outcome_beats_null_bh": 10,
+  "rotation_null": null,
+  "effective_tests": 5.000000000000002,
+  "n_signatures": 16,
+  "label_site_variance_median_r2": 0.44379065488261865,
+  "control_c_calibrated_r2": 0.041041501420903626,
+  "control_c_perm_median": 0.44549405240646417,
+  "small_panel_spearman": [
+    -0.9999999999999999,
+    1.4042654220543672e-24
+  ],
+  "small_panel_bracket": [
+    {
+      "k": 10,
+      "n_sets": 16,
+      "median_gap": 0.45263990530686704,
+      "mean_gap": 0.4112815366144797
+    },
+    {
+      "k": 20,
+      "n_sets": 16,
+      "median_gap": 0.29027981967320476,
+      "mean_gap": 0.29762981719051906
+    },
+    {
+      "k": 40,
+      "n_sets": 15,
+      "median_gap": 0.21376441998317808,
+      "mean_gap": 0.22828449281375335
+    },
+    {
+      "k": 80,
+      "n_sets": 14,
+      "median_gap": 0.1406361902081571,
+      "mean_gap": 0.13821038582355868
+    },
+    {
+      "k": 160,
+      "n_sets": 11,
+      "median_gap": 0.0839951050247244,
+      "mean_gap": 0.07830536567724058
+    }
+  ]
+}

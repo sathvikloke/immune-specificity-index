@@ -1,0 +1,92 @@
+{
+  "n_patients": 6580,
+  "counts_patient_level": {
+    "EUR": 5312,
+    "AFR": 594,
+    "ASIAN": 502,
+    "AMR": 172
+  },
+  "site_cramers_v": {
+    "v": 0.5372172071513952,
+    "v_uncorrected": 0.6170364559285376,
+    "n": 6580,
+    "n_rows": 4,
+    "n_cols": 608,
+    "chi2": 7515.688922031341,
+    "v_perm_median": 0.0,
+    "v_perm_p95": 0.08800614397849103,
+    "v_calibrated": 0.5372172071513952,
+    "perm_p": 0.004975124378109453,
+    "n_perm": 200
+  },
+  "type_cramers_v": {
+    "v": 0.28009713273901427,
+    "v_uncorrected": 0.2880827935889533,
+    "n": 6561,
+    "n_rows": 4,
+    "n_cols": 31,
+    "chi2": 1633.5255516203504,
+    "v_perm_median": 0.0,
+    "v_perm_p95": 0.032147234829374066,
+    "v_calibrated": 0.28009713273901427,
+    "perm_p": 0.004975124378109453,
+    "n_perm": 200
+  },
+  "contrasts": {
+    "AFR": {
+      "n": 594,
+      "crude_mean_delta_z": -0.03318439462141779,
+      "crude_lo": -0.08181762033772229,
+      "crude_hi": 0.02387462410569445,
+      "stratified_mean_delta_z": 0.02819472036005261,
+      "stratified_lo": 0.011129629033240265,
+      "stratified_hi": 0.044246409177216686,
+      "site_stratified_mean_delta_z": 0.07031503910161352,
+      "site_stratified_lo": 0.047204642880140285,
+      "site_stratified_hi": 0.09955157335709006,
+      "n_sites_supporting": 6,
+      "n_types_used": 11,
+      "median_mde_80pct": 0.14973715744937582,
+      "n_signatures_q005": 0,
+      "n_heterogeneous": 13,
+      "verdict": "no difference detected; could not rule out |delta_z| < 0.150"
+    },
+    "ASIAN": {
+      "n": 502,
+      "crude_mean_delta_z": 0.2021414120254738,
+      "crude_lo": 0.15451708613206522,
+      "crude_hi": 0.24951179256983774,
+      "stratified_mean_delta_z": 0.17011213489152688,
+      "stratified_lo": 0.14347344984954505,
+      "stratified_hi": 0.19295636147140838,
+      "site_stratified_mean_delta_z": 0.28881916307576994,
+      "site_stratified_lo": 0.24453706401546904,
+      "site_stratified_hi": 0.3309779803305433,
+      "n_sites_supporting": 4,
+      "n_types_used": 5,
+      "median_mde_80pct": 0.18648065867053867,
+      "n_signatures_q005": 10,
+      "n_heterogeneous": 3,
+      "verdict": "difference detected, BUT only 4 sites carry both groups \u2014 NOT separable from site"
+    },
+    "AMR": {
+      "n": 172,
+      "crude_mean_delta_z": 0.09395238271880257,
+      "crude_lo": 0.021112757047500975,
+      "crude_hi": 0.1752328687017348,
+      "stratified_mean_delta_z": -0.02991310761506499,
+      "stratified_lo": -0.09044078797813376,
+      "stratified_hi": 0.02267840092017433,
+      "site_stratified_mean_delta_z": 0.25243199043653813,
+      "site_stratified_lo": 0.15714622854388063,
+      "site_stratified_hi": 0.3440354569919851,
+      "n_sites_supporting": 3,
+      "n_types_used": 2,
+      "median_mde_80pct": 0.43232927798568194,
+      "n_signatures_q005": 0,
+      "n_heterogeneous": 3,
+      "verdict": "no difference detected; could not rule out |delta_z| < 0.432"
+    }
+  },
+  "scope": "SUPPLEMENTARY non-inferiority analysis. Fourth multiplicity family. Counts are patient-level, not slide-level."
+}

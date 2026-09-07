@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+title: >-
+  Proliferation, not immunity: H&E-inferred tumour microenvironment
+  signatures are immune-specific but carry no prognostic advantage
+  over random gene sets
+message: If you use this software or its results, please cite it.
+type: software
+authors:
+  - family-names: Loke
+    given-names: Sathvik
+# RESOLVED 2026-09-07. The curated public snapshot is pushed and live. This is a
+# SEPARATE repository from the private working one
+# (sathvikloke/hne-tme-immune-specificity-audit), which stays private — its
+# history carries the cluster host and username, home paths and a personal
+# email, and no later fix would remove them from that history. Do not point
+# this field at the private name.
+repository-code: "https://github.com/sathvikloke/immune-specificity-index"
+abstract: >-
+  Analysis code for an audit of H&E-inferred tumour microenvironment
+  signatures across 7,168 TCGA patients in 31 cancer types. Defines an
+  immune-specificity index (ISI) that residualises signatures on the
+  within-cancer-type global expression axis and disattenuates for the
+  reliability of the residualised score, and runs the identical
+  random-gene-set null against progression-free interval.
+keywords:
+  - computational pathology
+  - tumour microenvironment
+  - gene signatures
+  - reproducibility
+  - foundation models
+license: MIT
+# `version` and `date-released` name the frozen analysis snapshot every quoted
+# number comes from -- the annotated tag `prereg-2026-08-18`, which is the only
+# tag in the repository. The previous `date-released: "2026-08-19"` matched no
+# tag, no release and no artefact; it was a date someone typed. If a public
+# release is ever cut, both fields move to that release and not before.
+version: "prereg-2026-08-18"
+date-released: "2026-08-18"

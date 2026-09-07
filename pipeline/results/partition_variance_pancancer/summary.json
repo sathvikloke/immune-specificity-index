@@ -1,0 +1,25 @@
+{
+  "cohort": "pancancer",
+  "n_partitions_used": 5,
+  "n_partitions_refused": 1,
+  "refused": [
+    {
+      "split_seed": 5,
+      "reason": "SVD did not converge"
+    }
+  ],
+  "isi_mean": 0.2934857349835578,
+  "isi_sd_across_partitions": 0.006523311640647398,
+  "bootstrap_se": 0.011100261700020214,
+  "combined_se": 0.012875146778578546,
+  "reported_ci": [
+    0.27172962183254884,
+    0.31524184813456674
+  ],
+  "honest_ci": [
+    0.2682509110018769,
+    0.31872055896523865
+  ],
+  "interval_understated_by": 0.1598957868313231,
+  "ci_still_excludes_zero": true
+}

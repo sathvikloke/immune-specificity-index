@@ -1,0 +1,21 @@
+# EXACT versions the frozen results were produced with, captured 2026-08-19 on
+# Python 3.13.9 (macOS, anaconda). `requirements.txt` carries lower bounds for
+# ordinary use; THIS file is what reproduces the numbers in the manuscript.
+#
+# Why pin at all: sklearn changed RidgeCV's alpha-selection defaults between
+# minor versions, and the ISI depends on the selected penalty. A lower-bound
+# spec is not a reproduction guarantee.
+#
+#   python -m venv .venv && source .venv/bin/activate
+#   pip install -r requirements-lock.txt
+numpy==2.1.3
+pandas==2.2.3
+scikit-learn==1.6.1
+scipy==1.15.3
+statsmodels==0.14.4
+pyarrow==24.0.0
+matplotlib==3.10.0
+openpyxl==3.1.5
+huggingface_hub==0.29.0
+requests==2.32.3
+pytest==8.3.4

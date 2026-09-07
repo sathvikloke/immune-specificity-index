@@ -1,0 +1,21 @@
+{
+  "platform": {
+    "system": "Darwin",
+    "machine": "arm64",
+    "python": "3.13.9",
+    "numpy": "2.1.3",
+    "pandas": "2.2.3"
+  },
+  "n_sites": 68,
+  "n_sites_tied": 51,
+  "n_patients": 944,
+  "n_patients_fold_changed": 216,
+  "hash_site_index": "e260a81c9919b7fa",
+  "hash_sizes": "1085bc3b226f462f",
+  "hash_order_quicksort": "9fd91de2c6f61b19",
+  "hash_order_stable": "654c68f3e3aa46a2",
+  "hash_fold_shipped": "e55ee4e8887b5167",
+  "hash_fold_stable": "9f31e33c2caaf1e3",
+  "synthetic_isi_shipped": 1.036173699004058,
+  "synthetic_isi_stable": 0.9752094760755506
+}

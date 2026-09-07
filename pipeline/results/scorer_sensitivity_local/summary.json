@@ -1,0 +1,175 @@
+{
+  "cohort": "nsclc",
+  "n_patients": 944,
+  "n_signatures": 16,
+  "n_null_sets": 1000,
+  "n_null_sets_matches_main_analysis": true,
+  "n_boot": 1000,
+  "ssgsea_ms_per_patient_set": 0.07587649938413653,
+  "arms": {
+    "mean_z__disattenuated": {
+      "isi": 0.318240180054566,
+      "lo": 0.26138392827249185,
+      "hi": 0.37633421961128716,
+      "n_signatures": 16,
+      "method": "mean-immune-specific-excess-z-patient-clustered-bootstrap [null subsampled to 200 draws]"
+    },
+    "mean_z__uncorrected": {
+      "isi": 0.3191678769197761,
+      "lo": 0.26624870689131597,
+      "hi": 0.3732045643148,
+      "n_signatures": 16,
+      "method": "mean-immune-specific-excess-z-patient-clustered-bootstrap [null subsampled to 200 draws]"
+    },
+    "ssgsea__disattenuated": {
+      "isi": null,
+      "lo": null,
+      "hi": null,
+      "n_signatures": null,
+      "method": null
+    },
+    "ssgsea__uncorrected": {
+      "isi": 0.1799529379910222,
+      "lo": 0.1391910971170491,
+      "hi": 0.2159114981000094,
+      "n_signatures": 16,
+      "method": "mean-immune-specific-excess-z-patient-clustered-bootstrap [null subsampled to 200 draws]"
+    }
+  },
+  "reconstructed": {
+    "mean_z": {
+      "isi": 0.3177350730216135,
+      "lo": 0.28216614604058765,
+      "hi": 0.3533040000026394,
+      "n_signatures": 16,
+      "beats_null": 16,
+      "method": "excess-over-null-z-disattenuated-with-split-half-reliability; CI is the across-signature SE, NOT the registered patient-clustered bootstrap"
+    },
+    "ssgsea": {
+      "isi": -0.13333507569716976,
+      "lo": -0.1831477284969278,
+      "hi": -0.08352242289741174,
+      "n_signatures": 16,
+      "beats_null": 0,
+      "method": "excess-over-null-z-disattenuated-with-split-half-reliability; CI is the across-signature SE, NOT the registered patient-clustered bootstrap"
+    }
+  },
+  "split_half_reliability": {
+    "mean_z": {
+      "observed_mean": 0.9619780095308824,
+      "null_mean": 0.7993110427435022,
+      "per_signature_observed": {
+        "SIG_HALLMARK_ALLOGRAFT_REJECTION": 0.9829869787308709,
+        "SIG_HALLMARK_ANGIOGENESIS": 0.8713111844990262,
+        "SIG_HALLMARK_COAGULATION": 0.9447002165319613,
+        "SIG_HALLMARK_COMPLEMENT": 0.9706760201487619,
+        "SIG_HALLMARK_E2F_TARGETS": 0.9887495033130291,
+        "SIG_HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION": 0.9878802418860457,
+        "SIG_HALLMARK_G2M_CHECKPOINT": 0.9841104715071431,
+        "SIG_HALLMARK_HYPOXIA": 0.9382717395383032,
+        "SIG_HALLMARK_IL2_STAT5_SIGNALING": 0.9555753069974168,
+        "SIG_HALLMARK_IL6_JAK_STAT3_SIGNALING": 0.9500874800142806,
+        "SIG_HALLMARK_INFLAMMATORY_RESPONSE": 0.979352834356779,
+        "SIG_HALLMARK_INTERFERON_ALPHA_RESPONSE": 0.9798283748953844,
+        "SIG_HALLMARK_INTERFERON_GAMMA_RESPONSE": 0.9866305198629239,
+        "SIG_HALLMARK_MYC_TARGETS_V1": 0.9861083698231303,
+        "SIG_HALLMARK_TGF_BETA_SIGNALING": 0.908063717367028,
+        "SIG_HALLMARK_TNFA_SIGNALING_VIA_NFKB": 0.977315193022033
+      },
+      "per_signature_null_mean": {
+        "SIG_HALLMARK_ALLOGRAFT_REJECTION": 0.8240018969587165,
+        "SIG_HALLMARK_ANGIOGENESIS": 0.43279673030812843,
+        "SIG_HALLMARK_COAGULATION": 0.7337857929485778,
+        "SIG_HALLMARK_COMPLEMENT": 0.8434942600879768,
+        "SIG_HALLMARK_E2F_TARGETS": 0.8804400487945508,
+        "SIG_HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION": 0.8697770308073552,
+        "SIG_HALLMARK_G2M_CHECKPOINT": 0.8678798482356543,
+        "SIG_HALLMARK_HYPOXIA": 0.8518985297007597,
+        "SIG_HALLMARK_IL2_STAT5_SIGNALING": 0.8446929465699705,
+        "SIG_HALLMARK_IL6_JAK_STAT3_SIGNALING": 0.7000230403457536,
+        "SIG_HALLMARK_INFLAMMATORY_RESPONSE": 0.8217266094166571,
+        "SIG_HALLMARK_INTERFERON_ALPHA_RESPONSE": 0.7992354200302633,
+        "SIG_HALLMARK_INTERFERON_GAMMA_RESPONSE": 0.8723185204366285,
+        "SIG_HALLMARK_MYC_TARGETS_V1": 0.9314176583242174,
+        "SIG_HALLMARK_TGF_BETA_SIGNALING": 0.6504771913455989,
+        "SIG_HALLMARK_TNFA_SIGNALING_VIA_NFKB": 0.865011159585227
+      }
+    },
+    "ssgsea": {
+      "observed_mean": 0.9336120947138573,
+      "null_mean": 0.2576286314429049,
+      "per_signature_observed": {
+        "SIG_HALLMARK_ALLOGRAFT_REJECTION": 0.9768857542610024,
+        "SIG_HALLMARK_ANGIOGENESIS": 0.7405706437901267,
+        "SIG_HALLMARK_COAGULATION": 0.8725578432131145,
+        "SIG_HALLMARK_COMPLEMENT": 0.9283460802959421,
+        "SIG_HALLMARK_E2F_TARGETS": 0.9922212847571902,
+        "SIG_HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION": 0.9780347227825394,
+        "SIG_HALLMARK_G2M_CHECKPOINT": 0.9902286900424195,
+        "SIG_HALLMARK_HYPOXIA": 0.8819141223697791,
+        "SIG_HALLMARK_IL2_STAT5_SIGNALING": 0.9249416432621853,
+        "SIG_HALLMARK_IL6_JAK_STAT3_SIGNALING": 0.9118488063105624,
+        "SIG_HALLMARK_INFLAMMATORY_RESPONSE": 0.9670457854049234,
+        "SIG_HALLMARK_INTERFERON_ALPHA_RESPONSE": 0.9737281437030976,
+        "SIG_HALLMARK_INTERFERON_GAMMA_RESPONSE": 0.9817624953110186,
+        "SIG_HALLMARK_MYC_TARGETS_V1": 0.976700388102376,
+        "SIG_HALLMARK_TGF_BETA_SIGNALING": 0.8738923592207558,
+        "SIG_HALLMARK_TNFA_SIGNALING_VIA_NFKB": 0.9671147525946834
+      },
+      "per_signature_null_mean": {
+        "SIG_HALLMARK_ALLOGRAFT_REJECTION": 0.1982484467481093,
+        "SIG_HALLMARK_ANGIOGENESIS": 0.1035719263813585,
+        "SIG_HALLMARK_COAGULATION": 0.13741564556433056,
+        "SIG_HALLMARK_COMPLEMENT": 0.29597150289812674,
+        "SIG_HALLMARK_E2F_TARGETS": 0.2974108378638575,
+        "SIG_HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION": 0.3382203855925475,
+        "SIG_HALLMARK_G2M_CHECKPOINT": 0.31313793830690734,
+        "SIG_HALLMARK_HYPOXIA": 0.273248146754718,
+        "SIG_HALLMARK_IL2_STAT5_SIGNALING": 0.23791850047734617,
+        "SIG_HALLMARK_IL6_JAK_STAT3_SIGNALING": 0.14347511116825554,
+        "SIG_HALLMARK_INFLAMMATORY_RESPONSE": 0.14233476884805524,
+        "SIG_HALLMARK_INTERFERON_ALPHA_RESPONSE": 0.2414591606437599,
+        "SIG_HALLMARK_INTERFERON_GAMMA_RESPONSE": 0.30897615692117836,
+        "SIG_HALLMARK_MYC_TARGETS_V1": 0.6591048471351576,
+        "SIG_HALLMARK_TGF_BETA_SIGNALING": 0.14428727576001077,
+        "SIG_HALLMARK_TNFA_SIGNALING_VIA_NFKB": 0.2872774520227589
+      }
+    }
+  },
+  "beats_null": {
+    "mean_z__disattenuated": 16,
+    "mean_z__uncorrected": 16,
+    "ssgsea__disattenuated": 0,
+    "ssgsea__uncorrected": 15
+  },
+  "agreement": [
+    {
+      "label": "uncorrected excess, mean_z vs ssgsea",
+      "n": 16,
+      "pearson": 0.6330779652343089,
+      "spearman": 0.5823529411764706,
+      "mean_abs_diff": 0.1392149389287539
+    },
+    {
+      "label": "reconstructed disattenuated excess, mean_z vs ssgsea",
+      "n": 16,
+      "pearson": 0.6605033132165066,
+      "spearman": 0.29411764705882354,
+      "mean_abs_diff": 0.45107014871878337
+    },
+    {
+      "label": "residualised observed r, mean_z vs ssgsea",
+      "n": 16,
+      "pearson": 0.7663689331224728,
+      "spearman": 0.6470588235294118,
+      "mean_abs_diff": 0.04900096838661186
+    }
+  ],
+  "runtime_s": {
+    "mean_z__disattenuated": 14199.815408229828,
+    "mean_z__uncorrected": 21136.6253759861,
+    "ssgsea__disattenuated": 3874.917428970337,
+    "ssgsea__uncorrected": 148.728524684906
+  },
+  "caveat": "The registered disattenuated ISI is UNDEFINED under scorer='ssgsea': the audit estimates reliability with the general-form Cronbach alpha for a mean-of-z-scores composite, which an ssGSEA rank-walk score is not, so alpha collapses to 0 and every draw is dropped. This is a property of the reliability estimator, not of ssGSEA. Arms 1 and 3 are the comparable ones."
+}

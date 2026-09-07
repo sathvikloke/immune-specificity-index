@@ -1,0 +1,20 @@
+{
+  "primary_excess": {
+    "value": 0.2911443244377561,
+    "ci_lo": NaN,
+    "ci_hi": NaN,
+    "n": 16,
+    "method": "mean-immune-specific-excess-z"
+  },
+  "secondary_delta_mae": {
+    "value": 0.008819376917063226,
+    "ci_lo": 0.007825369388863765,
+    "ci_hi": 0.009810454268836503,
+    "n": 7168,
+    "method": "paired-cluster-bootstrap"
+  },
+  "runtime_s": 5769.107793092728,
+  "notes": [
+    "pooled ISI bootstrap produced only 0 usable draws; the interval is NOT reportable"
+  ]
+}

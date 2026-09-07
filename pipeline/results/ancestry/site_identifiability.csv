@@ -1,0 +1,4 @@
+group,n_group_total,n_sites_total,n_sites_supporting,frac_sites_supporting,n_group_in_supporting_sites,n_reference_in_supporting_sites,n_type_site_cells_supporting,n_patients_in_supporting_cells
+AFR,594,576,6,0.010416666666666666,73,241,6,314
+ASIAN,502,542,4,0.007380073800738007,125,208,4,333
+AMR,172,534,3,0.0056179775280898875,36,210,3,246

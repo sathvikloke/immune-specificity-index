@@ -1,0 +1,20 @@
+{
+  "primary_excess": {
+    "value": 0.03794208139978702,
+    "ci_lo": -0.486717446450849,
+    "ci_hi": 0.5665953948951914,
+    "n": 3,
+    "method": "mean-immune-specific-excess-z"
+  },
+  "secondary_delta_mae": {
+    "value": 0.3970255632993103,
+    "ci_lo": 0.37084870772185546,
+    "ci_hi": 0.4246684623183607,
+    "n": 800,
+    "method": "paired-cluster-bootstrap"
+  },
+  "runtime_s": 100.01355481147766,
+  "notes": [
+    "ComBat: post-correction site AUROC is NOT interpretable (measured 0.005; the within-site zero-sum constraint makes the classifier anti-predictive). Report the RAW site AUROC as the confound measure. Deployment answer: under preserved-site folds ComBat is estimable for 0.0% of held-out samples (0/800)."
+  ]
+}

@@ -83,6 +83,20 @@ def main() -> int:
         print("\n  Within the limit.")
         return 0
 
+    # A raw FileNotFoundError traceback here is not a diagnosis. `reproduce.sh
+    # --check` calls this script, and the PUBLIC SNAPSHOT deliberately does not
+    # stage `07-ABSTRACT-DRAFT.md` -- it is a working document with budget notes
+    # and open TODOs, not a deliverable. So every reader running the deposit's
+    # advertised entry point reaches this line with the file absent. Measured
+    # 2026-09-07 inside a freshly staged snapshot: it crashed with a traceback.
+    if not args.path.is_file():
+        print(f"MISSING {args.path} -- this script counts an abstract draft, "
+              "and that draft is not part of the public snapshot.")
+        print("  It is a working document, excluded on purpose. If you are "
+              "reading this from the deposit, nothing is wrong with the "
+              "deposit; this script simply has no input here.")
+        return 2
+
     title, body = extract(args.path.read_text())
     if not title or not body:
         print(f"Could not find '## TITLE' and '## BODY' sections in {args.path}")

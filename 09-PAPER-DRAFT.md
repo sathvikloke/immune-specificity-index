@@ -15,12 +15,18 @@ bar from the 2025-26 corpus is an independent external cohort**, which this work
 does not yet have; see §7 of the pre-registration.
 
 **Status:** complete draft against the 2026-08-18 analysis freeze
-([`05-PRE-REGISTRATION.md`](05-PRE-REGISTRATION.md), git tag `prereg-2026-08-18`).
+([`05-PRE-REGISTRATION.md`](05-PRE-REGISTRATION.md); recorded by the annotated tag
+`prereg-2026-08-18` in the **private** working repository, which the published
+snapshot does not carry — see the Code Availability Statement).
 All numbers trace to `pipeline/results/nsclc_v3` and `pipeline/results/pancancer_v3`.
 `pancancer_v2` is **identical on every immune-specificity number** — mean excess
-0.291144, range 0.165–0.390, checked 2026-09-02 — and differs only in carrying
+0.291144, range 0.165–0.390, checked 2026-09-02 — and differs only in **lacking**
 `null_draws.npz`, the persisted per-draw null correlations that make the
-family-level rotation null and Figure 1B's distribution possible. An earlier
+family-level rotation null and Figure 1B's distribution possible.
+(This sentence said v2 *carried* the file until 2026-09-07. It is the other way
+round, verified by `ls`: `pancancer_v3/null_draws.npz` exists, `pancancer_v2/`
+has no `.npz` at all. The direction is the whole content of the sentence, since
+v3 is the reported run precisely because it has the draws.) An earlier
 version of this line said v2; it was already reporting v3 results, since it quotes
 the rotation null.
 Figures are rendered by `pipeline/scripts/10_make_figures.py` into
@@ -218,6 +224,32 @@ heads with the penalty tuned by generalized cross-validation **inside each
 training fold**; imputation and standardization are likewise fitted on training
 folds only.
 
+**Two split schemes are run, and the comparison between them is itself a
+reported result.** Alongside the preserved-site partition, patients are assigned
+to folds at random with no regard to site, using the same fold count and the
+same seed; every model is fitted under both. Two quantities are reported from
+the pair. Δ*r* is the per-signature difference in out-of-fold correlation
+between the schemes. Δ-MAE is a **paired difference in mean absolute error**:
+out-of-fold predictions from the same ridge head are matched on (patient,
+signature) across the two schemes, and the difference is taken as preserved-site
+minus random-patient, so a **positive value means preserved-site splitting costs
+accuracy**. Its interval is a patient-clustered bootstrap on the paired
+differences — the same resampling used for the index, not a normal
+approximation.
+
+**Covariate baselines are fitted under the random-patient split, and that scope
+limits what they can be read as.** A covariate-only design matrix of one-hot
+tissue source site, one-hot cancer type, numeric ABSOLUTE purity and one-hot
+stage is fitted with the same ridge head and the same folds as the embedding,
+and the embedding's advantage is its out-of-fold correlation minus that
+baseline's, per signature, on that split. Simpler baselines — cohort mean,
+per-type mean, site only, type only, purity only — are computed the same way.
+Because the split is random over patients, a held-out patient's site is present
+in training, so these baselines measure how much of a signature a covariate set
+*explains within this cohort*; they are not estimates of how a covariate model
+would transfer to an unseen site, which is the question the preserved-site
+scheme asks.
+
 Two orderings in this pipeline are made explicit because a seed alone does not
 determine them. Sites of equal size are common — 51 of the 68 NSCLC sites share
 a size with another site — and the largest-first ordering must therefore break
@@ -271,7 +303,7 @@ of incomplete patients is reported.
 ### Outcome arm
 
 Signature and null scores enter Harrell's C directly as continuous risk scores.
-There is no dichotomisation path in the code, and the reduction from model to
+There is no dichotomization path in the code, and the reduction from model to
 scalar was fixed in advance, both to avoid documented inflation of type I error
 (8) and C-hacking (9).
 
@@ -296,7 +328,7 @@ truth that the numerical checker also reads. Six signatures are MSigDB-immune
 (allograft rejection, coagulation, complement, inflammatory response, and
 interferon α and γ). Note that **coagulation and complement are MSigDB-immune
 and are counted as such**, which works against the contrast rather than for it.
-IL6/JAK/STAT3 signalling is **excluded** from the immune group because MSigDB's
+IL6/JAK/STAT3 signaling is **excluded** from the immune group because MSigDB's
 gene-set page states no process category for it; since its excess is negative,
 including it would strengthen the contrast, so excluding it is the conservative
 choice.
@@ -323,7 +355,7 @@ in figure captions.
 
 ### Reproducibility
 
-104 automated tests; the analysis is deterministic given seed 0 **on a fixed
+122 automated tests; the analysis is deterministic given seed 0 **on a fixed
 platform**. The configuration is written to `config.json` on every run and the
 code asserts at save time that the computed estimand matches the pre-registered
 string. Each run additionally records the cohort it was fitted on — the patient
@@ -562,17 +594,34 @@ partition choice accounts for 25.7% of total variance. The conclusion is
 unchanged in both cohorts — the honest interval still excludes zero by a
 wide margin.
 
-The comparison between the two cohorts is the more informative result, and it
-runs against the intuition that a larger cohort is a safer one. Partition choice
-is a *larger* share of total uncertainty pan-cancer (25.7%) than in NSCLC
-(8.4%), even though the pan-cancer cohort is 7.6 times larger. The reason is
-that the two variance components scale differently: the bootstrap standard error
-falls with sample size, from 0.0294 to 0.0111, while the between-partition
-standard deviation barely moves, from 0.0089 to 0.0065. Partition variance
-behaves as a floor that resampling patients cannot lower, because it comes from
-the design rather than from sampling noise. Reporting a bootstrap interval alone
-therefore becomes *more* misleading, not less, as cohorts grow — which is the
-opposite of how such intervals are usually read.
+The two cohorts differ in how much of the total they attribute to partition
+choice — 25.7% pan-cancer against 8.4% in NSCLC, in the cohort 7.6 times larger
+— and that ordering runs against the intuition that a larger cohort is a safer
+one. We report the contrast but do not build on it, because six and five
+partitions are too few to establish it. A chi-square interval for the true
+between-partition standard deviation, at one fewer degree of freedom than the
+number of partitions, spans [0.0056, 0.0218] in NSCLC and [0.0039, 0.0187]
+pan-cancer; propagated through the variance share those become [3.4%, 35.5%]
+and [11.0%, 74.0%]. Each standard deviation is pinned only to within a factor
+of about four, which is what five draws buy, and both pairs of intervals overlap
+across most of their range. The point estimates are ordered; these data do not
+establish that the quantities behind them are.
+
+What *is* precisely estimated is the bootstrap component, and it behaves as
+sampling theory says it should: between the two cohorts it falls by a factor of
+2.6490, against the 2.7556 predicted by the ratio of the square roots of the
+sample sizes — agreement within 4%, and a useful check that the bootstrap is
+doing what it claims. Over the same step the partition component falls by only
+1.3630, roughly half the rate predicted either by patient count (2.7556) or by
+tissue-source-site count (3.0171, for 619 sites against 68). We record that
+asymmetry because it is present in the point estimates, and we offer no
+explanation for it: neither candidate scaling accounts for it, and separating a
+genuine design floor from five draws of a noisy variance estimate would take on
+the order of 20 to 30 partitions per cohort, which we did not run. The claim
+this analysis supports is therefore the narrow one it began with — the reported
+bootstrap interval understates total uncertainty, by 4.5% in NSCLC and 16.0%
+pan-cancer — and not a general statement about how grouped-partition variance
+scales with cohort size.
 
 Two further observations. The sixth pan-cancer assignment was refused by the
 degeneracy guard when the residualization SVD failed to converge, so the
@@ -626,7 +675,11 @@ signature on the dominant expression axis and correcting for the measurement
 reliability of curated modules, curated TME signatures remain substantially more
 image-predictable than size- and expression-matched random gene sets, in 31
 cancer types. This is a stronger result for the modality than the composition
-hypothesis predicts, and it is obtained under site-disjoint validation.
+hypothesis predicts, and it is obtained under site-disjoint validation. The
+claim is made for the mean-of-z-scores composite the index is defined on, and
+does not carry over to an arbitrary scoring rule: under single-sample GSEA the
+uncorrected contrast survives at about half its magnitude, but the corrected
+estimand does not exist at all, for the reason given below.
 
 **That information is not prognostic.** The prognostic content of the Hallmark
 TME family, measured against the only fair comparator, is proliferative and
@@ -638,13 +691,34 @@ implication is direct: **image-inferred immune scores should not be used as
 prognostic biomarkers**, not because the image reads them poorly, but because the
 underlying transcriptomic scores are not prognostic once compared fairly.
 
-**A methodological point that generalises.** Any comparison of a curated gene set
+**A methodological point that generalizes.** Any comparison of a curated gene set
 against a random one is confounded by reliability, and the size of that
 confounding depends on how much of the sets' internal consistency comes from a
 shared global axis. Because that dependence is inverse in panel size, the
 smallest panels — which are the ones nearest clinical deployment — are the most
 exposed. Reporting a raw-score α understates the problem by up to an order of
 magnitude.
+
+The correction that repairs this confounding is itself not scorer-free, and that
+is the sharper half of the point. Disattenuation divides by the square root of
+the comparator's reliability, so a scoring rule that drives the reliability of
+*random* sets toward zero — as a rank-walk statistic does, from 0.799 to 0.258
+here — turns a modest correction into a numerically violent one and can remove
+the estimand entirely. Any index built on a curated-versus-random comparison
+therefore has to name its scorer as part of its definition rather than treat
+scoring as an implementation detail, and has to report what its comparator's
+reliability actually is. Ours does not survive that substitution, and we would
+expect most such indices not to.
+
+<!--
+Deliberate omission, decided 2026-09-07: the partition-variance result is NOT
+mentioned in the Discussion. Per the A5 addendum in 14-SCIENCE-AUDIT.md the
+cross-cohort contrast is a contrast of point estimates whose chi-square
+intervals overlap, so it is not a contribution and does not belong in the
+paper's argument. It stays a Results paragraph plus Limitation 8. Do not
+re-find this as a gap -- it is a decision, not an oversight. The scorer /
+ssGSEA half of the same gap WAS acted on, in the two paragraphs above.
+-->
 
 ### Limitations
 
@@ -829,7 +903,58 @@ deposited with the analysis code below.
 > unblocked and takes the same URL.
 >
 > Re-verified at push time: 169 staged files, 1,447,396 bytes, and the audit
-> CLEAN — plus an independent `grep` for each forbidden pattern (cluster host,
+> CLEAN. ⚠ **Those two figures describe what is LIVE, and a rebuild no longer
+> reproduces them.** A rebuild on 2026-09-07 produced **172 files,
+> 1,756,296 bytes**, because a root `README.md` was added — the landing page for
+> this URL was a bare list of five files until then. The README is staged but
+> **NOT pushed**; publishing stays a deliberate manual act. Re-measure both
+> figures at the next push rather than carrying either pair forward. (Those
+> rebuild figures are themselves already superseded — see below. Every edit to a
+> staged file moves the byte count, so the pair is only true as of the rebuild
+> that produced it, and it is quoted with its date for that reason.)
+> The rebuild figures moved again later on 2026-09-07, 170 → 172 files and
+> 1,493,616 → 1,756,296 bytes, for a reason that belongs in the record: the two
+> `null_draws.npz` files (249,170 bytes) are now staged, because **without them
+> the Data Availability Statement above was false.** Figure 1B's null cannot be
+> drawn from anything else in the deposit, and `10_make_figures.py` silently
+> substituted a mean ± SD band while printing that it had drawn the real
+> distribution. The other 13,510 bytes are this session's edits to files that
+> are themselves staged.
+>
+> ⚠ **The statement was false a SECOND way, and the first fix did not reveal
+> it — running the figure script against a staged tree did.** With
+> `null_draws.npz` in place, `10_make_figures.py` still **exited 1** inside the
+> snapshot, at figure 2: its x-axis needs the count of genes per signature
+> surviving expression filtering, whose only route was
+> `data/interim/expr_nsclc.parquet` and the Hallmark GMT — and `pipeline/data/`
+> is excluded from the snapshot deliberately, because the inputs are public but
+> large. Every reader reproducing from the deposit hit it. The quantity is
+> **16 integers**, so it is now deposited as `results/gene_set_sizes.csv`, which
+> the existing `.csv` rule stages; recomputation from `data/` stays authoritative
+> where those inputs exist and the two are **compared**, so a stale deposit fails
+> loudly. Measured after the fix: the snapshot renders **all five figures,
+> exit 0**, with figure 2 reproducing ρ = −0.500, p = 0.0485 identically and
+> figure 1B drawing violins. All nine supplementary tables already built from the
+> snapshot alone. **This is now a test, not a claim** — the suite stages a real
+> snapshot into a temp directory, renders from it with no `data/` reachable, and
+> a companion test deletes the deposit to prove the check can fail.
+> After these changes a rebuild stages **173 files**; the staged tree measured
+> **1,780,474 bytes as of the rebuild at 19:46 CDT on 2026-09-07**, and
+> **1,806,703 bytes as of the rebuild at 21:14 CDT on 2026-09-07** — the count
+> unmoved across both, the byte total moved by edits to staged files, which is
+> precisely why the two are treated differently. The two
+> figures are now treated differently, deliberately. The **file count is a
+> checked authority** in `19_check_numbers.py`, derived from a live rebuild
+> rather than stored, because it moves only when a file is added or removed —
+> which is the drift that went unnoticed four times (169 → 170 → 172 → 173). The
+> **byte total is recorded as a dated observation and is not gated**, because
+> `pipeline/scripts/` and this manuscript are both staged, so it moves on every
+> character of every edit; a gate on it would be red almost always and would be
+> ignored within a session. A stale dated observation reads as history; a stale
+> bare figure reads as a fact. Every historical pair above is likewise phrased
+> so the checker does not read it as a current claim.
+> The audit was CLEAN on the rebuild too — plus an independent `grep` for each
+> forbidden pattern (cluster host,
 > cluster username, cluster and local home paths, email) over the staged tree,
 > returning nothing, because the tool passing its own check is not the same as
 > the tree being clean. The patterns are not spelled out here: quoting them
@@ -837,7 +962,28 @@ deposited with the analysis code below.
 > `22_build_public_snapshot.py` excludes itself. The rebuild caught a REAL leak
 > that the 2026-09-04 build could not have seen: `science_gaps.json` had gained
 > an absolute `cohort_path` under the author's home directory. It was fixed at
-> source and the artefact regenerated, not hand-edited.
+> source and the artifact regenerated, not hand-edited.
+>
+> ⚠ **BLOCKING BEFORE SUBMISSION: the LIVE deposit is three sessions stale, so
+> the Data Availability Statement is true of this working tree and FALSE of the
+> artifact a reader can actually reach.** Established 2026-09-07 by querying the
+> live repository's *contents* for the first time — every earlier check asked
+> only for its refs. At commit `8b7cce1` the published tree holds **169 files,
+> 1,448,379 bytes**; a rebuild now stages **173**. The four that are staged and
+> not live are `README.md`, `pipeline/results/gene_set_sizes.csv`, and both
+> `null_draws.npz` — which is to say **exactly the three files that were added to
+> make this statement true**, plus the landing page. Measured against a tree
+> reconstructed to match the live commit: `10_make_figures.py` **exits 1** at
+> figure 2, and before that figure 1B silently falls back to a mean ± SD band.
+> Both defects this section describes as fixed are still live for every reader.
+> The nine supplementary tables *do* build from the live tree (exit 0), so it is
+> the figure half alone that is false — the same split as before the fix.
+> **Nothing here can close this; only a push can**, and publishing is deliberately
+> the author's act. It is recorded as a blocking pre-submission item in
+> `submission/SUBMISSION-CHECKLIST.md`. Note the general shape, which is the
+> reason this went unnoticed for three sessions: **the staged tree and the
+> published tree are different artifacts, and every check in this repository
+> measured the staged one.**
 
 **Variant A — public GitHub repository. ← CHOSEN**
 
@@ -845,10 +991,24 @@ deposited with the analysis code below.
 > `https://github.com/sathvikloke/immune-specificity-index` under the
 > MIT license. The repository contains the complete pipeline, the frozen
 > configuration used for every reported result, an exact dependency lockfile,
-> and a single-command reproduction script. The pre-registered protocol is
-> timestamped at git tag `prereg-2026-08-18`, created before any result in this
-> paper was computed. Reported values were produced on macOS 15 / arm64 with
+> a single-command reproduction script, and the pre-registered protocol.
+> Reported values were produced on macOS 15 / arm64 with
 > Python 3.13.9; see Limitations for the observed cross-platform spread.
+
+⚠ **A tag claim was REMOVED here on 2026-09-07 and the gap is an OPEN AUTHOR
+DECISION.** The paragraph above previously ended "The pre-registered protocol is
+timestamped at git tag `prereg-2026-08-18`" — untrue of the repository it points
+at: `git ls-remote --heads --tags` returns one ref and **zero tags**. The cause
+is structural, not an oversight, so it cannot be patched here: the snapshot
+builder publishes a *fresh* repository so no private string survives in history,
+and a repository with no history has no tags. **Tagging the public repo is
+ruled out** — its only commit is dated 2026-09-07. The protocol's *content* is
+public; only its *timestamp* is private. **The three options, the trade-offs and
+the recommendation (Zenodo, i.e. Variant B below) live in `16-YOUR-TASKS.md`
+§"the public repo has no pre-registration timestamp" — this manuscript is not
+the place to hold an unresolved decision, and duplicating it invites the two
+copies to drift.** Nothing above this line needs editing when it is settled
+except, under Variant B, adding the DOI.
 
 **Variant B — archived Zenodo snapshot with a DOI.**
 
@@ -857,10 +1017,25 @@ deposited with the analysis code below.
 > the MIT license. The deposit contains the complete pipeline, the frozen
 > configuration used for every reported result, an exact dependency lockfile,
 > and a single-command reproduction script, captured at the commit corresponding
-> to this manuscript. The pre-registered protocol is included as git tag
-> `prereg-2026-08-18`, created before any result in this paper was computed.
+> to this manuscript. The pre-registered protocol is included in the deposit, and
+> the deposit's Zenodo publication date establishes its timestamp independently.
 > Reported values were produced on macOS 15 / arm64 with Python 3.13.9; see
 > Limitations for the observed cross-platform spread.
+
+⚠ **Variant B carried the SAME false tag claim until 2026-09-07 and it is fixed
+above.** It read "The pre-registered protocol is included as git tag
+`prereg-2026-08-18`, created before any result in this paper was computed" — the
+identical sentence removed from Variant A, and false for the identical reason
+the moment the deposit is built from the public snapshot, which has no tags.
+Recorded because of how it was found: the Variant A fix was verified against the
+live repository and stopped there, leaving the unchosen variant to reintroduce
+the defect if it were ever chosen. **A claim removed from one place is not a
+claim removed.** Note also what Variant B actually buys: Zenodo's own
+publication date is a third-party timestamp, but it is the date of *deposit*, not
+of pre-registration — so it evidences "fixed before these results were
+published", not "fixed before they were computed". That is weaker than the
+private tag and stronger than nothing, and the Limitations wording should say so
+rather than implying a tag exists.
 
 Variant B satisfies the requirement without making the repository public, and
 Zenodo appears on AACR's own list of acceptable repositories. Variant A is

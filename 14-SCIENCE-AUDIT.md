@@ -640,7 +640,9 @@ the HPC4 value `0.9752094760755513` to 15 significant figures.
 they remain the reported primary. That is option B, chosen over a re-freeze for
 a reason: re-freezing would sever the link between the `prereg-2026-08-18` tag
 and the reported run, and would replace the pre-registered number instead of
-reporting both. Measured re-run cost, from the frozen `summary.json` files:
+reporting both. (That tag lives in the **private** working repository; this file
+is published inside the snapshot, which carries no tags. The link the sentence
+describes is real, but a reader of the snapshot cannot check it there.) Measured re-run cost, from the frozen `summary.json` files:
 NSCLC 1,739.6 s (0.48 h), pan-cancer 17,115.6 s (4.75 h) — about 5.2 h idle, and
 this project has measured a 35× contention spread, so far more under load.
 
@@ -883,7 +885,7 @@ scope argument turns the test red.
 - Negative controls: raw site AUROC, the ComBat estimability argument, covariate
   baselines, purity decomposition.
 - The ancestry supplement, including the identifiability result.
-- 104 tests, deterministic seeds, exact version lock, one-command reproduction.
+- 122 tests, deterministic seeds, exact version lock, one-command reproduction.
 
 ## C. Verdict, in effort
 
@@ -1243,13 +1245,45 @@ Reworded rather than exempted, per the guardrail.
 |---|---|---|---|
 | bootstrap component | 2.6490 | 2.7556 | 0.961 |
 | partition component | 1.3630 | 2.7556 | 0.495 |
-| partition component | 1.3630 | 2.5527 (sqrt of the site counts, 202 vs 31) | 0.534 |
+| partition component | 1.3630 | 3.0171 (sqrt of the site counts, 619 vs 68) | 0.452 |
 
 The bootstrap component is within 4% of the sqrt(n) prediction. The partition
 component falls at about **half** the predicted rate on either candidate scaling
 — neither the patient count nor the site count explains it. That is a real
 asymmetry in the point estimates, and it has **no simple explanation** from
 these data; it is not, on this evidence, a demonstrated invariance either.
+
+**Correction, 2026-09-07 (later the same day) — the right numbers, for a
+reason worth stating carefully.** The site-count row above originally read
+`2.5527 (sqrt of the site counts, 202 vs 31)` with an observed/predicted of
+`0.534`. Those two counts are **real and correctly transcribed**: `202` and
+`31` are printed by `11_close_science_gaps.py` as `16 signatures, N sites` for
+the pan-cancer-scoped and NSCLC-scoped runs respectively (see
+`results/science_gaps_stablesort.log` and `..._run3.log`). The error is not
+fabrication — it is that they are **the wrong quantity for this argument**.
+
+`202` and `31` are Control C's *usable* site counts: the sites the label-side
+variance regression retains after its own filtering. Partition variance does
+not arise there. It arises from **assigning sites to folds**, and that
+assignment ranges over every tissue source site in the cohort, filtered or not.
+The counts that govern it are therefore the full TCGA tissue-source-site counts,
+which are **68** for NSCLC and **619** for pan-TCGA. Both were counted directly
+from the barcodes in each run's `predictions.csv.gz` and both are corroborated
+independently inside the library: `decomposition.py`'s docstring records "641
+distinct TSS codes over 8,535 patients" for the full parquet before cohort
+filtering, and "n=956 with 68" for NSCLC, and Limitation 8 says "51 of the 68
+NSCLC sites". So the prediction is sqrt(619/68) = 3.0171 and observed/predicted
+is 0.452.
+
+**The verdict is unchanged, and slightly strengthened:** site count explains the
+partition component *less* well than patient count does, not more, so neither
+candidate scaling rescues it. Recorded rather than silently edited, because the
+failure mode here is a subtle one worth naming — a number can be real,
+correctly copied, and still wrong, because it answers a different question than
+the one being asked. A first pass at this correction asserted the counts "appear
+nowhere else in the pipeline"; that assertion came from grepping only `.md`,
+`.py` and `.html` and not the logs, and it was itself wrong. Both errors have
+the same shape.
 
 **Consequence, recorded as a decision.** The finding stays where it is — a
 Results paragraph plus Limitations 8 — and is **NOT** promoted to a second

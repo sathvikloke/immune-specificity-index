@@ -9,7 +9,11 @@
 # that is the point -- see the note below each figure. These are timings someone
 # actually saw produced, not estimates:
 #
-#   reproduce.sh --check   72 s, then 43 s   (2026-09-04, first complete runs)
+#   reproduce.sh --check   247 s (4 m 7 s), exit 0   (2026-09-07, MEASURED end to
+#                          end after the five steps were added; nothing else
+#                          running; log results/reproduce_check_20260907_run3.log)
+#                          Superseded: 72 s, then 43 s (2026-09-04), both taken
+#                          before the five steps existed.
 #   pytest tests/ -q       26.0 / 54.6 / 56.1 s   (86 tests, three runs)
 #   pytest tests/ -q       48.7 s idle; 864.3 s with one pan-cancer job resident;
 #                          1702.6 s (28 m 22 s) on 2026-09-05 with EIGHT agent
@@ -17,12 +21,29 @@
 #                          session's pytest all resident -- a 35x spread, and the
 #                          largest yet measured. Name what else was running.
 #
-# THE --check FIGURE ABOVE IS STALE AND IS NOT A PREDICTION. On 2026-09-05 the
-# --check path gained five steps (24_split_determinism --check, 26_sort_audit,
-# two --self-tests and --coverage). Their individual costs were measured -- 3 s,
-# 28 s, ~5 s, ~1 s, ~5 s idle -- but the whole path has NOT been re-timed end to
-# end since, so no total is quoted here. Measure it before quoting one; this
-# project has been burned repeatedly by carried-forward timings.
+# THE --check FIGURE IS NOW MEASURED, 2026-09-07, and the measuring found a bug.
+# On 2026-09-05 the --check path gained five steps (24_split_determinism --check,
+# 26_sort_audit, two --self-tests and --coverage) and was not re-timed end to end
+# until 2026-09-07. Doing so took three runs and each failed differently, which
+# is worth knowing before trusting a fourth:
+#   run 1 (145 s, exit 1)  CONTAMINATED -- launched alongside another pytest and
+#                          with the tree mid-edit. Neither number nor verdict
+#                          usable. Never run --check next to another pytest:
+#                          --check runs the full suite itself.
+#   run 2 (137 s, exit 1)  Clean, and it exposed a REAL defect. This script
+#                          exports PYTHONHASHSEED=0 (line below), so a fresh
+#                          ENVIRONMENT.md render from inside --check reports 0
+#                          where the committed file, generated interactively,
+#                          records "(unset)". test_environment_md_matches_a_
+#                          fresh_render_on_this_platform therefore failed HERE
+#                          while passing standalone -- meaning --check could
+#                          never exit 0, by construction, since session 28.
+#                          Fixed by excluding that one row from _strip_volatile,
+#                          the same treatment the git-commit row already gets.
+#                          137 s is a TIME-TO-FAILURE: it aborted at the suite
+#                          and never reached the self-test stages.
+#   run 3 (247 s, exit 0)  The real figure. Quote this one.
+# The lesson is the project's own: a check nobody runs end to end is not a check.
 #
 # THE ~2.5 h FULL-RUN FIGURE HAS NEVER BEEN MEASURED. It is the oldest unverified
 # performance claim in the repo. The two frozen runs it is presumably derived
@@ -93,7 +114,10 @@ if [[ "${1:-}" == "--check" ]]; then
   python scripts/19_check_numbers.py --self-test
   python scripts/26_sort_audit.py --self-test
   echo; echo "=== how much is actually checked ==="
-  python scripts/19_check_numbers.py --coverage | tail -5
+  # --strict here also GATES: it fails if any document has fewer literals
+  # checked than when the floor was recorded. `pipefail` is set above, so a
+  # non-zero status survives the pipe -- without it this would report tail's.
+  python scripts/19_check_numbers.py --coverage --strict | tail -6
   echo; echo "CHECK PASSED. Full reproduction: bash reproduce.sh"
   exit 0
 fi

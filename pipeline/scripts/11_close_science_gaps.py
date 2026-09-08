@@ -158,6 +158,54 @@ def cohort_fingerprint_status(summary: dict | None, run_patients) -> dict:
     }
 
 
+def read_and_check_cohort(res):
+    """Read a results directory's cohort and check it against its own summary.
+
+    Does the I/O that `cohort_fingerprint_status` deliberately avoids: recovers
+    the run's patients from `predictions.csv.gz`, loads `summary.json` if it is
+    there, compares the two, and refuses to continue on a mismatch.
+
+    Extracted from `main()` so the *integration* can be exercised on a fixture
+    directory. The pure function's branches were unit-tested from the day it
+    was written, but this wiring -- which file is read, which column holds the
+    patient id, whether the digest is compared against the right set, and
+    whether a mismatch actually stops the run -- had never executed on a
+    non-absent case, because no results directory on disk carries a
+    fingerprint. Four tested branches behind untested plumbing is not a guard;
+    it is a guard-shaped object, which is the A11 defect class exactly.
+
+    Returns `(preds, run_patients, status)`. Raises SystemExit on a mismatch:
+    every downstream stage is keyed to `run_patients`, so if the summary and
+    the predictions disagree there is no defensible answer to "whose data is
+    this", and writing gap numbers into the directory would repeat A11.
+    """
+    preds = pd.read_csv(res / "predictions.csv.gz")
+    # The run's own patient set, straight from its predictions. Before the
+    # writer existed this was the ONLY cohort record a results directory
+    # carried -- config.json and summary.json both describe the estimator's
+    # settings but never say which patients it was fitted on.
+    run_patients = set(preds["patient"].astype(str))
+
+    summary_path = res / "summary.json"
+    fp = cohort_fingerprint_status(
+        json.loads(summary_path.read_text()) if summary_path.exists() else None,
+        run_patients)
+    if fp["status"] == "mismatch":
+        raise SystemExit(
+            f"\nFATAL: {res.name}/summary.json records a cohort of "
+            f"{fp['recorded_n']} patients (sha256 {str(fp['recorded'])[:16]}...) "
+            f"but predictions.csv.gz contains {fp['observed_n']} "
+            f"(sha256 {fp['observed'][:16]}...). The directory describes two "
+            "different cohorts; refusing to write gap numbers into it.")
+    if fp["status"] == "match":
+        print(f"  cohort fingerprint: MATCHES summary.json "
+              f"({fp['observed_n']} patients)")
+    else:
+        print("  cohort fingerprint: not recorded (run predates 2026-09-06) "
+              "— cohort taken from predictions.csv.gz")
+    return preds, run_patients, fp
+
+
 def cohort_scope_status(available, run_patients, scope: str) -> dict:
     """Resolve which patients a cohort-derived stage may use. PURE: no I/O.
 
@@ -288,38 +336,14 @@ def main() -> int:
 
     # ---------------------------------------------------------------- A3 ---
     print("\nA3  effective number of tests (Li & Ji) — DESCRIPTIVE ONLY")
-    preds = pd.read_csv(res / "predictions.csv.gz")
-    # The run's own patient set, straight from its predictions. This is the only
-    # cohort fingerprint the results directory actually carries -- config.json
-    # and summary.json both record the estimator's settings but never say which
-    # patients they were fitted on.
-    run_patients = set(preds["patient"].astype(str))
-    report["run_n_patients"] = len(run_patients)
-
     # Make the fingerprint LOAD-BEARING. Writing it was the source-level fix for
     # A11; until something reads it, a directory could still carry a summary
     # describing one cohort beside predictions from another and nothing would
-    # object. A mismatch is fatal rather than a warning: every downstream stage
-    # here is keyed to `run_patients`, so if the two disagree there is no
-    # defensible answer to "whose data is this".
-    summary_path = res / "summary.json"
-    fp = cohort_fingerprint_status(
-        json.loads(summary_path.read_text()) if summary_path.exists() else None,
-        run_patients)
+    # object. The read, the comparison and the refusal all live in
+    # `read_and_check_cohort` so that a fixture test can drive them.
+    preds, run_patients, fp = read_and_check_cohort(res)
+    report["run_n_patients"] = len(run_patients)
     report["cohort_fingerprint"] = fp
-    if fp["status"] == "mismatch":
-        raise SystemExit(
-            f"\nFATAL: {res.name}/summary.json records a cohort of "
-            f"{fp['recorded_n']} patients (sha256 {str(fp['recorded'])[:16]}...) "
-            f"but predictions.csv.gz contains {fp['observed_n']} "
-            f"(sha256 {fp['observed'][:16]}...). The directory describes two "
-            "different cohorts; refusing to write gap numbers into it.")
-    if fp["status"] == "match":
-        print(f"  cohort fingerprint: MATCHES summary.json "
-              f"({fp['observed_n']} patients)")
-    else:
-        print("  cohort fingerprint: not recorded (run predates 2026-09-06) "
-              "— cohort taken from predictions.csv.gz")
     wide = (preds[preds["model"] == "ridge_embedding"]
             .pivot_table(index="patient", columns="target", values="y_true"))
     corr = wide.corr().to_numpy()

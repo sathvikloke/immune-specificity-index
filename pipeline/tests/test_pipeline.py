@@ -1629,6 +1629,7 @@ def test_fix_pooled_bootstrap_survives_a_single_nan_patient():
 # ---------------------------------------------------------------------------
 
 import importlib.util  # noqa: E402
+import os  # noqa: E402
 import subprocess  # noqa: E402
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
@@ -1961,9 +1962,26 @@ def _strip_volatile(text: str) -> list[str]:
     keeping this test green were mutually exclusive, and a test that forbids the
     document from telling the truth is the one that gets deleted. The marker
     itself is emitted BY `render()`, so it cannot go missing on one side only.
+
+    `PYTHONHASHSEED` excluded 2026-09-07, and this one was a REAL defect rather
+    than a nuisance. `reproduce.sh` line 50 exports `PYTHONHASHSEED=0` for
+    determinism, so a `render()` called from inside `reproduce.sh --check` sees
+    `0` while the committed file -- generated from an interactive shell --
+    records `(unset)`. The rows are both correct; the variable describes how the
+    interpreter was LAUNCHED, not the machine the file documents, which is why
+    ENVIRONMENT.md's own prose already says "exported by `reproduce.sh`. NOT set
+    by default in an interactive shell". Comparing it meant `reproduce.sh
+    --check` could **never** exit 0 on the very platform it validates, while the
+    same test passed standalone -- so the repository's one-command reproduction
+    entry point, cited in the paper's Reproducibility section and in
+    `pipeline/README.md`, failed by construction. It went unnoticed because
+    `--check` gained the suite step in session 28 and was not run end to end
+    again until 2026-09-07. The variable is still WRITTEN to the file; it is
+    only excluded from the equality comparison.
     """
     head = text.split(_ENV_GENERATED_END)[0]
-    return [ln for ln in head.splitlines() if "| git commit |" not in ln]
+    return [ln for ln in head.splitlines()
+            if "| git commit |" not in ln and "`PYTHONHASHSEED`" not in ln]
 
 
 def test_environment_write_preserves_hand_authored_tail():
@@ -2638,3 +2656,834 @@ def test_no_claim_pattern_is_vacuous_on_the_real_tree():
     assert out.returncode == 0, (
         "19_check_numbers.py --strict failed on the real tree:\n"
         f"{out.stdout[-4000:]}")
+
+
+def test_every_exempt_file_is_actually_scanned_and_the_check_can_fail():
+    """An EXEMPT entry must name a file the checker would otherwise scan.
+
+    THE DEFECT THIS PINS, found 2026-09-07. `19_check_numbers.py` applies
+    `EXEMPT` inside `for rel in DOCS:` -- so an EXEMPT key that is not in DOCS
+    is unreachable. Both keys (`05-PRE-REGISTRATION.md`, `02-PROJECT-DECISION
+    .md`) were missing from DOCS, which made the entire table dead code. It
+    survived because the OBSERVABLE BEHAVIOUR was identical: the files went
+    unscanned either way. What differed was the reason, and the reason is what
+    everyone was relying on -- the module docstring gives the exemption its own
+    section, and handoffs carried "frozen ... and in the checker's EXEMPT table"
+    forward as a live fact for eleven sessions. Nobody had run the checker and
+    looked for the word `exempt` in its output; it never appeared.
+
+    Why this matters beyond tidiness: the protection was accidental. Adding
+    `05-PRE-REGISTRATION.md` to DOCS for any reason -- and it stated results, so
+    it was a plausible addition -- would have silently started scanning a file
+    whose test count is frozen at 67 on purpose, reported a MISMATCH against the
+    live count, and invited someone to "fix" the pre-registration to match. The
+    exemption existed precisely to prevent that and would not have fired.
+
+    This is the project's recurring shape: a guard being present is not the
+    guarded thing being safe.
+    """
+    mod = _load_script("19_check_numbers.py")
+
+    assert mod.EXEMPT, "EXEMPT is empty; this test is guarding nothing"
+    missing = sorted(set(mod.EXEMPT) - set(mod.DOCS))
+    assert not missing, (
+        "these EXEMPT entries name files the checker never scans, so the "
+        "exemption is unreachable and the file is protected only by accident: "
+        f"{missing}. Either add each to DOCS (so the exemption fires and is "
+        "reported under `skipped:`) or delete the entry and say plainly in the "
+        "docstring that the file is simply not scanned.")
+
+    # CAN IT FAIL? Assert the property is discriminating rather than trivially
+    # true of any two collections. Without this, a refactor that made EXEMPT a
+    # subset of DOCS by construction -- or emptied one of them -- would leave a
+    # test that passes while checking nothing.
+    fake_exempt = dict(mod.EXEMPT)
+    fake_exempt["99-NOT-IN-DOCS.md"] = "a file no DOCS entry names"
+    assert sorted(set(fake_exempt) - set(mod.DOCS)) == ["99-NOT-IN-DOCS.md"], (
+        "the subset check does not detect an EXEMPT key absent from DOCS, so "
+        "it would pass no matter what EXEMPT contained")
+
+    # And the exemption must be OBSERVABLE, not merely reachable: a reader of
+    # the output has to be able to tell that a file was skipped on purpose
+    # rather than silently dropped. This is the half that was missing -- the
+    # dead table was invisible precisely because nothing printed.
+    out = subprocess.run(
+        [sys.executable, str(SCRIPTS / "19_check_numbers.py")],
+        cwd=SCRIPTS.parent, capture_output=True, text=True, timeout=900)
+    for name, reason in mod.EXEMPT.items():
+        assert f"{name} (exempt:" in out.stdout, (
+            f"{name} is in EXEMPT and in DOCS, but the checker never reports "
+            f"it as exempt, so the skip is invisible to anyone reading the "
+            f"output. Expected a `skipped:` line naming it. Reason on file: "
+            f"{reason}\n{out.stdout[-2500:]}")
+
+
+# ------------------------------------------------- the seed coupling ---
+#
+# Three library functions take their RNG seed from a DEFAULT ARGUMENT, and
+# their only callers do not pass one:
+#
+#   decomposition.permutation_calibration  <- 11_close_science_gaps.py:403
+#   ancestry.cramers_v_calibrated          <- 06_run_ancestry.py:93,94
+#   ancestry.pooled_over_signatures        <- 06_run_ancestry.py:189,190,199
+#
+# They are reproducible today for one reason only: each default happens to be
+# 0, and `AuditConfig.seed` also happens to be 0. Nothing enforces that. Change
+# the config seed to study seed sensitivity and these three arms would silently
+# keep using 0 -- not crash, not warn, just quietly fail to move, which is the
+# worst of the three outcomes because the run would still look successful.
+#
+# Two other functions were on the suspect list carried in the handoff chain and
+# are NOT defects: `signatures.random_gene_sets` is called with
+# `seed=config.seed` from experiment.py, and `signatures.split_half_reliability`
+# is called with `seed=seed` from 13_scorer_sensitivity.py. Their defaults are
+# never reached. Checked 2026-09-07 by reading every call site.
+#
+# The coupling is left in place rather than rewired: rewiring means threading a
+# seed through two standalone scripts, and re-running them would change
+# artefacts that PROVENANCE.json hashes. So it is made LOUD instead. This test
+# is what makes the coupling safe, and it is the reason it may be left alone.
+
+_SEED_COUPLED = (
+    ("aacr27.decomposition", "permutation_calibration", "11_close_science_gaps.py"),
+    ("aacr27.ancestry", "cramers_v_calibrated", "06_run_ancestry.py"),
+    ("aacr27.ancestry", "pooled_over_signatures", "06_run_ancestry.py"),
+)
+
+
+def seed_default_mismatches(config_seed, entries):
+    """Pure: the entries whose default seed differs from `config_seed`.
+
+    Pure so that BOTH directions are testable. A check that has only ever been
+    run on the passing case is not a check -- this project shipped an A11 fix
+    verified only where it was a no-op, and that is the mistake being avoided.
+    """
+    import importlib
+    import inspect as _inspect
+
+    out = []
+    for mod_name, func_name, caller in entries:
+        mod = importlib.import_module(mod_name)
+        default = _inspect.signature(getattr(mod, func_name)).parameters["seed"].default
+        if default != config_seed:
+            out.append((f"{mod_name}.{func_name}", default, config_seed, caller))
+    return out
+
+
+def test_seeded_defaults_agree_with_the_audit_config_seed():
+    """The three unwired seeds must equal `AuditConfig.seed`."""
+    config_seed = experiment.AuditConfig().seed
+    bad = seed_default_mismatches(config_seed, _SEED_COUPLED)
+    assert not bad, (
+        "a function whose caller does not pass a seed now defaults to a "
+        "DIFFERENT seed than AuditConfig, so that arm would silently use the "
+        "wrong RNG stream while the run still reported success:\n"
+        + "\n".join(
+            f"  {name}: default {d!r} != AuditConfig.seed {c!r} (called by {caller})"
+            for name, d, c, caller in bad)
+        + "\nFix by passing seed= explicitly at the call site, which is the "
+          "real repair; changing the default only moves the coupling.")
+
+
+def test_seed_default_check_can_fail():
+    """Prove the check above is not vacuous, in both directions.
+
+    Without this, `test_seeded_defaults_agree_with_the_audit_config_seed` would
+    pass just as happily if `seed_default_mismatches` returned [] for every
+    input -- which is exactly how a guard becomes decorative.
+    """
+    # Direction 1: a config seed that does NOT match the defaults must be caught.
+    caught = seed_default_mismatches(4242, _SEED_COUPLED)
+    assert len(caught) == len(_SEED_COUPLED), (
+        "every one of the three coupled functions defaults to 0, so a config "
+        f"seed of 4242 must flag all {len(_SEED_COUPLED)}; got {caught}")
+    assert all(d == 0 and c == 4242 for _, d, c, _ in caught)
+
+    # Direction 2: a matching seed must be reported clean, so the check is not
+    # simply always-positive.
+    assert seed_default_mismatches(0, _SEED_COUPLED) == []
+
+    # Direction 3: a function whose default genuinely differs is detected on
+    # its own, not merely as part of a sweep.
+    assert seed_default_mismatches(
+        0, (("aacr27.ancestry", "cramers_v_calibrated", "x"),)) == []
+
+
+# ------------------------------------------------- US spelling in prose ---
+
+# The four artefacts that are actually submitted. Internal working documents
+# (14-SCIENCE-AUDIT.md, 15-CHECKLIST.md, 16-YOUR-TASKS.md, the pipeline and
+# results READMEs) are deliberately NOT here -- they were excluded from the
+# conversion on purpose, because they sit next to British code identifiers
+# like `residualise_matrix` and mixing conventions there reads worse than
+# leaving them.
+_SUBMITTED_DOCS = (
+    "09-PAPER-DRAFT.md",
+    "07-ABSTRACT-DRAFT.md",
+    "submission/COVER-LETTER.md",
+    "poster/poster.html",
+)
+
+# British forms that have a US counterpart. `analyse` is here; `analysis` and
+# `analyses` are NOT, because they are identical in both conventions -- a naive
+# list that included them would fire on correct prose and get itself deleted,
+# which is how the previous WORD_CLAIMS attempt died.
+_BRITISH = (
+    "tumour", "colour", "favour", "behaviour", "labour", "centre", "licence",
+    "defence", "analyse", "catalogue", "programme", "artefact", "generalis",
+    "specialis", "normalis", "randomis", "optimis", "summaris", "categoris",
+    "characteris", "dichotomis", "residualis", "standardis", "harmonis",
+    "utilis", "organis", "recognis", "minimis", "maximis", "regularis",
+    "penalis", "modelling", "labelled", "labelling", "signalling",
+)
+
+# Exact tokens the stem list above matches but which are CORRECT US English.
+# `analyses` contains the stem `analyse` yet is the ordinary plural of
+# `analysis` and identical in both conventions; flagging it is precisely the
+# false-positive-on-correct-prose that killed the previous word-claim attempt.
+_NOT_BRITISH = frozenset({"analyses", "analysis"})
+
+
+def british_spellings_in_prose(text, *, is_markdown=True):
+    """Pure: [(line_no, word)] for British spellings in PROSE only.
+
+    Three exclusions, each one a trap this project already hit:
+
+    * fenced blocks and `inline code`, because the library really does contain
+      `residualise_matrix` and `globalaxis.residualisation`; renaming those
+      would break the frozen pipeline and the provenance manifest;
+    * everything from `## References` onward, because reference titles are
+      quoted verbatim and Schmauch's *Nat Commun* title really is spelled
+      "tumours";
+    * HTML comments, which carry drafting notes rather than submitted prose.
+
+    Pure so both directions are testable. The 2026-09-06 conversion was driven
+    by a fixed find-and-replace list and silently missed every British word not
+    on that list -- four of them survived in submitted prose for a day, and one
+    (*signalling*) was sitting in the very checklist line that cited it as
+    evidence the manuscript had not been converted. A word list cannot notice
+    its own omissions; a scan over the finished text can.
+    """
+    import re as _re
+
+    pattern = _re.compile(r"\b\w*(?:" + "|".join(_BRITISH) + r")\w*\b", _re.I)
+    hits, in_fence, past_refs = [], False, False
+    for lineno, line in enumerate(text.split("\n"), 1):
+        if line.strip().startswith("```"):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        if is_markdown and _re.match(r"^##\s+References", line):
+            past_refs = True
+        if past_refs:
+            continue
+        clean = _re.sub(r"`[^`]*`", "", line)
+        clean = _re.sub(r"<!--.*?-->", "", clean)
+        hits.extend((lineno, m.group(0)) for m in pattern.finditer(clean)
+                    if m.group(0).lower() not in _NOT_BRITISH)
+    return hits
+
+
+def test_submitted_documents_use_american_spelling():
+    """The submission artefacts must stay in US spelling.
+
+    Decided and executed in commit `3ee560a`; see the record in
+    16-YOUR-TASKS.md. This test exists because the decision was executed by a
+    word list, and a word list is not a check -- `dichotomisation`,
+    `signalling`, `generalises` and `generalised` all survived it.
+    """
+    repo = Path(__file__).resolve().parents[2]
+    bad = {}
+    for rel in _SUBMITTED_DOCS:
+        path = repo / rel
+        assert path.exists(), f"submitted document is missing: {rel}"
+        hits = british_spellings_in_prose(
+            path.read_text(encoding="utf-8"), is_markdown=rel.endswith(".md"))
+        if hits:
+            bad[rel] = hits
+    assert not bad, (
+        "British spelling survives in prose that gets submitted (US spelling "
+        "was decided and converted in commit 3ee560a):\n"
+        + "\n".join(f"  {rel}:{ln}  {w}"
+                    for rel, hits in bad.items() for ln, w in hits)
+        + "\nIf a hit is inside a reference title or a code identifier it "
+          "should be in backticks or below `## References`, which this scan "
+          "already skips -- fix the markup rather than the word list.")
+
+
+def test_american_spelling_check_can_fail():
+    """Prove the scan above is not vacuous, and that its exclusions work.
+
+    Without this the test would pass just as happily if the regex matched
+    nothing at all.
+    """
+    # Direction 1: plain British prose is caught.
+    assert british_spellings_in_prose("the tumour microenvironment\n") == [
+        (1, "tumour")]
+
+    # Direction 2: correct US prose is clean, and the two words that are
+    # identical in both conventions do NOT fire.
+    assert british_spellings_in_prose(
+        "the tumor microenvironment\nAnalyses are exploratory; one analysis.\n"
+    ) == []
+
+    # Direction 3: each documented exclusion actually excludes.
+    assert british_spellings_in_prose("call `residualise_matrix` here\n") == []
+    assert british_spellings_in_prose(
+        "```\nresidualise_matrix(x)\n```\n") == []
+    assert british_spellings_in_prose("<!-- tumour note -->\n") == []
+    assert british_spellings_in_prose(
+        "## References\n1. RNA-Seq expression of tumours from slides\n") == []
+
+    # Direction 4: the exclusions are scoped, not blanket -- prose on a line
+    # that ALSO contains a code span is still scanned.
+    assert british_spellings_in_prose(
+        "the tumour is scored by `residualise_matrix`\n") == [(1, "tumour")]
+
+    # Direction 5: the reference cutoff is markdown-only, so the HTML poster
+    # cannot silently drop everything after a line that happens to match.
+    assert british_spellings_in_prose(
+        "## References\ntumour\n", is_markdown=False) == [(2, "tumour")]
+
+    # Direction 6: the `analyses` exclusion is a whole-token exemption, not a
+    # licence to ignore the `analyse` family. Catching this distinction is the
+    # whole reason the exclusion is an exact-token set and not another stem.
+    assert british_spellings_in_prose("we analysed the cohort\n") == [
+        (1, "analysed")]
+    assert british_spellings_in_prose("we analyse the cohort\n") == [
+        (1, "analyse")]
+    assert british_spellings_in_prose("two analyses; one analysis\n") == []
+
+
+# --------------------------------- cohort fingerprint, on a real directory ---
+
+def _make_results_dir(tmp_path, patients, summary=None, name="run_v9"):
+    """A minimal results directory: predictions.csv.gz, optionally summary.json.
+
+    Deliberately built from files rather than mocks. The point of the test
+    below is the plumbing -- which file is opened and which column is read --
+    and a mock would assume exactly the thing under test.
+    """
+    import gzip
+    import json as _json
+
+    res = tmp_path / name
+    res.mkdir()
+    frame = pd.DataFrame({
+        "patient": list(patients) * 2,
+        "model": ["ridge_embedding"] * len(patients) + ["ridge_site"] * len(patients),
+        "target": ["SIG_A"] * (2 * len(patients)),
+        "y_true": np.arange(2 * len(patients), dtype=float),
+    })
+    with gzip.open(res / "predictions.csv.gz", "wt") as fh:
+        frame.to_csv(fh, index=False)
+    if summary is not None:
+        (res / "summary.json").write_text(_json.dumps(summary))
+    return res
+
+
+def test_science_gaps_reads_a_real_fingerprint_from_a_real_directory(tmp_path):
+    """Exercise the fingerprint WIRING, not just the pure comparison.
+
+    `test_cohort_fingerprint_mismatch_is_detected_and_absence_is_tolerated`
+    covers all four branches of `cohort_fingerprint_status`, which is pure. It
+    cannot cover the part that actually broke things in A11: reading the right
+    file, taking the patient set from the right column, and letting a mismatch
+    stop the run. As of 2026-09-07 no results directory on disk carries a
+    fingerprint, so the real script has only ever taken the "absent" branch --
+    the match and mismatch paths have never executed outside a unit test.
+
+    Backfilling fingerprints into the frozen runs was considered and DECLINED:
+    it would mean teaching the reader to look in side files, i.e. adding a
+    production code path that exists only for testing. A fixture directory
+    gives the same coverage and adds nothing to the shipped reader.
+    """
+    mod = _load_script("11_close_science_gaps.py")
+    patients = ["TCGA-A1-0001", "TCGA-A2-0002", "TCGA-A3-0003"]
+    digest = mod.fingerprint_patients(patients)
+
+    # --- the branch that has never run for real: a genuine match -------------
+    res = _make_results_dir(
+        tmp_path, patients,
+        summary={"cohort": {"n_patients": 3, "patient_set_sha256": digest}})
+    preds, run_patients, fp = mod.read_and_check_cohort(res)
+    assert fp["status"] == "match", fp
+    assert run_patients == set(patients)
+    # The digest must be computed over the PREDICTIONS' patients, not copied
+    # out of the summary -- otherwise the check compares a value to itself.
+    assert fp["observed"] == digest
+    assert fp["observed_n"] == 3
+    # `preds` must come back usable: main() pivots it immediately afterwards,
+    # so a reader that returned the right verdict and the wrong frame would
+    # still break the stage it guards.
+    assert (preds["model"] == "ridge_embedding").sum() == 3
+
+    # --- the branch that exists for A11: predictions from another cohort -----
+    other = _make_results_dir(
+        tmp_path, patients,
+        summary={"cohort": {"n_patients": 7168,
+                            "patient_set_sha256": mod.fingerprint_patients(
+                                ["TCGA-ZZ-9999"])}},
+        name="run_mismatch")
+    with pytest.raises(SystemExit) as excinfo:
+        mod.read_and_check_cohort(other)
+    message = str(excinfo.value)
+    assert "FATAL" in message and "run_mismatch" in message, message
+    assert "7168" in message and "3" in message, (
+        "the refusal must name both cohort sizes, or the person reading it "
+        f"cannot tell which directory is wrong: {message}")
+
+    # --- and absence must still be tolerated on a real directory -------------
+    legacy = _make_results_dir(tmp_path, patients, summary=None, name="run_old")
+    _, _, absent = mod.read_and_check_cohort(legacy)
+    assert absent["status"] == "absent", absent
+    assert absent["observed_n"] == 3
+
+    # A summary that exists but predates the writer is absent, not a mismatch.
+    stringy = _make_results_dir(tmp_path, patients, summary={"cohort": "nsclc"},
+                                name="run_stringkey")
+    _, _, got = mod.read_and_check_cohort(stringy)
+    assert got["status"] == "absent", got
+
+
+def test_science_gaps_fingerprint_reader_can_fail(tmp_path):
+    """Prove the fixture above would notice a reader that stopped checking.
+
+    Direction: if the wiring took its "observed" patients from the summary
+    instead of from predictions.csv.gz, every directory would match itself and
+    the test above would still pass on the match case. Pin the discriminating
+    property -- a directory whose predictions were changed while the summary
+    was not MUST become a mismatch.
+    """
+    mod = _load_script("11_close_science_gaps.py")
+    patients = ["TCGA-A1-0001", "TCGA-A2-0002", "TCGA-A3-0003"]
+    summary = {"cohort": {"n_patients": 3,
+                          "patient_set_sha256": mod.fingerprint_patients(patients)}}
+
+    # Same summary, one patient swapped in the predictions: the count still
+    # agrees, so only the digest can catch this.
+    swapped = _make_results_dir(
+        tmp_path, ["TCGA-A1-0001", "TCGA-A2-0002", "TCGA-B9-0009"],
+        summary=summary, name="run_swapped")
+    with pytest.raises(SystemExit) as excinfo:
+        mod.read_and_check_cohort(swapped)
+    assert "FATAL" in str(excinfo.value)
+
+    # And the unswapped control passes, so the assertion above is not simply
+    # always-true.
+    clean = _make_results_dir(tmp_path, patients, summary=summary,
+                              name="run_clean")
+    assert mod.read_and_check_cohort(clean)[2]["status"] == "match"
+
+
+def test_the_public_snapshot_can_actually_render_the_figures(tmp_path):
+    """The Data Availability Statement, made mechanical instead of asserted.
+
+    The paper promises that "derived intermediates sufficient to reproduce every
+    reported figure and table are deposited with the analysis code". That
+    sentence was FALSE twice, and both times the prose was checked by reading
+    rather than by running:
+
+      * until 2026-09-07 `null_draws.npz` was excluded by suffix, so figure 1B
+        silently drew a mean +/- SD band -- and the script printed that it had
+        drawn the real distribution;
+      * until later the same day `data/interim/expr_nsclc.parquet` and the GMT
+        were the only route to figure 2's panel sizes, and `pipeline/data/` is
+        excluded from the snapshot on purpose. `10_make_figures.py` exited 1 at
+        figure 2 for every reader reproducing from the deposit.
+
+    Reading the snapshot builder could not have caught either one; running the
+    figure script against a staged tree catches both. So that is what this does:
+    stage a real snapshot into a temp dir and render from it, with NO `data/`
+    reachable -- which is exactly a reader's situation.
+    """
+    out = tmp_path / "snap"
+    staged = subprocess.run(
+        [sys.executable, str(SCRIPTS / "22_build_public_snapshot.py"),
+         "--out", str(out)],
+        cwd=SCRIPTS.parent, capture_output=True, text=True, timeout=300)
+    assert staged.returncode == 0, f"staging failed:\n{staged.stdout[-2000:]}"
+    assert not (out / "pipeline" / "data").exists(), (
+        "this test is only meaningful while the snapshot excludes data/; if that "
+        "changed deliberately, the reasoning here needs rewriting, not the path")
+
+    env = dict(os.environ, MPLCONFIGDIR=str(tmp_path / "mpl"))
+    rendered = subprocess.run(
+        [sys.executable, str(out / "pipeline" / "scripts" / "10_make_figures.py"),
+         "--outdir", str(tmp_path / "figs")],
+        cwd=out / "pipeline", capture_output=True, text=True, timeout=900, env=env)
+    assert rendered.returncode == 0, (
+        "the public snapshot cannot render the manuscript figures, so the Data "
+        f"Availability Statement is false:\n{rendered.stdout[-3000:]}"
+        f"\n{rendered.stderr[-3000:]}")
+
+    # Presence of an exit code is not enough -- figure 1B has a fallback that
+    # renders a DIFFERENT panel and keeps going. Require the real null, and
+    # require figure 2 to have actually plotted rather than been skipped.
+    assert "panel B null: violins" in rendered.stdout, (
+        "panel B fell back to a mean +/- SD band inside the snapshot, which is "
+        f"the 2026-09-07 defect returning:\n{rendered.stdout[-3000:]}")
+    assert "figure2: Spearman" in rendered.stdout, (
+        f"figure 2 did not render from the snapshot:\n{rendered.stdout[-3000:]}")
+    # Every manuscript figure, by its real stem. Named explicitly rather than
+    # globbed: a glob would pass on a tree that rendered only figure 0.
+    for name in ("figure0_schematic", "figure1_isi", "figure2_reliability",
+                 "figure3_outcome", "figure4_controls"):
+        assert (tmp_path / "figs" / f"{name}.png").exists(), f"{name}.png missing"
+
+
+def test_the_snapshot_figure_check_can_fail(tmp_path):
+    """Prove the test above is discriminating, not merely green.
+
+    Direction: remove the deposited panel sizes from a staged tree -- which is
+    precisely the state the snapshot was in before 2026-09-07 -- and rendering
+    MUST fail loudly rather than skipping figure 2 or plotting NaN. Without this,
+    a future change that made `gene_set_sizes()` return `{}` on a missing deposit
+    would leave the test above passing while the defect returned.
+    """
+    out = tmp_path / "snap"
+    subprocess.run(
+        [sys.executable, str(SCRIPTS / "22_build_public_snapshot.py"),
+         "--out", str(out)],
+        cwd=SCRIPTS.parent, capture_output=True, text=True, timeout=300, check=True)
+    deposit = out / "pipeline" / "results" / "gene_set_sizes.csv"
+    assert deposit.exists(), "the deposit is not staged -- figure 2 cannot render"
+    deposit.unlink()
+
+    env = dict(os.environ, MPLCONFIGDIR=str(tmp_path / "mpl"))
+    rendered = subprocess.run(
+        [sys.executable, str(out / "pipeline" / "scripts" / "10_make_figures.py"),
+         "--outdir", str(tmp_path / "figs")],
+        cwd=out / "pipeline", capture_output=True, text=True, timeout=900, env=env)
+    assert rendered.returncode != 0, (
+        "removing the panel-size deposit did not fail the render, so the check "
+        "above cannot detect the defect it exists for")
+    assert "FATAL" in rendered.stdout + rendered.stderr
+
+
+def test_the_public_snapshot_can_verify_its_own_provenance(tmp_path):
+    """The deposit's integrity checker must not report corruption that isn't there.
+
+    Found 2026-09-07 the same way both Data Availability defects were: by running
+    a consumer inside a staged tree. `21_provenance_manifest.py` printed
+    **FAILED: 0 changed, 4 missing** to any reader who tried to verify the
+    deposit. Nothing was wrong with it -- the four are `.npz` probes the snapshot
+    excludes on purpose. A checker that cries corruption over its own deliberate
+    exclusions is worse than no checker: the next reader who sees FAILED has no
+    way to tell it from a real tampering, so they learn to ignore it.
+
+    Note what the earlier audit missed. The excluded `.npz` files WERE examined
+    on 2026-09-07 and correctly cleared -- but only against the question "is this
+    a figure or table input?". Nobody asked whether anything else in the deposit
+    read them. Clearing a file for one consumer says nothing about the others.
+    """
+    out = tmp_path / "snap"
+    staged = subprocess.run(
+        [sys.executable, str(SCRIPTS / "22_build_public_snapshot.py"),
+         "--out", str(out)],
+        cwd=SCRIPTS.parent, capture_output=True, text=True, timeout=300)
+    assert staged.returncode == 0, f"staging failed:\n{staged.stdout[-2000:]}"
+
+    script = out / "pipeline" / "scripts" / "21_provenance_manifest.py"
+    assert not (out / "pipeline" / "scripts" / "22_build_public_snapshot.py").exists(), (
+        "the builder excludes itself by design, and that absence is how the "
+        "manifest detects it is running inside a deposit; if it is now staged, "
+        "the detection needs rewriting, not this assertion")
+
+    checked = subprocess.run(
+        [sys.executable, str(script)],
+        cwd=out / "pipeline", capture_output=True, text=True, timeout=300)
+    assert checked.returncode == 0, (
+        "the public deposit cannot verify its own provenance, so a reader is "
+        f"told the artefacts are corrupt when they are not:\n{checked.stdout[-3000:]}")
+    # Exit 0 alone is not enough: it would also pass if the check silently
+    # tolerated every absence. Require it to NAME the excluded artefacts.
+    assert "NOT DEPOSITED" in checked.stdout, (
+        f"the excluded artefacts were not reported at all:\n{checked.stdout[-3000:]}")
+    for name in ("bisect_macos.npz", "bisect_hpc4.npz",
+                 "alpha_margin_macos.npz", "alpha_margin_fast_macos.npz"):
+        assert name in checked.stdout, f"{name} not accounted for in the deposit"
+
+
+def test_the_snapshot_provenance_check_can_fail(tmp_path):
+    """Prove the test above discriminates rather than tolerating any absence.
+
+    Direction: delete an artefact the snapshot DOES stage. That is real
+    corruption of the deposit, and it must still fail inside the deposit, where
+    the tolerance for excluded files lives.
+    """
+    out = tmp_path / "snap"
+    subprocess.run(
+        [sys.executable, str(SCRIPTS / "22_build_public_snapshot.py"),
+         "--out", str(out)],
+        cwd=SCRIPTS.parent, capture_output=True, text=True, timeout=300, check=True)
+
+    victim = out / "pipeline" / "results" / "nsclc_v3" / "summary.json"
+    assert victim.exists(), "expected a deposited artefact to delete"
+    victim.unlink()
+
+    checked = subprocess.run(
+        [sys.executable, str(out / "pipeline" / "scripts" / "21_provenance_manifest.py")],
+        cwd=out / "pipeline", capture_output=True, text=True, timeout=300)
+    assert checked.returncode == 1, (
+        "deleting a DEPOSITED artefact did not fail the deposit's provenance "
+        "check, so the tolerance added for excluded files is too broad")
+    assert "MISSING" in checked.stdout
+
+
+def test_an_undeposited_artefact_is_still_required_on_the_working_tree():
+    """The tolerance is scoped to the deposit, and that scoping must hold.
+
+    Inside a snapshot an artefact flagged `deposited: false` may be absent. On
+    the working repository it may NOT -- that is where the frozen results live,
+    and `bisect_macos.npz` vanishing there is exactly the event the manifest
+    exists to catch. The two cases are separated by whether the snapshot builder
+    is present, so this pins the working-tree half.
+    """
+    import json as _json
+    import shutil
+    import tempfile
+
+    mod = _load_script("21_provenance_manifest.py")
+    tmp = Path(tempfile.mkdtemp())
+    real_results, real_manifest = mod.RESULTS, mod.MANIFEST
+    real_tracked = list(mod.TRACKED_FILES)
+    try:
+        (tmp / "nsclc_v3").mkdir(parents=True)
+        probe = tmp / "bisect_macos.npz"          # a suffix the snapshot excludes
+        probe.write_bytes(b"not really an npz")
+        mod.RESULTS, mod.MANIFEST = tmp, tmp / "PROVENANCE.json"
+        mod.TRACKED_FILES = ["bisect_macos.npz"]
+
+        assert mod.write() == 0
+        recorded = _json.loads((tmp / "PROVENANCE.json").read_text())["files"]
+        assert recorded["bisect_macos.npz"]["deposited"] is False, (
+            "a .npz that is not null_draws.npz is not staged by the snapshot; "
+            "if that changed, this test's premise changed with it")
+
+        assert not mod._is_public_deposit(), (
+            "the real tree has the builder in it, so this must not read as a deposit")
+        probe.unlink()
+        assert mod.verify() == 1, (
+            "an excluded-from-snapshot artefact vanished from the WORKING tree "
+            "and was tolerated; the deposit tolerance has leaked out of scope")
+    finally:
+        mod.RESULTS, mod.MANIFEST = real_results, real_manifest
+        mod.TRACKED_FILES = real_tracked
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def test_pattern_reach_is_recorded_and_can_detect_a_lost_document():
+    """The reach report must record real files, not an empty dict that prints.
+
+    `--strict` asks only whether a pattern matched ANYTHING, so a pattern that
+    used to guard three documents and now guards one still passes. That is not
+    hypothetical: on 2026-09-07, rewording a checklist item turned "rebuild
+    stages **173 files**" into "rebuild now stages **173**", one of two guarded
+    documents silently lost its guard, and `--strict` stayed green.
+
+    So this pins the machinery the report is built on: reach must agree with the
+    match COUNT it is derived from, and a pattern known to span two documents
+    must be seen spanning two. A report that always printed "1 file" would be as
+    useless as no report, and nothing else would notice.
+    """
+    mod = _load_script("19_check_numbers.py")
+    table = mod.authority(slow=False)
+    counts, reach = {}, {}
+    mod.scan(mod.REPO, table, mod.every_stored_run(), quiet=True,
+             match_counts=counts, match_files=reach)
+
+    assert counts, "no patterns were exercised at all"
+    for desc, n in counts.items():
+        files = reach.get(desc, set())
+        if n:
+            assert files, (
+                f"{desc!r} compared {n} line(s) but recorded no document; the "
+                "reach bookkeeping has drifted from what was actually checked")
+        else:
+            assert not files, f"{desc!r} matched nothing yet recorded {files}"
+
+    spanning = {d for d, f in reach.items() if len(f) >= 2}
+    assert spanning, (
+        "not one pattern reached two documents, which cannot be true of this "
+        "repository -- the per-file recording is collapsing everything into one")
+    # The cohort sizes are quoted in the abstract, the manuscript, the poster and
+    # the checklists. If this ever reaches one document, either the reach
+    # recording broke or the repository really did lose those guards; both are
+    # worth failing on.
+    wide = [d for d in spanning if "cohort size" in d]
+    assert wide, f"no cohort-size pattern spans documents; reach={sorted(spanning)[:5]}"
+
+
+def test_compare_live_detects_a_deposit_that_is_missing_a_staged_file():
+    """The staged tree and the published tree are DIFFERENT ARTIFACTS.
+
+    Every check in this repository measured the staged one. The Data
+    Availability Statement was fixed in three consecutive sessions and verified
+    each time against a fresh build; nobody asked the published repository what
+    it actually contains, because `git ls-remote` answers only what refs exist
+    and a ref cannot reveal a missing file. The deposit sat three sessions
+    stale, and the files absent from it were exactly the ones added to make that
+    statement true.
+
+    `--compare-live` closes that gap, but it needs network, so the fetch cannot
+    be a pytest. This is the part that decides the verdict, and it is pure.
+    """
+    snap = _load_script("22_build_public_snapshot.py")
+
+    same = {"README.md": "aaa", "pipeline/reproduce.sh": "bbb"}
+    clean = snap.compare_trees(same, dict(same))
+    assert clean == {"missing_from_live": [], "only_live": [],
+                     "content_differs": []}, (
+        "identical trees must compare clean, or every real difference is noise")
+
+    # The real 2026-09-07 shape: four files staged, none of them published.
+    staged = dict(same, **{"README.md": "aaa",
+                           "pipeline/results/gene_set_sizes.csv": "ccc"})
+    live = {"pipeline/reproduce.sh": "bbb"}
+    diff = snap.compare_trees(staged, live)
+    assert diff["missing_from_live"] == ["README.md",
+                                         "pipeline/results/gene_set_sizes.csv"]
+    assert diff["only_live"] == []
+    assert diff["content_differs"] == []
+
+    # A file published that a rebuild would no longer stage is the other
+    # direction, and it is the dangerous one: it means the deposit carries
+    # something this repository has decided not to publish.
+    diff = snap.compare_trees({"a": "1"}, {"a": "1", "leaked.txt": "2"})
+    assert diff["only_live"] == ["leaked.txt"]
+    assert diff["missing_from_live"] == []
+
+    # Content drift is REPORTED and must never be confused with a set
+    # difference: it moves on every prose edit, so gating on it would make this
+    # red almost always -- the friction that made the byte total ungated too.
+    diff = snap.compare_trees({"a": "1"}, {"a": "2"})
+    assert diff["content_differs"] == ["a"]
+    assert diff["missing_from_live"] == [] and diff["only_live"] == []
+
+
+def test_compare_live_gates_on_the_file_set_and_not_on_content():
+    """The verdict itself must fire, in both directions.
+
+    A guard nobody has watched fail is indistinguishable from one that works, so
+    this drives `report_comparison` rather than re-asserting `compare_trees`.
+    """
+    snap = _load_script("22_build_public_snapshot.py")
+
+    ok = snap.report_comparison(
+        {"missing_from_live": [], "only_live": [], "content_differs": []},
+        "deadbee", 173, 173)
+    assert ok == 0, "an identical file set must pass"
+
+    drifted = snap.report_comparison(
+        {"missing_from_live": [], "only_live": [],
+         "content_differs": ["09-PAPER-DRAFT.md"] * 14},
+        "deadbee", 173, 173)
+    assert drifted == 0, (
+        "content drift must NOT gate -- 14 files differed on 2026-09-07 purely "
+        "because the deposit was three sessions behind, and a check that goes "
+        "red on ordinary prose edits gets ignored")
+
+    stale = snap.report_comparison(
+        {"missing_from_live": ["README.md"], "only_live": [],
+         "content_differs": []},
+        "8b7cce1", 173, 169)
+    assert stale == 1, "a file staged but not published must FAIL"
+
+
+def test_the_number_checker_names_curation_rather_than_tampering_in_a_deposit():
+    """`FROZEN ARTEFACT MISSING` reads as corruption. In a deposit it is not.
+
+    Same liability `21_provenance_manifest.py` carried until 2026-09-07: a check
+    that prints a claim it cannot support teaches the next reader to ignore it,
+    and then a real failure looks the same as this one. Measured inside a
+    freshly staged snapshot, `19_check_numbers.py` refused with the bare message
+    over two `.npz` probes the snapshot excludes ON PURPOSE.
+
+    The refusal itself is correct and stays -- the authorities really are
+    unreadable there. Only the diagnosis changes.
+    """
+    checker = _load_script("19_check_numbers.py")
+    missing = ["pipeline/results/bisect_macos.npz"]
+
+    text = checker._missing_artefact_message(missing)
+    assert "bisect_macos.npz" in text
+    # This IS the working repository, so the builder is present and the deposit
+    # wording must not appear.
+    assert checker.BUILDER.is_file(), (
+        "the snapshot builder is missing from the working tree, which would "
+        "make every deposit-detection in this repository wrong")
+    assert "NOTHING IS WRONG" not in text, (
+        "the deposit wording leaked into the working repository, where a "
+        "missing frozen artefact really does mean something is wrong")
+
+
+def test_the_deposit_wording_fires_when_the_builder_is_absent(tmp_path):
+    """Both directions, with the builder's presence as the ONLY variable.
+
+    Same tree, same missing artefact, opposite diagnosis. Proven by moving one
+    thing, because two runs that differ in several ways prove nothing about
+    which one mattered -- the lesson that cost this project six sessions.
+    """
+    checker = _load_script("19_check_numbers.py")
+    missing = ["pipeline/results/bisect_hpc4.npz"]
+    real_builder = checker.BUILDER
+    assert real_builder.is_file()
+
+    try:
+        checker.BUILDER = tmp_path / "22_build_public_snapshot.py"
+        assert not checker.BUILDER.exists()
+        deposit_text = checker._missing_artefact_message(missing)
+        assert "NOTHING IS WRONG WITH THIS DEPOSIT" in deposit_text, (
+            "a deposit reader is still told an intact deposit is corrupt")
+        assert "bisect_hpc4.npz" in deposit_text
+
+        checker.BUILDER.write_text("# the builder is present again\n")
+        working_text = checker._missing_artefact_message(missing)
+    finally:
+        checker.BUILDER = real_builder
+
+    assert "NOTHING IS WRONG" not in working_text, (
+        "restoring the builder must restore the strict diagnosis; otherwise "
+        "the tolerance leaks into the working repository")
+    assert working_text != deposit_text
+
+
+def test_the_coverage_floor_can_fail_and_gates_on_counts_not_percentages():
+    """Coverage must be able to REGRESS loudly, and on the right quantity.
+
+    The obvious gate is a floor on each document's checked FRACTION. It is the
+    wrong one, and this is the measurement that says so: across one session of
+    ordinary documentation work on 2026-09-07, two of thirteen documents lost a
+    percentage point while every per-document checked COUNT held exactly.
+    Writing prose about numbers moves the denominator and removes no guard, so a
+    fraction floor would have fired twice for no defect -- and a gate that goes
+    red on ordinary work gets ignored.
+    """
+    checker = _load_script("19_check_numbers.py")
+    floors = checker.COVERAGE_FLOOR
+    assert floors, "the floor table is empty, so this gate guards nothing"
+
+    # cov maps rel -> (seen, checked, unchecked, in_style); only [1] is gated.
+    at_floor = {rel: (10_000, n, [], 0) for rel, n in floors.items()}
+    assert checker._coverage_floor_verdict(at_floor) == 0
+
+    # A denominator explosion -- exactly what adding a table of exit codes does
+    # -- must NOT fire, because nothing stopped being checked.
+    diluted = {rel: (1_000_000, n, [], 0) for rel, n in floors.items()}
+    assert checker._coverage_floor_verdict(diluted) == 0, (
+        "the floor is reading a fraction; ordinary prose would make it red")
+
+    # One fewer literal checked in one document must fail.
+    victim = sorted(floors)[0]
+    regressed = dict(at_floor)
+    regressed[victim] = (10_000, floors[victim] - 1, [], 0)
+    assert checker._coverage_floor_verdict(regressed) == 1, (
+        f"losing a checked literal in {victim} did not fail the gate")
+
+    # A document vanishing from the scan entirely is the loudest version of the
+    # same failure and must not read as "nothing to check, therefore fine".
+    dropped = {k: v for k, v in at_floor.items() if k != victim}
+    assert checker._coverage_floor_verdict(dropped) == 1, (
+        f"{victim} disappearing from the scan passed silently")

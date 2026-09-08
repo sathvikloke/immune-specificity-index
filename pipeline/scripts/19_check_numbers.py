@@ -69,9 +69,58 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 REPO = ROOT.parent
 RESULTS = ROOT / "results"
+BUILDER = ROOT / "scripts" / "22_build_public_snapshot.py"
+
+
+def _is_deposit() -> bool:
+    """True when this tree is the published snapshot, not the working repo.
+
+    Same marker `21_provenance_manifest.py` uses: the snapshot builder excludes
+    itself by design -- its docstring quotes every string it forbids -- so its
+    ABSENCE is what identifies a deposit."""
+    return not BUILDER.is_file()
+
+
+def _missing_artefact_message(missing: list[str]) -> str:
+    """Refuse, but name the RIGHT reason.
+
+    This check refuses either way: it cannot verify a full-precision claim whose
+    authority is not on disk, and quietly dropping the authority would leave the
+    claim looking checked when it is not. What changes here is only the
+    diagnosis, and only because the wrong one is expensive.
+
+    `bisect_macos.npz` and `bisect_hpc4.npz` are 2.18 MB EACH and are excluded
+    from the public snapshot on purpose. Measured 2026-09-07 inside a freshly
+    staged tree: this refusal fired, reading "FROZEN ARTEFACT MISSING", which
+    tells a reader of an intact deposit that it has been tampered with. That is
+    the same liability `21_provenance_manifest.py` carried until it learned to
+    say NOT DEPOSITED -- a check that prints a claim it cannot support is worse
+    than no check, because the next reader cannot tell it from real corruption.
+    """
+    head = ("FROZEN ARTEFACT MISSING -- refusing to check against remembered "
+            "constants:\n  " + "\n  ".join(missing))
+    if not _is_deposit():
+        return head
+    return (head + "\n\n"
+            "This tree is a PUBLIC DEPOSIT, not the working repository, and "
+            "the files above\nare excluded from it deliberately -- they are "
+            "multi-megabyte internal platform\nprobes, not results the paper "
+            "reports. NOTHING IS WRONG WITH THIS DEPOSIT.\n"
+            "This script verifies the working repository's documents against "
+            "its own frozen\nartefacts; it is not one of the commands that "
+            "runs from the deposit alone.\nSee `pipeline/README.md`, "
+            "'What runs from the deposit alone'.")
 
 # Files that record history and must not be retro-corrected. Listed with the
 # reason, because an unexplained exemption becomes a place to hide drift.
+#
+# EVERY KEY HERE MUST ALSO APPEAR IN `DOCS`, and a test enforces that. Until
+# 2026-09-07 neither key was in DOCS, so this table was unreachable: the files
+# were unscanned because nothing listed them, not because anything exempted
+# them. The net effect was identical, which is exactly why it survived -- the
+# docstring section above described a mechanism that had never once executed,
+# and handoffs carried "in the checker's EXEMPT table" forward as a live fact.
+# An exemption that cannot fire is not an exemption; it is a comment.
 EXEMPT = {
     "05-PRE-REGISTRATION.md":
         "test count frozen at 67, deliberately, at the protocol's git tag",
@@ -301,6 +350,42 @@ def _abstract_chars() -> tuple[int, int] | None:
     if not m:
         return None
     return (int(m.group(1).replace(",", "")), int(m.group(2).replace(",", "")))
+
+
+def _snapshot_size() -> tuple[int, int] | None:
+    """(staged file count, staged bytes) from a LIVE rebuild, not from memory.
+
+    Three documents quote this pair and nothing verified it, so it drifted
+    every time anyone edited a staged file: 169 -> 170 -> 172 -> 173 files and
+    1,447,396 -> 1,493,616 -> 1,756,296 -> 1,764,887 bytes inside two sessions,
+    twice leaving a stale pair in the manuscript. It is derived by RUNNING
+    `22_build_public_snapshot.py` into a temp directory and reading the numbers
+    it prints, rather than by re-implementing its staging rules here -- a second
+    definition of "what is staged" would be free to disagree with the first, and
+    this project has already been bitten by exactly that (S3's two definitions
+    of p). ~0.2 s, so it sits behind the `slow` gate with the other subprocesses.
+    """
+    script = ROOT / "scripts" / "22_build_public_snapshot.py"
+    if not script.exists():
+        return None
+    with tempfile.TemporaryDirectory() as td:
+        try:
+            out = subprocess.run(
+                [sys.executable, str(script), "--out", str(Path(td) / "snap")],
+                cwd=ROOT, capture_output=True, text=True, timeout=300)
+        except (OSError, subprocess.TimeoutExpired):
+            return None
+        if out.returncode != 0:
+            # A leaking tree is a different failure, reported by that script.
+            # Returning None here drops the two claims rather than checking
+            # them against a number produced by a run that refused to finish.
+            return None
+        files = re.search(r"Audited ([\d,]+) staged file", out.stdout)
+        size = re.search(r"Staged tree: ([\d,]+) bytes", out.stdout)
+        if not (files and size):
+            return None
+        return (int(files.group(1).replace(",", "")),
+                int(size.group(1).replace(",", "")))
 
 
 def authority(*, slow: bool = True) -> dict[str, float]:
@@ -882,9 +967,7 @@ def authority(*, slow: bool = True) -> dict[str, float]:
         del table[k]
 
     if missing:
-        raise SystemExit(
-            "FROZEN ARTEFACT MISSING -- refusing to check against remembered "
-            "constants:\n  " + "\n  ".join(missing))
+        raise SystemExit(_missing_artefact_message(missing))
 
     # The number of entries in the manuscript's reference list, COUNTED from
     # the list itself. Unlike everything else here the authority is a document
@@ -927,6 +1010,10 @@ def authority(*, slow: bool = True) -> dict[str, float]:
         sc = _site_counts()
         if sc is not None:
             table.update(sc)
+        snap = _snapshot_size()
+        if snap is not None:
+            table["snapshot_files"], table["snapshot_bytes"] = (
+                float(snap[0]), float(snap[1]))
     return table
 
 
@@ -1176,6 +1263,38 @@ CLAIMS: list[tuple[str, str, float, str, str | None]] = [
      "abstract characters, counted by 08_count_abstract.py just now", None),
     ("abstract_headroom", r"(\d{1,4})\s+characters? of headroom", 0.5,
      "abstract characters remaining (limit minus live count)", None),
+    # The public snapshot's size, from a live rebuild. Added 2026-09-07 because
+    # this pair drifted four times in two sessions while three documents quoted
+    # it and nothing checked it. Both patterns are anchored on the word
+    # "stages"/"staged" and the unit, NOT on the digits -- anchoring on the
+    # digits is the mistake that made three A7 patterns vacuous.
+    #
+    # The LIVE pushed figures (169 files / 1,447,396 bytes) must NOT match
+    # these: they describe a different tree, one that no rebuild reproduces, and
+    # they are correct where they appear. Both are excluded by requiring the
+    # verb "stages"/"a rebuild stages" rather than matching any nearby number.
+    # Both are WRAP-scoped: in BOTH documents that carry them the count and the
+    # byte figure are split across a line break, so a line-scoped pattern would
+    # match nothing and pass while checking nothing -- the exact failure this
+    # file has shipped four times.
+    ("snapshot_files", r"rebuild stages \**(\d{2,4})\**\s+files", 0.5,
+     "files a snapshot rebuild stages right now", "WRAP:rebuild stages"),
+    #
+    # THE BYTE SIZE IS DELIBERATELY NOT CHECKED HERE, and this is a decision,
+    # not an omission. It was written as a claim first and removed after one
+    # measurement: `pipeline/scripts/` and `09-PAPER-DRAFT.md` are BOTH staged,
+    # so the staged byte total moves when any source file or the manuscript
+    # changes by a single character -- including this comment, and including the
+    # line that would record the number. A gate on it would go red after almost
+    # every edit in the project and demand a manuscript change to clear, which
+    # is how a check earns being ignored. The FILE COUNT has the property the
+    # byte total lacks: it moves only when a file is added or removed, which is
+    # a real event and exactly the drift that went unnoticed (169 -> 170 -> 172
+    # -> 173). The byte figure is instead written in the documents as a DATED
+    # observation, the same fix applied to the two hand-maintained countdowns:
+    # a stale dated observation reads as history, a stale bare claim reads as a
+    # fact. `authority()` still measures it, so it is one line from being a gate
+    # if that judgement ever changes.
     # A7. The split-half reliabilities are the load-bearing numbers of the
     # scorer result -- the whole "the estimand is undefined under ssGSEA"
     # argument rests on the null reliability collapsing from 0.799 to 0.258 --
@@ -1814,6 +1933,18 @@ DOCS = [
     # Added 2026-09-06 with S3's derived NSCLC multiplicity values. It states
     # results, so it belongs in the scan even though it is an internal document.
     "18-SUPPLEMENTARY-INVENTORY.md",
+    # Added 2026-09-07. It is a LIVE working document, not a historical record,
+    # and it carried a "Test suite | 78 tests | done" row that had been wrong for
+    # roughly thirty tests without anything noticing -- because this file had
+    # never been scanned.
+    "11-SUBMISSION-PACK.md",
+    # Added 2026-09-07 so that EXEMPT below is LOAD-BEARING. Both are skipped by
+    # the exemption, so scanning them changes no claim count; what changes is
+    # that the exemption now actually fires and says so in `skipped:`. Until
+    # today neither file was in this list, which made every EXEMPT entry dead
+    # code -- a guard for a door nobody walked through. See EXEMPT's note.
+    "05-PRE-REGISTRATION.md",
+    "02-PROJECT-DECISION.md",
 ]
 
 
@@ -1983,7 +2114,8 @@ def _stylesheet_lines(lines: list[str]) -> set[int]:
 def scan(root: Path, table: dict[str, float], every_run: dict[str, float],
          *, verbose: bool = False, quiet: bool = False,
          coverage: dict[str, list] | None = None,
-         match_counts: dict[str, int] | None = None
+         match_counts: dict[str, int] | None = None,
+         match_files: dict[str, set[str]] | None = None
          ) -> tuple[int, int, list[str], list[str], list[str]]:
     """Scan `root`'s documents.
 
@@ -1993,6 +2125,12 @@ def scan(root: Path, table: dict[str, float], every_run: dict[str, float],
     literals were actually compared against an authoritative value and which
     were merely seen. See `--coverage` and the note on why a claim COUNT is not
     a coverage measure.
+
+    If `match_files` is given it records, per pattern description, the SET of
+    documents that pattern actually compared something in -- its REACH. This is
+    recorded inside `compare()` rather than at the pattern loops, so it cannot
+    drift away from what was really checked: every comparison in every claim
+    family passes through that one function.
     """
     checked = failures = 0
     unmatched: list[str] = []
@@ -2037,6 +2175,8 @@ def scan(root: Path, table: dict[str, float], every_run: dict[str, float],
             tol = _tol_for(literal, floor)
             checked += 1
             covered.add((i, literal.strip()))
+            if match_files is not None:
+                match_files.setdefault(desc, set()).add(rel)
             if abs(got - expected) > tol:
                 failures += 1
                 say(f"  MISMATCH {rel}:{i}")
@@ -2637,6 +2777,17 @@ def _self_test_rows(table) -> list[tuple[str, str, str]]:
         rows.append(("abstract character count (live recount)",
                      rf"{n // 1000},?{n % 1000:03d}\s*/\s*{lim // 1000},?{lim % 1000:03d}",
                      f"{n - 100:,} / {lim:,}"))
+    # The snapshot pair, added 2026-09-07. Both are live-measured, so like the
+    # rows above they cannot be written as constants. Note the file count and
+    # the byte figure are separated by a LINE BREAK in
+    # `submission/SUBMISSION-CHECKLIST.md` and not in `09-PAPER-DRAFT.md`;
+    # injection runs against whole-file text, so `\s+` covers both without the
+    # row having to know which document it is rewriting.
+    if "snapshot_files" in table:
+        n = int(table["snapshot_files"])
+        rows.append(("public snapshot file count (live rebuild)",
+                     rf"rebuild stages \*\*{n} files",
+                     f"rebuild stages **{n + 1} files"))
     return rows
 
 
@@ -2695,7 +2846,53 @@ def self_test(table, every_run) -> int:
     return 0
 
 
-def coverage_report(table, every_run) -> int:
+def _reach_report(counts: dict[str, int], reach: dict[str, set[str]]) -> None:
+    """Per pattern: WHICH documents it actually checked, and how many lines.
+
+    WHY REPORTING RATHER THAN GATING, decided 2026-09-07 and recorded so it is
+    not re-litigated. `--strict` is per-pattern and GLOBAL: a pattern that used
+    to check three documents and now checks one still passes. The obvious fix --
+    gate on an expected per-document match count -- was rejected. It would fire
+    on every ordinary prose edit that adds or removes a mention, and a check that
+    goes red on almost every edit gets ignored, which is how the snapshot byte
+    total failed as a gate. 21 of 29 guarded patterns already match exactly one
+    line in one file, so such a gate would mostly pin accidents of wording.
+
+    That this is worth printing at all is not hypothetical. While rewriting a
+    checklist item on 2026-09-07 I turned "rebuild stages **173 files**" into
+    "rebuild now stages **173**" -- and `--strict` stayed GREEN, because the
+    pattern still matched the manuscript. One document silently lost its guard.
+    Nothing reported it; the count in the summary line simply went down by one,
+    which reads as prose churn. This section makes that visible.
+    """
+    if not counts:
+        return
+    print("PATTERN REACH -- which documents each pattern actually checked.\n")
+    print("A pattern that used to check three documents and now checks one "
+          "still\npasses `--strict`, which only asks whether it matched "
+          "ANYTHING. Shrinkage\nis reported here rather than gated; see this "
+          "function's docstring for why.\n")
+    single, none = 0, 0
+    for desc in sorted(counts):
+        files = sorted(reach.get(desc, ()))
+        n = counts[desc]
+        if not files:
+            none += 1
+            print(f"  (0 files)  {desc}   <-- VACUOUS: matched nothing")
+            continue
+        if len(files) == 1:
+            single += 1
+        print(f"  {len(files)} file(s), {n:3d} line(s)  {desc}")
+        for f in files:
+            print(f"        {f}")
+    print(f"\n  {len(counts)} pattern(s): {none} matching nothing, {single} "
+          f"reaching exactly one document,\n  "
+          f"{len(counts) - none - single} reaching two or more. A pattern that "
+          "drops a document\n  keeps passing -- compare this list against the "
+          "last session's before trusting it.\n")
+
+
+def coverage_report(table, every_run, strict: bool = False) -> int:
     """Per document: which numbers are checked, and which are merely present.
 
     WHY THIS EXISTS, and why a claim COUNT was never coverage. The check prints
@@ -2713,8 +2910,11 @@ def coverage_report(table, every_run) -> int:
     is that a human can now read the list and see what is unguarded.
     """
     cov: dict[str, list] = {}
+    counts: dict[str, int] = {}
+    reach: dict[str, set[str]] = {}
     checked, failures, _, skipped_files, _ = scan(
-        REPO, table, every_run, quiet=True, coverage=cov)
+        REPO, table, every_run, quiet=True, coverage=cov,
+        match_counts=counts, match_files=reach)
 
     print("COVERAGE REPORT -- which numeric literals each document has "
           "checked.\n")
@@ -2742,6 +2942,8 @@ def coverage_report(table, every_run) -> int:
             print(f"      ... and {len(unchecked) - 14} more")
         print()
 
+    _reach_report(counts, reach)
+
     print(f"TOTAL: {tot_cov} of {tot_seen} numeric literals checked "
           f"({100.0 * tot_cov / max(tot_seen, 1):.0f}%), "
           f"{checked} claim comparisons, {failures} mismatch(es).")
@@ -2750,9 +2952,81 @@ def coverage_report(table, every_run) -> int:
               "or script content.")
     for entry in skipped_files:
         print(f"  skipped: {entry}")
-    print("\nThis report never fails. Read it and decide which unchecked "
-          "numbers are\nclaims about a result; those are the ones worth a "
-          "pattern and a self-test row.")
+    if not strict:
+        print("\nThis report never fails without --strict. Read it and decide "
+              "which unchecked\nnumbers are claims about a result; those are "
+              "the ones worth a pattern and a\nself-test row.")
+        return 0
+    return _coverage_floor_verdict(cov)
+
+
+# How many literals each document must still have CHECKED. Recorded 2026-09-07
+# at the exact live counts, which is safe for a reason that was measured rather
+# than assumed -- see `_coverage_floor_verdict`.
+COVERAGE_FLOOR = {
+    "09-PAPER-DRAFT.md": 157,
+    "07-ABSTRACT-DRAFT.md": 25,
+    "14-SCIENCE-AUDIT.md": 103,
+    "15-CHECKLIST.md": 17,
+    "16-YOUR-TASKS.md": 9,
+    "pipeline/README.md": 21,
+    "poster/poster.html": 19,
+    "submission/SUBMISSION-CHECKLIST.md": 8,
+    "submission/COVER-LETTER.md": 7,
+    "pipeline/results/README.md": 58,
+    "CITATION.cff": 2,
+    "18-SUPPLEMENTARY-INVENTORY.md": 8,
+    "11-SUBMISSION-PACK.md": 3,
+}
+
+
+def _coverage_floor_verdict(cov: dict) -> int:
+    """Fail when a document has FEWER literals checked than it used to.
+
+    WHY A COUNT AND NOT A PERCENTAGE. The obvious gate is a floor on each
+    document's checked FRACTION, and it is the wrong one: the denominator moves
+    for reasons that have nothing to do with losing a guard. Measured across one
+    session of ordinary documentation work on 2026-09-07 -- adding a measured
+    table to `pipeline/README.md` and a log row to `results/README.md`, both
+    dense with exit codes and counts:
+
+        percentages   2 of 13 documents fell by a point
+        checked COUNTS  all 13 unchanged, exactly
+
+    Writing prose about numbers lowers the fraction while removing nothing. A
+    fraction floor would therefore have fired twice in one session for no
+    defect at all, and a gate that goes red on ordinary work gets ignored --
+    the same reasoning that made the snapshot byte total a dated observation
+    instead of a check. The count only falls when a pattern really has stopped
+    matching something it used to match.
+
+    This is the AGGREGATE guard. Its per-pattern counterpart is the reach
+    report, which catches the sharper case: a pattern that still matches
+    somewhere, so `--strict` stays green, while quietly dropping a document.
+    That is a real defect, caused in this repository on 2026-09-07 by rewording
+    a checklist item.
+    """
+    lost = []
+    for rel, floor in sorted(COVERAGE_FLOOR.items()):
+        entry = cov.get(rel)
+        if entry is None:
+            lost.append(f"  {rel}: not scanned at all (floor {floor})")
+            continue
+        ncov = entry[1]
+        if ncov < floor:
+            lost.append(f"  {rel}: {ncov} checked, was {floor} "
+                        f"(-{floor - ncov})")
+    if lost:
+        print("\nCOVERAGE REGRESSED -- these documents have fewer literals "
+              "checked than\nthey did when the floor was recorded:")
+        print("\n".join(lost))
+        print("\nEither a guard stopped matching (find it in the reach report "
+              "above), or the\nclaim was deliberately removed -- in which case "
+              "lower the floor in\nCOVERAGE_FLOOR, in the same commit, with "
+              "the reason.")
+        return 1
+    print(f"\nOK: all {len(COVERAGE_FLOOR)} documents still have at least as "
+          "many literals\nchecked as when the floor was recorded.")
     return 0
 
 
@@ -2783,7 +3057,7 @@ def main() -> int:
     if args.self_test:
         return self_test(table, every_run)
     if args.coverage:
-        return coverage_report(table, every_run)
+        return coverage_report(table, every_run, strict=args.strict)
 
     print("Checking documents against the frozen results.")
     print(f"Authority: {len(table)} values from results/nsclc_v3, "

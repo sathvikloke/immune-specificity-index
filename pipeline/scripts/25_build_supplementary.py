@@ -363,8 +363,15 @@ CAPTIONS = {
         "Each signature's ground-truth score regressed on tissue source site "
         "with no image involved, so the quantity measured is how much of the "
         "target is site structure before any prediction is attempted. "
-        "Permutation-calibrated. Referred to in the manuscript's prose but not "
-        "previously tabulated."),
+        "Permutation-calibrated. **Pan-cancer only.** Unlike S5 and S7, this "
+        "table covers a single cohort, and which cohort it is matters: the "
+        "same control computed on the NSCLC scope gives a median R-squared of "
+        "0.145, against 0.444 here -- a threefold difference. The scoping is "
+        "stated in the caption rather than left to be inferred from the source "
+        "filename because getting it wrong is not hypothetical: audit item A11 "
+        "was exactly that, a runner that silently computed this control on the "
+        "full cohort while reporting it as the requested one. Referred to in "
+        "the manuscript's prose but not previously tabulated."),
     "S7_decomposition": (
         "Nested-model decomposition of the image signal over purity, cancer "
         "type and site.",

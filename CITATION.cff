@@ -31,8 +31,19 @@ keywords:
 license: MIT
 # `version` and `date-released` name the frozen analysis snapshot every quoted
 # number comes from -- the annotated tag `prereg-2026-08-18`, which is the only
-# tag in the repository. The previous `date-released: "2026-08-19"` matched no
-# tag, no release and no artefact; it was a date someone typed. If a public
-# release is ever cut, both fields move to that release and not before.
+# tag in the author's PRIVATE working repository. The previous
+# `date-released: "2026-08-19"` matched no tag, no release and no artefact; it
+# was a date someone typed. If a public release is ever cut, both fields move to
+# that release and not before.
+#
+# READ THIS BEFORE "FIXING" THE VERSION STRING. This file is published inside the
+# public snapshot, and that snapshot is a fresh single-commit repository with
+# ZERO tags -- verified 2026-09-07 with `git ls-remote --heads --tags`. So
+# `version` below is a VERSION STRING that happens to be spelled like a tag; it
+# is NOT a reference a reader can resolve there, and this comment used to say
+# "the only tag in the repository", which read as a claim about whichever
+# repository the reader was holding. Do not add a tag to the public snapshot to
+# make this resolve: its only commit is dated 2026-09-07, so the tag would assert
+# a timestamp that does not exist. See `16-YOUR-TASKS.md` for the open decision.
 version: "prereg-2026-08-18"
 date-released: "2026-08-18"

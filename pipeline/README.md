@@ -66,7 +66,7 @@ statsmodels 0.14.
 python3 -m pytest tests -q
 ```
 
-**104 tests.** If this number drifts from reality again, re-measure rather than
+**122 tests.** If this number drifts from reality again, re-measure rather than
 editing the prose. (Re-measured 2026-09-02 by counting `def test_` in `tests/`;
 the previous "57 tests, ~7 s" had drifted. <!-- numcheck: ignore: deliberately records the superseded count, as the evidence that drift happened --> The wall-clock figure is deliberately
 not quoted now — it was measured at ~7 s on an idle machine and 37 min on a loaded
@@ -134,7 +134,7 @@ scripts/
   01_fetch_data.py        embeddings / ancestry / purity / expression
   02_run_audit.py         --demo (synthetic) or --real
   03_fetch_signatures.py  MSigDB, CC-BY-4.0, KEGG-restricted sets filtered out
-tests/              104 tests: planted-confound recovery + a regression test for
+tests/              122 tests: planted-confound recovery + a regression test for
                     every rev.3 pipeline fix
 ```
 
@@ -187,14 +187,61 @@ computational abstracts mention code availability — ship the repo with the abs
 
 ```bash
 pip install -r requirements-lock.txt   # EXACT versions the results were produced with
-bash reproduce.sh --check              # tests + figures from stored results, ~2 min
-bash reproduce.sh                      # full: fetch, both cohorts, figures, ~2.5 h
+bash reproduce.sh --check              # tests + figures from stored results, 4 m 7 s (measured)
+bash reproduce.sh                      # full: fetch, both cohorts, figures, ~2.5 h (ESTIMATE, never measured)
 ```
 
 `requirements.txt` carries lower bounds for ordinary use; `requirements-lock.txt`
 is what reproduces the manuscript numbers. The pin is not ceremony — sklearn has
 changed `RidgeCV`'s alpha-selection defaults between minor versions, and the ISI
 depends on the selected penalty.
+
+### What runs from the deposit alone
+
+**Read this before concluding anything is broken.** What is published at
+`immune-specificity-index` is a *curated snapshot*, not this working repository:
+the raw inputs under `data/` are public but large and are not redistributed
+here, several multi-megabyte internal diagnostic probes are left out, and the
+working documents (drafts, checklists, the poster) are not deliverables. Some
+scripts shipped in the deposit therefore have no input there. **That is
+curation, not corruption.**
+
+Every row below was MEASURED on 2026-09-07 by running the command inside a
+freshly staged snapshot with no `data/` reachable — not inferred from reading
+the code.
+
+| command | exit | in the deposit |
+|---|---|---|
+| `python3 scripts/10_make_figures.py` | **0** | all five figures render |
+| `python3 scripts/25_build_supplementary.py` | **0** | all nine tables build |
+| `python3 scripts/20_check_versions.py` | **0** | |
+| `python3 scripts/21_provenance_manifest.py` | **0** | 110 of 114 verified; 4 not staged, and it says so |
+| `python3 scripts/23_export_environment.py` | **0** | |
+| `python3 -m pytest tests/ -q` | 1 | **13 failed, 101 passed, 3 skipped** — see below |
+| `python3 scripts/24_split_determinism.py --check` | 2 | needs `data/interim/cohort_nsclc.parquet` |
+| `python3 scripts/26_sort_audit.py` | 2 | needs the staged inputs |
+| `python3 scripts/19_check_numbers.py` | 1 | needs the excluded `bisect_*.npz` probes |
+| `python3 scripts/08_count_abstract.py` | 2 | the abstract draft is not a deliverable |
+| `bash reproduce.sh --check` | 2 | **stops at `24_split_determinism.py`, ~10 s in** |
+
+Two consequences worth stating plainly rather than letting a reader discover
+them:
+
+**`bash reproduce.sh --check` cannot pass inside the deposit.** It is this
+repository's one-command check over the *working* tree, and three of the
+commands it runs need inputs the deposit does not carry. It fails fast and
+loudly, which is the right failure — but it is quoted above as a reproduction
+route and that is only true where `data/` exists. To verify the deposit itself,
+run the five exit-0 commands in the table.
+
+**The 13 test failures are all curation, and none of them is the analysis
+code.** Classified by cause, they are: 6 that exercise
+`22_build_public_snapshot.py`, which excludes *itself* by design and so is
+absent; 6 that need the excluded `bisect_*.npz` platform probes; and 1 that
+checks spelling across working documents the deposit does not stage. The 101
+that pass are the pipeline's own tests. A deposit reader running the suite sees
+red on an intact deposit — that is a known and accepted cost of curating, and
+it is written down here rather than left as a surprise.
 
 ### The lock file is necessary but NOT sufficient — read this before rerunning
 
@@ -220,7 +267,8 @@ variability the study already widens its interval for.
 > sites**. The tie order is architecture-dependent, so the two machines build
 > **different cross-validation partitions from byte-identical inputs**, with
 > identical fold sizes (which is why every guard passed). Verify it yourself on
-> any machine:
+> any machine **that has the inputs** — this script builds real fold partitions,
+> so it exits 2 in the public deposit, where `data/` is not redistributed:
 >
 > ```bash
 > python3 scripts/24_split_determinism.py --check
@@ -315,7 +363,15 @@ be useful to know — that is a second data point on a defect with one.
 process, so without it the gene pool is ordered differently every run and
 `seed=0` does not reproduce.
 
-### Headline results (frozen at git tag `prereg-2026-08-18`)
+### Headline results (frozen at the 2026-08-18 analysis freeze)
+
+> The freeze is recorded by an annotated git tag, `prereg-2026-08-18`, **in the
+> author's private working repository — not in this published snapshot, which is
+> built as a fresh single-commit repository and therefore carries no tags.** The
+> pre-registered protocol's *content* is here in full (`05-PRE-REGISTRATION.md`);
+> its *timestamp* is not independently verifiable from this repository alone.
+> Earlier wording put the tag name in this heading, which invited a reader to run
+> `git tag`, find nothing, and reasonably conclude the claim was invented.
 
 | | Pan-TCGA (n=7,168, 31 types) | NSCLC (n=944) |
 |---|---|---|

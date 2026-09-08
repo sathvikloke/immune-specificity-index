@@ -3,8 +3,12 @@
 
     python scripts/10_make_figures.py --outdir results/figures
 
-Reads only `results/nsclc_v3` and `results/pancancer_v2`; computes nothing, so a
-figure can never disagree with the numbers in the paper.
+Reads `results/nsclc_v3` and `results/pancancer_v3`, and derives no statistic
+that the paper also quotes, so a figure cannot disagree with the numbers in the
+text. (It named `pancancer_v2` until 2026-09-07 and had done since before v3 was
+the reported run; and "computes nothing" was never true -- figure 2 recomputes
+two Spearman correlations and figure 3 an MDE. Both claims are corrected here
+rather than left as flattering description.)
 
 Figure 1B draws the null as a real distribution. Until 2026-08-19 only the null's
 mean and SD reached disk, so that panel showed a mean +/- SD band and said so;
@@ -32,6 +36,24 @@ from aacr27 import signatures as sig_mod  # noqa: E402
 NSCLC = ROOT / "results" / "nsclc_v3"
 PAN = ROOT / "results" / "pancancer_v3"
 GMT = ROOT / "data" / "raw" / "signatures" / "h.all.v2024.1.Hs.symbols.tme.gmt"
+EXPR = ROOT / "data" / "interim" / "expr_nsclc.parquet"
+
+# Figure 2's x-axis needs ONE derived quantity from the analysis inputs: how many
+# genes of each signature survive expression filtering. That is 16 integers, and
+# until 2026-09-07 the only way to obtain them was to read a 41,046-column
+# parquet and the GMT -- neither of which is staged into the public snapshot,
+# because `pipeline/data/` is excluded there on purpose (the inputs are public
+# but large). So `10_make_figures.py` exited 1 at figure 2 for every reader
+# reproducing from the deposit, which made the paper's Data Availability
+# Statement false a SECOND way, after `null_draws.npz` was fixed the same day.
+#
+# The fix is the same shape as that one: deposit the derived quantity next to the
+# results, where the snapshot's `.csv` rule already carries it. It is 16 rows.
+# Recomputation from the inputs stays authoritative when they are present, and
+# the two are compared rather than merely preferred -- a deposit nobody checks is
+# a deposit that can drift.
+GENE_SIZES = ROOT / "results" / "gene_set_sizes.csv"
+N_SIGNATURES = 16
 
 # Okabe-Ito: colourblind-safe.
 C_PAN, C_NSCLC, C_NULL = "#0072B2", "#D55E00", "#999999"
@@ -114,14 +136,81 @@ def load(path: Path, name: str) -> pd.DataFrame:
     return d
 
 
-def gene_set_sizes() -> dict[str, int]:
-    expr_cols = set(pd.read_parquet(ROOT / "data/interim/expr_nsclc.parquet").columns)
+def _rel(p: Path) -> str:
+    """Display path, relative to the pipeline root when it is under it."""
+    try:
+        return str(p.relative_to(ROOT))
+    except ValueError:
+        return str(p)
+
+
+def _sizes_from_inputs() -> dict[str, int] | None:
+    """Recompute the panel sizes from the analysis inputs, or None if absent.
+
+    Returns None rather than raising when `data/` is missing, because that is
+    the normal state of the public snapshot, not an error.
+    """
+    if not (EXPR.exists() and GMT.exists()):
+        return None
+    expr_cols = set(pd.read_parquet(EXPR).columns)
     sets = sig_mod.SignatureSet.from_gmt(GMT).sets
     # GMT keys are HALLMARK_*; the result files key on the bare name. Without
     # stripping the prefix the join silently yields all-NaN and the Spearman
     # correlation in figure 2 comes out NaN rather than raising.
     return {k.replace("HALLMARK_", ""): len([g for g in v if g in expr_cols])
             for k, v in sets.items()}
+
+
+def _sizes_from_deposit() -> dict[str, int] | None:
+    """Read the deposited panel sizes, or None if they are not deposited.
+
+    An INCOMPLETE deposit is rejected here rather than tolerated. A file that
+    exists but covers fewer than the 16 signatures would map to NaN in figure 2
+    and yield a NaN Spearman rather than an error -- the same shape of silent
+    hole that let an inadequate `null_draws.npz` render panel B with no null at
+    all. Coverage is not presence.
+    """
+    if not GENE_SIZES.exists():
+        return None
+    d = pd.read_csv(GENE_SIZES)
+    if list(d.columns) != ["signature", "n_genes"] or len(d) != N_SIGNATURES:
+        raise SystemExit(
+            f"FATAL: {_rel(GENE_SIZES)} is malformed -- expected {N_SIGNATURES} "
+            f"rows of (signature, n_genes), found {len(d)} row(s) of "
+            f"{list(d.columns)}. Regenerate it with --write-gene-sizes on a "
+            f"machine that has data/, or delete it to fall back to recomputation.")
+    return dict(zip(d["signature"], d["n_genes"].astype(int)))
+
+
+def gene_set_sizes() -> dict[str, int]:
+    """The 16 post-filtering panel sizes figure 2 plots against.
+
+    Recomputation wins when `data/` is present; the deposit serves the snapshot.
+    When both exist they are COMPARED, so a stale deposit fails loudly on the
+    one machine able to notice.
+    """
+    computed, deposited = _sizes_from_inputs(), _sizes_from_deposit()
+    if computed is not None and deposited is not None and computed != deposited:
+        diff = {k: (computed.get(k), deposited.get(k))
+                for k in set(computed) | set(deposited)
+                if computed.get(k) != deposited.get(k)}
+        raise SystemExit(
+            f"FATAL: {_rel(GENE_SIZES)} disagrees with a fresh recomputation "
+            f"from data/. computed vs deposited: {diff}\n"
+            f"       The deposit is what the public snapshot ships, so this "
+            f"must be resolved, not ignored. Re-run with --write-gene-sizes.")
+    if computed is not None:
+        return computed
+    if deposited is not None:
+        print(f"  figure2: panel sizes read from {_rel(GENE_SIZES)} "
+              f"(data/ is absent -- this is the deposited-snapshot path)")
+        return deposited
+    raise SystemExit(
+        f"FATAL: figure 2 needs the per-signature panel sizes and neither route "
+        f"is available.\n"
+        f"       recomputation needs {_rel(EXPR)} and {_rel(GMT)};\n"
+        f"       the deposit would be at {_rel(GENE_SIZES)}.\n"
+        f"       Obtain the inputs (see README) or the deposited results.")
 
 
 # ------------------------------------------------------------- schematic ---
@@ -217,25 +306,67 @@ def figure1(outdir: Path) -> None:
     # Observed vs null. The null is the ACTUAL 1,000 draws per signature, not a
     # summary band — see the module docstring.
     draws_path = PAN / "null_draws.npz"
+    _fig1b_null = "violins"
+    data = []
     if draws_path.exists():
         z = np.load(draws_path)
         key = {k.replace("SIG_HALLMARK_", ""): k for k in z.files}
         data = [z[key[s]] for s in order if s in key]
-        if len(data) == len(order):
-            vp = ax2.violinplot(data, positions=y, vert=False, widths=0.85,
-                                showextrema=False, showmedians=True)
-            for b in vp["bodies"]:
-                b.set_facecolor(C_NULL)
-                b.set_alpha(0.55)
-                b.set_edgecolor("none")
-            vp["cmedians"].set_color("#444444")
-            vp["cmedians"].set_linewidth(0.9)
-            ax2.plot([], [], "s", color=C_NULL, alpha=.55, ms=6,
-                     label="Random-set null (1,000 draws)")
+        if len(data) != len(order):
+            # THE SECOND SILENT HOLE, closed 2026-09-07. Previously an npz that
+            # existed but did not cover all 16 signatures fell through BOTH
+            # arms: no violins, and no band either, so panel B rendered with no
+            # null at all and nothing said so. `else` guarded only a missing
+            # file, not an inadequate one. Coverage is not the same as presence.
+            print(f"\n  !! WARNING: {draws_path} covers {len(data)} of "
+                  f"{len(order)} signatures.\n"
+                  "     Falling back to the mean +/- SD band for ALL of them, "
+                  "rather than\n     drawing a partial null that would look "
+                  "complete.\n")
+            _fig1b_null = "band"
     else:
+        _fig1b_null = "band"
+
+    if _fig1b_null == "violins":
+        vp = ax2.violinplot(data, positions=y, vert=False, widths=0.85,
+                            showextrema=False, showmedians=True)
+        for b in vp["bodies"]:
+            b.set_facecolor(C_NULL)
+            b.set_alpha(0.55)
+            b.set_edgecolor("none")
+        vp["cmedians"].set_color("#444444")
+        vp["cmedians"].set_linewidth(0.9)
+        ax2.plot([], [], "s", color=C_NULL, alpha=.55, ms=6,
+                 label="Random-set null (1,000 draws)")
+    else:
+        # LOUD, and it must stay loud. This branch draws a DIFFERENT FIGURE
+        # from the published one -- a mean +/- SD band in place of the real
+        # 1,000 draws -- and until 2026-09-07 it did so in silence while
+        # `main()` unconditionally printed that panel B showed the real
+        # distribution. Anyone reproducing from the public snapshot hit exactly
+        # this path, because `null_draws.npz` was excluded from the snapshot by
+        # suffix, and was told in the script's own output that they had got the
+        # violins. The file is now staged (it is 124 KB), so this branch should
+        # be unreachable for a reader who cloned the snapshot -- if you are
+        # seeing it, something is missing that the paper says is deposited.
+        print("\n  !! WARNING: figure 1B fell back to a mean +/- SD BAND.\n"
+              f"     {draws_path} is absent or does not cover all "
+              f"{len(order)} signatures,\n"
+              "     so the 1,000 per-signature null draws could not be drawn.\n"
+              "     THIS IS NOT THE PUBLISHED PANEL B, which shows the real\n"
+              "     distribution as violins. Re-run the pan-cancer analysis to\n"
+              "     regenerate null_draws.npz, or obtain it with the deposited\n"
+              "     results.\n")
         ax2.hlines(y, pan["null_mean_r"] - pan["null_sd_r"],
                    pan["null_mean_r"] + pan["null_sd_r"], color=C_NULL, lw=4,
                    alpha=.55, label="Random-set null (mean $\\pm$ SD)")
+        # Annotate the ARTEFACT ITSELF, not just the terminal. A figure that
+        # leaves the machine carrying a claim it cannot support is the failure
+        # mode; a warning scrolled past in a log is not a control.
+        ax2.text(0.98, 0.02,
+                 "null shown as mean $\\pm$ SD\n(per-draw nulls unavailable)",
+                 transform=ax2.transAxes, ha="right", va="bottom",
+                 fontsize=5.5, color="#B00020")
     ax2.plot(pan["r_residual_refit"], y, "o", ms=4, color=C_PAN,
              label="Curated signature", zorder=3)
     ax2.set_yticks(y)
@@ -247,7 +378,9 @@ def figure1(outdir: Path) -> None:
 
     save(fig, outdir, "figure1_isi")
     print(f"  figure1: 16 signatures, pan excess "
-          f"{pan.excess_z.min():.3f}-{pan.excess_z.max():.3f}")
+          f"{pan.excess_z.min():.3f}-{pan.excess_z.max():.3f} "
+          f"[panel B null: {_fig1b_null}]")
+    return _fig1b_null
 
 
 # ------------------------------------------------------------------ fig 2 ---
@@ -256,8 +389,19 @@ def figure2(outdir: Path) -> None:
     """Reliability gap vs panel size, and why the raw-score alpha misleads."""
     sizes = gene_set_sizes()
     pan, nsc = load(PAN, "immune_excess"), load(NSCLC, "immune_excess")
-    for d in (pan, nsc):
+    for name, d in (("pancancer", pan), ("nsclc", nsc)):
         d["k"] = d["sig"].map(sizes)
+        # ASSERT THE JOIN. The comment on the HALLMARK_ prefix has warned since
+        # 2026-08-19 that an unmatched key yields all-NaN and a NaN Spearman
+        # "rather than raising" -- and nothing raised. A documented hazard with
+        # no guard is a hazard, so this is now the guard.
+        missing = sorted(d.loc[d["k"].isna(), "sig"])
+        if missing:
+            raise SystemExit(
+                f"FATAL: figure 2's panel-size join left {len(missing)} of "
+                f"{len(d)} {name} signatures unmatched: {missing}\n"
+                f"       Spearman would have been NaN and the panel would have "
+                f"rendered anyway. Panel sizes cover: {sorted(sizes)}")
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7.6, 3.4))
 
@@ -412,7 +556,27 @@ def main() -> int:
     ap.add_argument("--svg", action="store_true",
                     help="also write SVG, for the A0 poster where these figures "
                          "are enlarged past their native 300 dpi size")
+    ap.add_argument("--write-gene-sizes", action="store_true",
+                    help=f"recompute the 16 panel sizes from data/ and write "
+                         f"{_rel(GENE_SIZES)}, the deposit that lets figure 2 "
+                         f"render from the public snapshot. Renders nothing.")
     args = ap.parse_args()
+
+    if args.write_gene_sizes:
+        sizes = _sizes_from_inputs()
+        if sizes is None:
+            raise SystemExit(
+                f"FATAL: --write-gene-sizes needs the analysis inputs, and "
+                f"{_rel(EXPR)} or {_rel(GMT)} is missing. The deposit can only "
+                f"be regenerated on a machine that has data/.")
+        d = (pd.DataFrame(sorted(sizes.items()), columns=["signature", "n_genes"])
+             .sort_values("signature", kind="stable"))
+        GENE_SIZES.parent.mkdir(parents=True, exist_ok=True)
+        d.to_csv(GENE_SIZES, index=False)
+        print(f"wrote {_rel(GENE_SIZES)}: {len(d)} signature(s), "
+              f"{d['n_genes'].min()}-{d['n_genes'].max()} genes after filtering")
+        return 0
+
     args.outdir.mkdir(parents=True, exist_ok=True)
 
     EXTRA_FORMATS.extend(f for f in ("tiff", "svg") if getattr(args, f))
@@ -420,14 +584,27 @@ def main() -> int:
 
     print(f"rendering into {args.outdir}: png, pdf{extra}")
     figure0(args.outdir)
-    figure1(args.outdir)
+    fig1b_null = figure1(args.outdir)
     figure2(args.outdir)
     figure3(args.outdir)
     figure4(args.outdir)
-    print("\nNOTE: figure 1B draws the null as a REAL distribution -- the 1,000 "
-          "per-signature draws persisted to null_draws.npz by AuditResult.save(), "
-          "not a mean +/- SD band. The band was what this script drew before "
-          "2026-08-19 and the caveat printed here said so; both are obsolete.")
+    # CONDITIONAL, since 2026-09-07. This NOTE used to print unconditionally,
+    # which made it an affirmative false statement in exactly the case where it
+    # mattered: a reader whose `null_draws.npz` was missing got the band AND was
+    # told they had got the real distribution. It was not a stale caveat, it was
+    # a claim the script could not check -- and the one population guaranteed to
+    # hit it was anyone reproducing from the public snapshot, which excluded the
+    # file by suffix until it was staged.
+    if fig1b_null == "violins":
+        print("\nNOTE: figure 1B draws the null as a REAL distribution -- the "
+              "1,000 per-signature draws persisted to null_draws.npz by "
+              "AuditResult.save(), not a mean +/- SD band. The band was what "
+              "this script drew before 2026-08-19; that is obsolete.")
+    else:
+        print("\nNOTE: figure 1B drew the null as a mean +/- SD BAND, NOT the "
+              "real distribution. See the warning above. The rendered figure "
+              "does not match the published panel B and is annotated in the "
+              "artefact itself to say so.")
     return 0
 
 

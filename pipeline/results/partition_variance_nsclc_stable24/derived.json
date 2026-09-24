@@ -1,0 +1,56 @@
+{
+  "cohort": "nsclc",
+  "source": "results/partition_variance_nsclc_stable24/per_partition.csv",
+  "n_partitions_used": 24,
+  "split_seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23
+  ],
+  "isi_mean": 0.3053045014498692,
+  "isi_min": 0.2922124012879652,
+  "isi_max": 0.3214189817519473,
+  "isi_sd_across_partitions": 0.007658304140287514,
+  "isi_sd_chi2_95ci": [
+    0.005952138038650019,
+    0.010742767401551091
+  ],
+  "bootstrap_se": 0.02936654847782444,
+  "combined_se": 0.030348703296937708,
+  "reported_ci": [
+    0.24774712408308375,
+    0.36286187881665466
+  ],
+  "honest_ci": [
+    0.2458221360103793,
+    0.36478686688935913
+  ],
+  "interval_understated_by": 0.03344468008744461,
+  "partition_share_of_total_variance": 0.06367734392972972,
+  "partition_share_from_sd_chi2_95ci": [
+    0.03945987358845294,
+    0.11802710916272194
+  ],
+  "ci_still_excludes_zero": true
+}

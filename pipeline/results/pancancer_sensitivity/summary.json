@@ -1,0 +1,28 @@
+{
+  "what": "Ledger E1, pan-cancer: the index with the global expression axis computed over all cancer types together and removed globally (axis_within_type=False). UNREGISTERED sensitivity analysis; the registered configuration is within type.",
+  "produced_by": "cluster/e1_global_axis.py (sha256 ddbb3124657c1034...), HPC4 job 130189, cpu-848, 2026-09-17, 1,217 s, fast path on; ISI-only configuration of 12_partition_variance.py --isi-only at split_seed 0; outputs copied unchanged except predictions.csv.gz (not kept)",
+  "reference_source": "results/pancancer_v3_stablesort/summary.json",
+  "reference_note": "The ISI-only configuration at split_seed 0 reproduces this reference bit for bit on HPC4 (job 130185_1, results/null_reliability/pancancer.json, and ledger B2).",
+  "variants": [
+    {
+      "variant": "reference",
+      "isi": 0.29684911595367525,
+      "lo": 0.274920163364846,
+      "hi": 0.31893289976112255
+    },
+    {
+      "variant": "global_axis",
+      "change": {
+        "axis_within_type": false
+      },
+      "isi": 0.3511541601948679,
+      "lo": 0.26920491724068524,
+      "hi": 0.435336029245005,
+      "shift_from_reference": 0.054305044241192646,
+      "signatures_beating_null": 15,
+      "signatures_degenerate_null": 0,
+      "axis_variance_explained": 0.10577395868216212,
+      "seconds": 1217.0
+    }
+  ]
+}

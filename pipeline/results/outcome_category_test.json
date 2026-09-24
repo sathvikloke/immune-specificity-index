@@ -1,0 +1,36 @@
+{
+  "source": "results/pancancer_v3/outcome_arm.csv",
+  "adjustment": "axis_residualised",
+  "group_categories": [
+    "proliferation",
+    "development",
+    "pathway"
+  ],
+  "n_signatures": 16,
+  "group_size": 6,
+  "group_members": [
+    "ANGIOGENESIS",
+    "E2F_TARGETS",
+    "EPITHELIAL_MESENCHYMAL_TRANSITION",
+    "G2M_CHECKPOINT",
+    "HYPOXIA",
+    "MYC_TARGETS_V1"
+  ],
+  "winners": [
+    "ANGIOGENESIS",
+    "E2F_TARGETS",
+    "EPITHELIAL_MESENCHYMAL_TRANSITION",
+    "G2M_CHECKPOINT",
+    "HYPOXIA"
+  ],
+  "winners_inside_group": 5,
+  "p_all_winners_inside_group": 0.0013736263736263737,
+  "p_at_least_this_many_inside": 0.0013736263736263737,
+  "mean_excess_difference_group_minus_rest": 0.06718214508322135,
+  "relabellings_enumerated": 8008,
+  "p_excess_difference_one_sided": 0.00012487512487512488,
+  "caveats": [
+    "the grouping was named after the winners were known: descriptive, not a test of a pre-specified hypothesis (the pre-specified contrast is immune vs other)",
+    "relabelling assumes exchangeable signatures; G2M and E2F share genes, so the true tail is heavier than enumerated"
+  ]
+}

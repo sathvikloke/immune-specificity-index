@@ -1,0 +1,34 @@
+{
+  "cohort": "nsclc",
+  "source_run": "results/nsclc_v3_stablesort",
+  "n_null_reliability": 25,
+  "alpha_gate_max_abs_diff": 1.1102230246251565e-16,
+  "median_alpha_observed": 0.9772981288042433,
+  "median_omega_observed": 0.9773143762181974,
+  "median_alpha_null": 0.8357636548608254,
+  "median_omega_null": 0.22695979224482216,
+  "median_gap_alpha": 0.1264110603924804,
+  "median_gap_omega": 0.7332800567863418,
+  "reconstructed_alpha": {
+    "isi": 0.29174499478292515,
+    "lo": 0.2584271008166345,
+    "hi": 0.3250628887492158,
+    "n_signatures": 16
+  },
+  "reconstructed_omega": {
+    "isi": 0.21465791262128392,
+    "lo": 0.17388317682667964,
+    "hi": 0.2554326484158882,
+    "n_signatures": 16
+  },
+  "beats_null_omega": 15,
+  "registered_isi": {
+    "value": 0.2922124012879651,
+    "ci_lo": 0.23552139004939532,
+    "ci_hi": 0.3527272668764091,
+    "n": 16,
+    "method": "mean-immune-specific-excess-z-patient-clustered-bootstrap [null subsampled to 200 draws]"
+  },
+  "method": "excess_over_null with mean null reliability of the first draws; across-signature SE; NOT the registered patient-clustered bootstrap",
+  "seconds": 586.0
+}

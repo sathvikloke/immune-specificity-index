@@ -11,7 +11,8 @@ all? -- but it answers it by monkeypatching `experiment._select_alpha_per_fold`
 and then running the FULL `run_audit`. Measured on macOS 2026-09-02: setup ~16
 min, then >3h23m inside `run_audit` without reaching a verdict.
 
-That cost is entirely incidental. Read `experiment.py:1099`:
+That cost is entirely incidental. Read `experiment._residualised_null_scores`
+(line 1099 at `bde5514`):
 
     fold_alpha = _select_alpha_per_fold(X, obs_resid.to_numpy(), split)
 
@@ -78,7 +79,8 @@ instead of reporting a meaningless number.
 
 The one deliberate difference: `run_audit` residualises the observed score in a
 single `residualise_matrix` call STACKED with that signature's null columns
-(experiment.py:1085-1093), whereas this script residualises all 16 observed
+(`experiment._residualised_null_scores`, lines 1085-1093 at `bde5514`), whereas
+this script residualises all 16 observed
 columns stacked together. Both are one per-group lstsq against the same design
 matrix, and the design matrix -- hence its SVD -- does not depend on the
 right-hand side, so the columns are mathematically independent. Different
@@ -172,7 +174,8 @@ def main() -> int:
             expr, method="pc1",
             cancer_type=frame.set_index("patient_id")["cancer_type"])
         # KEEP THE INDEX. `axis.values` is a Series indexed by patient_id, which
-        # is what experiment.py:696-698 reindexes against. Casting it to a bare
+        # is what `experiment._immune_specific_excess` (lines 696-698 at `48fce72`)
+        # reindexes against. Casting it to a bare
         # array here and reindexing afterwards is exactly the bug described at
         # AXIS_CACHE above.
         axis_ser = axis.values if hasattr(axis, "values") else pd.Series(axis)
@@ -192,7 +195,8 @@ def main() -> int:
             "the global axis is mostly NaN -- residualising against it would "
             "make every alpha NaN and the margins meaningless")
 
-    # Rebuild axis_values / within / split EXACTLY as experiment.py:696-718 does.
+    # Rebuild axis_values / within / split EXACTLY as
+    # `experiment._immune_specific_excess` did at `bde5514` (lines 696-718).
     # `axis_raw` is already in cohort row order (checked above), so it is aligned
     # positionally rather than reindexed by label.
     axis_values = pd.Series(axis_raw, index=frame.index)
@@ -202,7 +206,8 @@ def main() -> int:
     )
     print(f"split: {split.n_folds} preserved-site folds, seed 0", flush=True)
 
-    # experiment.py:1085-1093, minus the null columns (see FIDELITY above).
+    # `experiment._residualised_null_scores` (lines 1085-1093 at `bde5514`),
+    # minus the null columns (see FIDELITY above).
     obs_raw = np.column_stack(
         [pd.to_numeric(frame[c], errors="coerce").to_numpy(dtype=float)
          for c in sig_cols])
@@ -304,11 +309,13 @@ def main() -> int:
         print(f"  The closest decision is {m.min():.3e} from its runner-up, which is")
         print("  far outside what differing libm/BLAS implementations disagree by")
         print("  (~1e-12 relative on this kind of reduction).")
-        print("  The 80 alphas CANNOT differ across platforms, so they are NOT the")
-        print("  cause of the 0.0218 NSCLC gap. A9's leading hypothesis is DEAD.")
-        print("  Next suspects, in order: the ridge solve itself, stats.corr_ci,")
-        print("  the patient-clustered bootstrap. Discriminate them with")
-        print("  18_bisect_platform.py, which dumps raw float64 per stage.")
+        print("  A wide margin does NOT make the alphas platform-invariant: that")
+        print("  holds only if both machines fit the same training partition, and")
+        print("  under the shipped sort they did not (A9, 2026-09-06: a non-stable")
+        print("  sort built different partitions and 11 of 80 alphas differ between")
+        print("  macOS and HPC4). This branch once said the alphas CANNOT differ;")
+        print("  that inference was wrong. Compare the 15/16/17 digests across")
+        print("  machines, and use 18_bisect_platform.py for per-stage dumps.")
         print("  NOT 'Accelerate vs OpenBLAS' -- this Mac was measured three ways")
         print("  and runs openblas 0.3.21. Read the BLAS line 18 prints on each")
         print("  machine before theorising about which library is which.")

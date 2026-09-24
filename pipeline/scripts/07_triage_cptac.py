@@ -58,8 +58,10 @@ slides; the "top and bottom" sectioning language points at frozen OCT blocks,
 which would not be. The public manifest does not record it. Resolve by
 inspecting a handful of downloaded slides before committing the full run.
 
-For reference the DISCOVERY side is 99.48% DX (diagnostic FFPE): parsed directly
-from the embeddings parquet, 10,117 of 10,170 slides.
+For reference the DISCOVERY side is 100% DX (diagnostic FFPE): all 10,170 slides
+in the embeddings parquet. This docstring said 99.48% (10,117) until 2026-09-17;
+the 53 it missed carry lettered suffixes (`-DXA` to `-DXU`), which a pattern
+requiring a digit after `DX` does not match.
 """
 
 from __future__ import annotations
@@ -136,7 +138,7 @@ def main() -> int:
     print("    Filtering first roughly halves both the download and the compute.")
 
     print("\n  UNRESOLVED: FFPE or frozen? Not in the manifest. Inspect a few")
-    print("  downloaded slides before committing. Discovery side is 99.48% DX.")
+    print("  downloaded slides before committing. Discovery side is 100% DX.")
     return 0
 
 

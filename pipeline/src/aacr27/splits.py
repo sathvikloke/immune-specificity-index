@@ -24,7 +24,7 @@ from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import GroupKFold, StratifiedGroupKFold
+from sklearn.model_selection import StratifiedGroupKFold
 
 
 @dataclass(frozen=True)
@@ -41,6 +41,57 @@ class SplitResult:
         test = np.where(self.fold.to_numpy() == k)[0]
         train = np.where(self.fold.to_numpy() != k)[0]
         return train, test
+
+
+def stable_group_kfold(groups, n_splits: int):
+    """Yield (train_idx, test_idx) as scikit-learn 1.6.1's GroupKFold(n_splits).split does,
+    with the group order pinned by a stable sort (A12, pinned 2026-09-24).
+
+    GroupKFold's non-shuffle branch orders groups by
+    `np.argsort(n_samples_per_group)[::-1]` -- the default, unstable sort. After
+    `collapse_to_patient` every group has one row, so every key ties and the
+    fold assignment is the platform's tie rule: macOS arm64 and Linux x86_64 give
+    different random-patient folds for the same seed (14-SCIENCE-AUDIT.md, A12).
+    This is that code with `kind="stable"` and nothing else changed -- the same
+    patch ledger item D1 measured in-process
+    (`results/session49_diagnostics/d1_pinned_groupkfold/`), under which the two
+    platforms agree on every secondary quantity to round-off. Ties now fall in
+    the reverse of `np.unique`'s order, on every platform.
+
+    The name matters: `26_sort_audit.py` case F reads this module and reports the
+    split as pinned only if `stable_group_kfold` appears in it.
+    """
+    if groups is None:
+        raise ValueError("The 'groups' parameter should not be None.")
+    groups = np.asarray(groups)
+    if groups.ndim != 1:
+        raise ValueError(f"groups must be one-dimensional, got shape {groups.shape}")
+    n_samples = len(groups)
+    if n_splits > n_samples:
+        raise ValueError(
+            f"Cannot have number of splits n_splits={n_splits} greater than the "
+            f"number of samples: n_samples={n_samples}."
+        )
+    unique_groups, group_idx = np.unique(groups, return_inverse=True)
+    if n_splits > len(unique_groups):
+        raise ValueError(
+            f"Cannot have number of splits n_splits={n_splits} greater than the "
+            f"number of groups: {len(unique_groups)}."
+        )
+    # Distribute the most frequent groups first, each to the lightest fold.
+    n_samples_per_group = np.bincount(group_idx)
+    order = np.argsort(n_samples_per_group, kind="stable")[::-1]
+    n_samples_per_fold = np.zeros(n_splits)
+    group_to_fold = np.zeros(len(unique_groups))
+    for group_index, weight in enumerate(n_samples_per_group[order]):
+        lightest_fold = np.argmin(n_samples_per_fold)
+        n_samples_per_fold[lightest_fold] += weight
+        group_to_fold[order[group_index]] = lightest_fold
+    sample_fold = group_to_fold[group_idx]
+    indices = np.arange(n_samples)
+    for f in range(n_splits):
+        test = sample_fold == f
+        yield indices[~test], indices[test]
 
 
 def random_patient_split(
@@ -65,13 +116,15 @@ def random_patient_split(
         iterator = splitter.split(frame, stratify.to_numpy(), groups=frame["patient"])
     else:
         # GroupKFold is deterministic and ignores random_state, so shuffle the
-        # group order ourselves to make `seed` meaningful.
+        # group order ourselves to make `seed` meaningful. The group order it
+        # then applies is pinned (`stable_group_kfold`, A12): with one row per
+        # patient every group ties, and the library's unstable sort made these
+        # folds platform-dependent. Runs before 2026-09-24 used the library's.
         rng = np.random.default_rng(seed)
         uniq = frame["patient"].unique()
         perm = {p: i for i, p in enumerate(rng.permutation(uniq))}
         shuffled = frame["patient"].map(perm)
-        splitter = GroupKFold(n_splits=n_folds)
-        iterator = splitter.split(frame, groups=shuffled)
+        iterator = stable_group_kfold(shuffled.to_numpy(), n_splits=n_folds)
 
     for k, (_, test_idx) in enumerate(iterator):
         fold.iloc[test_idx] = k

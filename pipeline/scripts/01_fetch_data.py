@@ -1,210 +1,178 @@
 #!/usr/bin/env python3
-"""Fetch every input the audit needs. Run this first.
+"""Fetch every raw input the audit needs, and prove each one is the file the results used.
 
-Everything here is open-access and ungated. Nothing requires dbGaP, an EGA data
-access committee, an institutional email, or a signing official.
+    python scripts/01_fetch_data.py --all          # fetch what is missing, verify everything
+    python scripts/01_fetch_data.py --verify       # verify only; download nothing
 
-    python scripts/01_fetch_data.py --all
-    python scripts/01_fetch_data.py --embeddings --ancestry
+Everything here is open access. Nothing requires dbGaP, a data access
+committee, an institutional email or a signing official.
 
-Some artefacts cannot be fetched programmatically (supplementary tables behind
-publisher UI, HuggingFace datasets needing the `datasets` client). For those
-this script prints exact instructions and the destination path rather than
-pretending to download them.
+WHAT THIS WRITES (rewritten 2026-09-17, ledger C4)
+==================================================
+Until 2026-09-17 this script downloaded only the embeddings -- under the
+dataset's own file name, which nothing downstream reads -- and printed
+instructions naming files (`carrot_zhang_2020_TableS1.xlsx`, `tcga_purity.csv`,
+`tme_signatures.gmt`, `tcga_expression.parquet`) that no script opens, and its
+purity note preferred CPE where `data.load_purity` prefers ABSOLUTE. A reader
+following it could not reach `00_build_interim.py`. Every entry in RAW_FILES is
+now the exact path the pipeline reads, the public source it came from, and the
+sha256 of the copy the frozen results were computed from. Each source below
+was re-downloaded on 2026-09-16/17 and reproduced that hash, except where noted.
+
+    data/raw/provgigapath/embeddings.parquet
+        HuggingFace dataset seandavis/tcga_provgigapath_embeddings, revision
+        073115403c2fc5134ee8d1332c603edba591dddb, file
+        provgigapath_embeddings_with_metadata.parquet (CC-BY-4.0, ungated).
+    data/raw/expression/tcga_RSEM_gene_tpm.gz
+        UCSC Xena TOIL hub, log2(TPM + 0.001).
+    data/raw/expression/ensembl_to_hugo.csv
+        HGNC's complete set as served on 2026-08-17, reduced to the rows with an
+        Ensembl id: `ensembl_gene_id,symbol`, in HGNC's order. HGNC (CC0) does
+        not archive that snapshot -- its 2026-08-04 and 2026-08-07 monthly
+        archives map 41,037 of TOIL's genes where this map maps 41,046 -- so the
+        map itself is committed at pipeline/resources/ensembl_to_hugo.csv and
+        copied from there. `derive_gene_map()` rebuilds it from any HGNC file and
+        reports whether the result matches.
+    data/raw/ancestry/UCSF_Ancestry_Calls.csv
+        GDC publication page CCG-AIM-2020 (Carrot-Zhang et al. 2020).
+    data/raw/purity/TCGA_ABSOLUTE_purity.tsv
+        GDC PanCanAtlas ABSOLUTE, `TCGA_mastercalls.abs_tables_JSedit.fixed.txt`.
+    data/raw/purity/TCGA_ABSOLUTE_purity.csv
+        The same file with tabs replaced by commas (what `data.load_purity` reads).
+    data/raw/signatures/h.all.v2024.1.Hs.symbols.gmt, and its .tme.gmt subset
+        MSigDB 2024.1.Hs Hallmark, via `03_fetch_signatures.py`, which also
+        writes the 16-set TME subset the analysis uses.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
+import shutil
 import sys
+import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw"
+RESOURCES = ROOT / "resources"
+
+HF_REPO = "seandavis/tcga_provgigapath_embeddings"
+HF_REVISION = "073115403c2fc5134ee8d1332c603edba591dddb"
+HF_FILE = "provgigapath_embeddings_with_metadata.parquet"
+GDC = "https://api.gdc.cancer.gov/data/"
+
+# path under data/raw -> (sha256, how to get it)
+RAW_FILES: dict[str, tuple[str, str]] = {
+    "provgigapath/embeddings.parquet": (
+        "234379b0d85cce26817358d7c63f707042ee8fd8f7145c18940a6893fb5deed6", "huggingface"),
+    "expression/tcga_RSEM_gene_tpm.gz": (
+        "2ac7215f35fbe2cdc671c03c2b40b934ac1a0c908757f05f6b8267e5ba0a1b6d",
+        "https://toil-xena-hub.s3.us-east-1.amazonaws.com/download/tcga_RSEM_gene_tpm.gz"),
+    "expression/ensembl_to_hugo.csv": (
+        "0315430e6dddde71c79fcc1f38a0b053507828f2bf6e47e53c6172cc9a7ad54b", "resources"),
+    "ancestry/UCSF_Ancestry_Calls.csv": (
+        "8e7b1f92c3d957ac9ab04e40fe731120ffa05328352126afe2ae89641f65fdb9",
+        GDC + "fdfa536a-c3c8-405d-99d9-bc9375b5084c"),
+    "purity/TCGA_ABSOLUTE_purity.tsv": (
+        "f430a975433d82e0098d7405619d4f12a0c765fcd97e7d63cc9b1de7f2d763cd",
+        GDC + "4f277128-f793-4354-a13d-30cc7fe9f6b5"),
+    "purity/TCGA_ABSOLUTE_purity.csv": (
+        "7a96dac3a253b7d0888cff5dc068256699ff2ffce8126f6a75a63fb4537becd5", "tabs-to-commas"),
+    "signatures/h.all.v2024.1.Hs.symbols.gmt": (
+        "ee2463540042078bfa3f67828e1e223bb354446d9fbb4d22845866835ba5c772",
+        "03_fetch_signatures.py"),
+    "signatures/h.all.v2024.1.Hs.symbols.tme.gmt": (
+        "098e63374eea867925911f5136d0f147ff1e73257a18de91931a5be7f6e55c94",
+        "03_fetch_signatures.py"),
+}
 
 
-EMBEDDINGS_INSTRUCTIONS = f"""
-SLIDE-LEVEL PROV-GIGAPATH EMBEDDINGS (primary substrate)
---------------------------------------------------------
-Repo:    seandavis/tcga_provgigapath_embeddings   (HuggingFace, dataset)
-Licence: CC-BY-4.0, ungated
-Size:    ~466 MB, single parquet, ~11,948 TCGA slides
-Encoder: Prov-GigaPath (Apache-2.0) — no non-commercial restriction
-
-  pip install huggingface_hub
-  huggingface-cli download seandavis/tcga_provgigapath_embeddings \\
-      --repo-type dataset --local-dir {RAW / 'provgigapath'}
-
-VERIFY ON THE DATASET CARD before writing methods text (red-team could not
-confirm these): tiling parameters, magnification, and whether vectors are
-mean-pooled tile embeddings or a CLS token.
-
-DELIBERATELY NOT USED:
-  MahmoodLab/UNI2-h-features   gated; gate text says gmail will be denied;
-                               UNI2-h weights are CC-BY-NC
-  W8Yi/tcga-wsi-uni2h-features ungated but derived from UNI2-h, so it inherits
-                               the non-commercial restriction
-Both are avoided because of the industry affiliation. If that stops mattering,
-`data.load_embeddings` accepts any parquet with a barcode and a vector column.
-"""
-
-ANCESTRY_INSTRUCTIONS = f"""
-TCGA GENETIC ANCESTRY CALLS
----------------------------
-Carrot-Zhang J, Chambwe N, Damrauer JS, et al. "Comprehensive Analysis of
-Genetic Ancestry and Its Molecular Correlates in Cancer."
-Cancer Cell 2020;37(5):639-654.e6.  doi:10.1016/j.ccell.2020.04.012
-
-10,678 patients, 33 cancer types. This is what makes the ancestry arm powered
-pan-cancer (AFR ~717, EAS ~535, AMR ~249) where it is hopeless in any single
-tumour type (NSCLC has EAS n=17).
-
-Get Table S1 from either:
-  1. GDC PanCanAtlas publication page (preferred, stable):
-     https://gdc.cancer.gov/about-data/publications/CCG-AIM-2020
-  2. The article's supplementary material:
-     https://www.cell.com/cancer-cell/fulltext/S1535-6108(20)30211-7
-  3. Open-access mirror:
-     https://escholarship.org/uc/item/8q63d5vs
-
-Save as: {RAW / 'ancestry' / 'carrot_zhang_2020_TableS1.xlsx'}
-
-On first load, `data.load_ancestry` guesses the patient and ancestry column
-names and records its guesses in the provenance file. CHECK THEM, then pass the
-names explicitly.
-"""
-
-PURITY_INSTRUCTIONS = f"""
-TUMOUR PURITY (ABSOLUTE)
-------------------------
-Needed for the purity decomposition, which is one of the two scientific cores.
-Aran D, Sirota M, Butte AJ. "Systematic pan-cancer analysis of tumour purity."
-Nat Commun 2015;6:8971  — provides ESTIMATE, ABSOLUTE, LUMP, IHC and CPE.
-
-Source options:
-  - PanCanAtlas: https://gdc.cancer.gov/about-data/publications/pancanatlas
-    (look for the ABSOLUTE purity/ploidy file)
-  - The Aran et al. supplementary table (CPE consensus column)
-
-Save as: {RAW / 'purity' / 'tcga_purity.csv'}
-Required columns: a TCGA patient barcode, and at least one purity estimate.
-Prefer CPE (consensus); fall back to ABSOLUTE. Record which you used — the
-red-team flagged that H&E-predicted ABSOLUTE purity reaches Spearman 0.418-0.655
-(Oner et al., Patterns 2021), which is the number the decomposition argues with.
-"""
-
-SIGNATURES_INSTRUCTIONS = f"""
-TME GENE SIGNATURES
--------------------
-NOT bundled with this package, deliberately: signature definitions must come
-from their sources so provenance is auditable.
-
-Options:
-  1. HistoTME's curated set (the direct precedent this audit targets):
-     https://github.com/spatkar94/HistoTME
-     Its ground-truth file carries the signature columns; the underlying
-     definitions trace to Bagaev et al., Cancer Cell 2021 (doi:10.1016/j.ccell.2021.04.014).
-  2. MSigDB Hallmark / C7 immunologic sets (GMT format):
-     https://www.gsea-msigdb.org/gsea/msigdb
-  3. Any GMT you trust.
-
-Save as: {RAW / 'signatures' / 'tme_signatures.gmt'}  (or .json)
-
-Loaders: `signatures.SignatureSet.from_gmt()` / `.from_json()`.
-A single-signature smoke test is available via `signatures.example_signature_set()`
-(CYT = GZMA + PRF1, Rooney et al. Cell 2015) so you can exercise the pipeline
-before the full set is in place.
-"""
-
-EXPRESSION_INSTRUCTIONS = f"""
-TCGA BULK RNA-SEQ
------------------
-Needed to compute signature ground truth AND to run the Venet null (random gene
-sets must be scored through the identical pipeline, which requires the full
-expression matrix, not just precomputed signature scores).
-
-Open tier, no dbGaP. Options:
-  - GDC Data Portal / API, "STAR - Counts" for TCGA projects:
-    https://portal.gdc.cancer.gov/
-    A pan-cancer pull is ~45 GB at ~4.2 MB per file.
-  - Recount3 or the UCSC Xena pan-cancer TOIL matrix are far smaller and
-    already harmonised; prefer one of these if bandwidth is a constraint.
-    https://xenabrowser.net/datapages/
-
-Save as: {RAW / 'expression' / 'tcga_expression.parquet'}
-Shape: samples x genes, log-transformed, HUGO symbols as columns.
-
-WARNING that bites people: if you z-score or median-scale WITHIN cohort, then
-TCGA-derived and CPTAC-derived ground truth sit on different scales and your
-"external validation" target has been silently redefined by cohort composition.
-Decide the scaling policy once, write it down, and apply it identically.
-"""
+def sha256(path: Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for block in iter(lambda: fh.read(1 << 20), b""):
+            h.update(block)
+    return h.hexdigest()
 
 
-def ensure_dirs() -> None:
-    for sub in ("provgigapath", "ancestry", "purity", "signatures", "expression"):
-        (RAW / sub).mkdir(parents=True, exist_ok=True)
+def _download(url: str, dest: Path) -> None:
+    tmp = dest.with_name(dest.name + ".part")
+    with urllib.request.urlopen(url, timeout=120) as r, open(tmp, "wb") as fh:
+        shutil.copyfileobj(r, fh, length=1 << 20)
+    tmp.replace(dest)
 
 
-def fetch_embeddings() -> bool:
-    """Attempt the HF download; fall back to printing instructions."""
-    dest = RAW / "provgigapath"
-    try:
-        from huggingface_hub import snapshot_download
-    except ImportError:
-        print(EMBEDDINGS_INSTRUCTIONS)
-        print("!! huggingface_hub not installed:  pip install huggingface_hub")
-        return False
+def _fetch_embeddings(dest: Path) -> None:
+    from huggingface_hub import hf_hub_download
 
-    print(f"Downloading seandavis/tcga_provgigapath_embeddings -> {dest}")
-    try:
-        snapshot_download(
-            repo_id="seandavis/tcga_provgigapath_embeddings",
-            repo_type="dataset",
-            local_dir=str(dest),
-        )
-    except Exception as exc:  # noqa: BLE001 - report anything and continue
-        print(f"!! download failed: {exc}")
-        print(EMBEDDINGS_INSTRUCTIONS)
-        return False
-
-    files = list(dest.rglob("*.parquet"))
-    print(f"   done: {len(files)} parquet file(s)")
-    for f in files:
-        print(f"     {f.relative_to(RAW)}  {f.stat().st_size / 1e6:.1f} MB")
-    return True
+    got = hf_hub_download(repo_id=HF_REPO, repo_type="dataset", revision=HF_REVISION,
+                          filename=HF_FILE)
+    shutil.copyfile(got, dest)
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--all", action="store_true", help="fetch/describe everything")
-    parser.add_argument("--embeddings", action="store_true")
-    parser.add_argument("--ancestry", action="store_true")
-    parser.add_argument("--purity", action="store_true")
-    parser.add_argument("--signatures", action="store_true")
-    parser.add_argument("--expression", action="store_true")
-    args = parser.parse_args()
+def derive_gene_map(hgnc_complete_set: Path, dest: Path) -> str:
+    """Rebuild the Ensembl -> HUGO map from an HGNC complete set; return its sha256."""
+    import pandas as pd
 
-    if not any(vars(args).values()):
-        parser.print_help()
+    h = pd.read_csv(hgnc_complete_set, sep="\t", dtype=str, usecols=["symbol", "ensembl_gene_id"])
+    h.dropna(subset=["ensembl_gene_id"])[["ensembl_gene_id", "symbol"]].to_csv(dest, index=False)
+    return sha256(dest)
+
+
+def obtain(rel: str, how: str) -> None:
+    dest = RAW / rel
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    if how == "huggingface":
+        _fetch_embeddings(dest)
+    elif how == "resources":
+        shutil.copyfile(RESOURCES / dest.name, dest)
+    elif how == "tabs-to-commas":
+        src = dest.with_suffix(".tsv")
+        if not src.exists():
+            raise FileNotFoundError(f"{src} is needed first")
+        dest.write_bytes(src.read_bytes().replace(b"\t", b","))
+    elif how.startswith("https://"):
+        _download(how, dest)
+    else:
+        raise FileNotFoundError(f"run `python scripts/{how}` to create {rel}")
+
+
+def main(argv=None) -> int:
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("--all", action="store_true", help="fetch what is missing, then verify")
+    ap.add_argument("--verify", action="store_true", help="verify only; download nothing")
+    args = ap.parse_args(argv)
+    if not (args.all or args.verify):
+        ap.print_help()
         return 1
 
-    ensure_dirs()
-    want = lambda flag: args.all or flag  # noqa: E731
-
-    if want(args.embeddings):
-        fetch_embeddings()
-    if want(args.ancestry):
-        print(ANCESTRY_INSTRUCTIONS)
-    if want(args.purity):
-        print(PURITY_INSTRUCTIONS)
-    if want(args.signatures):
-        print(SIGNATURES_INSTRUCTIONS)
-    if want(args.expression):
-        print(EXPRESSION_INSTRUCTIONS)
-
+    bad = 0
+    for rel, (want, how) in RAW_FILES.items():   # insertion order: .tsv before .csv
+        path = RAW / rel
+        if not path.exists() and args.all:
+            try:
+                print(f"  fetching {rel} <- {how}", flush=True)
+                obtain(rel, how)
+            except Exception as exc:  # noqa: BLE001 - report every missing input, then fail
+                print(f"  COULD NOT FETCH {rel}: {type(exc).__name__}: {exc}")
+        if not path.exists():
+            print(f"  MISSING        {rel}  (source: {how})")
+            bad += 1
+            continue
+        got = sha256(path)
+        if got == want:
+            print(f"  VERIFIED       {rel}")
+        else:
+            print(f"  HASH DIFFERS   {rel}: {got[:16]} (expected {want[:16]}) -- "
+                  "not the file the frozen results were computed from")
+            bad += 1
     print(f"\nRaw data root: {RAW}")
-    print("Next:  python scripts/02_run_audit.py --demo    (synthetic smoke test)")
+    if bad:
+        print(f"FAILED: {bad} input(s) missing or different.")
+        return 1
+    print("OK: every raw input is the file the frozen results were computed from.")
+    print("Next:  python scripts/00_build_interim.py --out data/interim --verify")
     return 0
 
 

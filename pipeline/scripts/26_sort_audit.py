@@ -35,14 +35,23 @@ MEASURED 2026-09-05, macOS arm64, numpy 2.1.3 / pandas 2.2.3, NSCLC inputs
   D models.py:339          0 of 15         no (median only)  SAFE, by consumer
   E splits.py:177          51 of 68        yes               A9, NOW FIXED
 
+  [2026-09-22: the line numbers above are those of 2026-09-05. A and E keep
+  theirs as the NAMES of defects A10 and A9. The cases below label B, C and D
+  by function -- `stats.bh_fdr`, `barcodes.site_summary`,
+  `models.site_prediction_control` -- because by 2026-09-22 D's line had
+  drifted 85 lines, into `impute_median`. C's sort was pinned to
+  kind="stable" on 2026-09-06; the case registers that through
+  `shipped_pins_stable`, so its verdict above predates the pin.]
+
 CASE A OVERTURNED WHAT HANDOFF #27 CARRIED FORWARD. It recorded this sort as
 "empirically harmless here, since continuous expression evidently produces no
 exact rank ties", inferred from downstream scores agreeing to 1.0e-14. The
 inference was wrong and the data says so loudly: EVERY one of the 944 samples
 carries ties and 35,394,448 of 38,747,424 rank entries (91%) are tied, because
 log-expression has a floor and every gene sitting on it shares an average rank.
-`signatures.py:206`'s own comment said exactly this; the handoff contradicted
-the source it was describing.
+The tie comment in `signatures._ssgsea_sample_tables` said exactly this; the
+handoff contradicted the source it was describing. [That comment was cited as
+`signatures.py:206` until 2026-09-22, by which point it had moved to 239.]
 
 The difference is not confined to the intermediate. `--deep` runs the real O(k)
 reduction over the 16 real signatures under both tie conventions and measures
@@ -254,7 +263,7 @@ def case_a_deep(expr: pd.DataFrame) -> dict:
 
 
 # --------------------------------------------------------------------------
-# Case B -- stats.py:180, Benjamini-Hochberg.
+# Case B -- stats.bh_fdr, Benjamini-Hochberg.
 # --------------------------------------------------------------------------
 def _bh_with_kind(p: np.ndarray, kind: str) -> np.ndarray:
     """`stats.bh_fdr`'s q-vector, with the sort algorithm swapped out.
@@ -335,7 +344,7 @@ def case_b(*, inject_tie: bool = True) -> dict:
         detail.append((name, len(v), t, d))
 
     return {
-        "case": "B stats.py:180  Benjamini-Hochberg",
+        "case": "B stats.bh_fdr  Benjamini-Hochberg",
         "families": detail,
         "max_abs_q_delta": worst_delta,
         "output_changes": worst_delta > 0.0,
@@ -344,7 +353,7 @@ def case_b(*, inject_tie: bool = True) -> dict:
 
 
 # --------------------------------------------------------------------------
-# Case C -- barcodes.py:130, site_summary. DEAD CODE.
+# Case C -- barcodes.site_summary. DEAD CODE.
 # --------------------------------------------------------------------------
 def case_c() -> dict:
     """`.nunique().sort_values(ascending=False)` then a cumulative sum.
@@ -369,7 +378,21 @@ def case_c() -> dict:
             except OSError:
                 continue
             for ln, line in enumerate(txt.splitlines(), 1):
-                if "site_summary" in line and not line.lstrip().startswith("def "):
+                # A CALL, not a MENTION. Until 2026-09-16 this matched the bare
+                # name, and the check defeated itself: `ENVIRONMENT.md` contains
+                # the sentence "`site_summary` is never called", so writing down
+                # that the function is dead was what made the detector report it
+                # alive. The stored artefact said `is_dead: true` on 2026-09-05
+                # and the next `--write` would have flipped it to false, silently
+                # contradicting the manuscript's "is not called anywhere in the
+                # pipeline" -- which was, and remains, TRUE.
+                #
+                # Requiring the open paren keeps the .md/.sh/.ipynb sweep, which
+                # exists to catch a notebook or script that really does call it,
+                # while no longer counting prose that merely names it. Measured
+                # at the time of the change: one hit under the old rule (that
+                # sentence), zero under this one.
+                if "site_summary(" in line and not line.lstrip().startswith("def "):
                     called_from.append(f"{f.relative_to(REPO)}:{ln}")
 
     ties = -1
@@ -387,7 +410,7 @@ def case_c() -> dict:
             changes = not a.index.equals(b.index)
 
     return {
-        "case": "C barcodes.py:130  site_summary  [DEAD CODE]",
+        "case": "C barcodes.site_summary  [DEAD CODE]",
         "call_sites": called_from,
         "tied_site_counts": ties,
         "output_changes": changes,
@@ -404,28 +427,35 @@ def case_c() -> dict:
 
 
 # --------------------------------------------------------------------------
-# Case D -- models.py:339, site AUROC ordering.
+# Case D -- models.site_prediction_control, site AUROC ordering.
 # --------------------------------------------------------------------------
 def case_d() -> dict:
     """`pd.DataFrame(rows).sort_values("auroc", ascending=False)`.
 
-    Row ORDER is non-stable under ties. The two statistics derived from it are a
-    median and a fraction above a threshold, both permutation-invariant, and
-    `experiment.py:249` recomputes the reported median straight off the column
-    rather than reading the `.attrs`. So ties can exist without touching a
-    reported number. The `.attrs` written at models.py:341-342 are never read by
-    anything -- and would not survive `.to_csv()` anyway, which is precisely how
-    the rotation-null p-value was silently lost once.
+    Row ORDER is non-stable under ties. What is derived from it is a median --
+    `AuditResult.headline` recomputes it straight off the `auroc` column, and the
+    reported figure is read from `site_control.csv` by `19_check_numbers.py` --
+    and a median is permutation-invariant, so ties can exist without touching a
+    reported number.
+
+    [Corrected 2026-09-22. This docstring said, in the present tense, that "the
+    `.attrs` written at models.py:341-342 are never read by anything". Nothing is
+    written there any more: `median_auroc` and `frac_above_0.9` were removed from
+    `site_prediction_control` on 2026-09-06 -- its own comment says why: dead on
+    arrival, and `.attrs` does not survive `.to_csv()`, which is precisely how
+    the rotation-null p-value was silently lost once. The docstring's line
+    numbers had drifted too: by 2026-09-22 `models.py:339` landed in
+    `impute_median` and `experiment.py:249` in a docstring.]
     """
     if not SITE_CONTROL.exists():
-        return {"case": "D models.py:339  site AUROC order", "skipped": "no site_control.csv"}
+        return {"case": "D models.site_prediction_control  site AUROC order", "skipped": "no site_control.csv"}
     df = pd.read_csv(SITE_CONTROL)
     a = pd.to_numeric(df["auroc"], errors="coerce").dropna().to_numpy()
     ties = count_row_ties(a)
     q = np.sort(a, kind="quicksort")[::-1]
     s = np.sort(a, kind="stable")[::-1]
     return {
-        "case": "D models.py:339  site AUROC order",
+        "case": "D models.site_prediction_control  site AUROC order",
         "n_sites": len(a),
         "tied_aurocs": ties,
         "median_quicksort": float(np.median(q)),
@@ -469,6 +499,88 @@ def case_e() -> dict:
     }
 
 
+# --------------------------------------------------------------------------
+# Case F -- scikit-learn's GroupKFold (A12). A library ordering, not ours.
+# --------------------------------------------------------------------------
+def _groupkfold_folds(groups: np.ndarray, *, stable: bool) -> np.ndarray:
+    """GroupKFold(5) fold ids, with the library's own argsort or a stable one.
+
+    The stable branch is sklearn 1.6.1's non-shuffle code with kind="stable"
+    and nothing else changed (the same patch ledger item D1 measured).
+    """
+    from sklearn.model_selection import GroupKFold
+
+    X = np.zeros((len(groups), 1))
+    if not stable:
+        fold = np.full(len(groups), -1)
+        for k, (_, te) in enumerate(GroupKFold(n_splits=5).split(X, groups=groups)):
+            fold[te] = k
+        return fold
+    _, group_idx = np.unique(groups, return_inverse=True)
+    sizes = np.bincount(group_idx)
+    order = np.argsort(sizes, kind="stable")[::-1]
+    per_fold = np.zeros(5)
+    to_fold = np.zeros(len(sizes))
+    for i, w in enumerate(sizes[order]):
+        j = np.argmin(per_fold)
+        per_fold[j] += w
+        to_fold[order[i]] = j
+    return to_fold[group_idx].astype(int)
+
+
+def case_f(splits_src: str | None = None, groups: np.ndarray | None = None) -> dict:
+    """A12: `splits.random_patient_split` hands patients to sklearn's GroupKFold.
+
+    GroupKFold orders groups with `np.argsort(n_samples_per_group)[::-1]` -- the
+    default, unstable sort -- and after `collapse_to_patient` every group has
+    size 1, so the whole order is the kernel's tie rule. The partition feeds the
+    random-patient scheme (Delta r, Delta-MAE, the covariate baselines) and the
+    site-prediction control, never the index. The library hashes are per
+    platform by design.
+
+    PINNED 2026-09-24 (the author's decision on A12, the memo's option b):
+    `splits.stable_group_kfold` is GroupKFold's code with `kind="stable"`, and
+    all three call sites use it, so the shipped verdict is FIXED. Until then it
+    was DOCUMENTED, NOT PINNED. The case sees the pin by the helper's NAME in
+    splits.py; the self-test checks the shipped (pinned) source, an injected
+    unpinned source that must read as not pinned, and tie-free groups that must
+    not change the folds.
+    """
+    import hashlib
+    import inspect
+
+    from sklearn.model_selection import GroupKFold
+
+    lib_src = inspect.getsource(GroupKFold._iter_test_indices)
+    lib_line = next((ln.strip() for ln in lib_src.splitlines() if "argsort(" in ln), "")
+    if splits_src is None:
+        splits_src = (REPO / "src" / "aacr27" / "splits.py").read_text()
+    pinned = "GroupKFold" not in splits_src or "stable_group_kfold" in splits_src
+    if groups is None:          # one row per patient, as after collapse_to_patient
+        groups = np.random.default_rng(0).permutation(944)
+    lib_folds = _groupkfold_folds(groups, stable=False)
+    stable_folds = _groupkfold_folds(groups, stable=True)
+    changes = not np.array_equal(lib_folds, stable_folds)
+    hashes = {n: hashlib.sha256(np.argsort(np.ones(n, np.int64)).tobytes()).hexdigest()[:16]
+              for n in (944, 7168)}
+    return {
+        "case": "F sklearn GroupKFold  random-patient group order  [A12]",
+        "library_line": lib_line,
+        "library_pins_stable": 'kind="stable"' in lib_line,
+        "all_ties_argsort_hash_944": hashes[944],
+        "all_ties_argsort_hash_7168": hashes[7168],
+        # The fold assignment itself, both ways: the stable one must agree
+        # across machines, the library one is free to differ.
+        "fold_hash_library": hashlib.sha256(lib_folds.astype(np.int64).tobytes()).hexdigest()[:16],
+        "fold_hash_stable": hashlib.sha256(stable_folds.astype(np.int64).tobytes()).hexdigest()[:16],
+        "ties_exist": True,
+        "output_changes": changes,
+        "shipped_pins_stable": pinned,
+        "documented": "A12 (pinned 2026-09-24 as splits.stable_group_kfold; the index "
+                      "does not use this partition)",
+    }
+
+
 def verdict(r: dict) -> str:
     """The verdict is about the SHIPPED code, not about the two algorithms.
 
@@ -487,6 +599,8 @@ def verdict(r: dict) -> str:
         return "SAFE (output is order-invariant)"
     if r.get("shipped_pins_stable"):
         return "FIXED (ties exist and matter; shipped pins kind=\"stable\")"
+    if r.get("documented"):
+        return f"DOCUMENTED, NOT PINNED -- {r['documented']}"
     return "DANGEROUS"
 
 
@@ -577,6 +691,28 @@ def self_test() -> int:
           f"comparison -> {'CAUGHT' if ok else 'VACUOUS'}")
     fails += not ok
 
+    # F: the library ordering must be SEEN to matter (ties exist and the fold
+    # assignment changes under a stable sort), and the shipped splits.py --
+    # pinned since 2026-09-24 (A12) -- must read as pinned, verdict FIXED. Until
+    # then this check asserted the opposite (not pinned), which was the truth.
+    f = case_f()
+    ok = (f["ties_exist"] and f["output_changes"] and f["shipped_pins_stable"]
+          and verdict(f).startswith("FIXED"))
+    print(f"  F library ordering  : order-changes={f['output_changes']} "
+          f"pinned={f['shipped_pins_stable']}  -> {'CAUGHT' if ok else 'VACUOUS'}")
+    fails += not ok
+    # ...and in the other two directions: a splits.py that still hands patients
+    # to GroupKFold is reported as NOT pinned (so the pin detector is not stuck
+    # at True), and groups of all-different sizes (no ties) change nothing.
+    fu = case_f(splits_src="from sklearn.model_selection import GroupKFold\n")
+    sizes = np.repeat(np.arange(20), np.arange(1, 21))   # group g has g+1 rows
+    fn = case_f(groups=sizes)
+    ok = (not fu["shipped_pins_stable"] and verdict(fu).startswith("DOCUMENTED")
+          and not fn["output_changes"])
+    print(f"  F other directions  : unpinned-source reads pinned={fu['shipped_pins_stable']} "
+          f"tie-free changes={fn['output_changes']}  -> {'CAUGHT' if ok else 'VACUOUS'}")
+    fails += not ok
+
     e = case_e()
     ok = e["ties_exist"] and e["output_changes"]
     print(f"  E positive control  : ties={e['tied_site_sizes']} order-changes="
@@ -605,10 +741,31 @@ def main() -> int:
                          "A10 numbers quoted in the documents are checked "
                          "against an artefact rather than a transcript. "
                          "Implies --deep.")
+    ap.add_argument("--library-order", type=Path, metavar="OUT",
+                    help="run case F only (no expression needed) and record it, "
+                         "with this machine's versions, to OUT -- a NEW file per "
+                         "platform; never one of the sort_audit_*.json artefacts")
     args = ap.parse_args()
 
     if args.self_test:
         return 1 if self_test() else 0
+
+    if args.library_order:
+        import sklearn
+
+        if args.library_order.name.startswith("sort_audit_"):
+            print("refusing: --library-order does not write the A10 artefacts", file=sys.stderr)
+            return 2
+        f = case_f()
+        f["verdict"] = verdict(f)
+        f["platform"] = {"system": platform.system(), "machine": platform.machine(),
+                         "python": platform.python_version(), "numpy": np.__version__,
+                         "sklearn": sklearn.__version__}
+        args.library_order.parent.mkdir(parents=True, exist_ok=True)
+        args.library_order.write_text(json.dumps(f, indent=2) + "\n")
+        report([f])
+        print(f"wrote {args.library_order}")
+        return 0
 
     if not EXPR_NSCLC.exists():
         print(f"missing {EXPR_NSCLC}", file=sys.stderr)
@@ -620,7 +777,7 @@ def main() -> int:
     results = [case_a(expr)]
     if deep:
         results.append(case_a_deep(expr))
-    results += [case_b(), case_c(), case_d(), case_e()]
+    results += [case_b(), case_c(), case_d(), case_e(), case_f()]
     bad = report(results)
 
     if args.write:
@@ -659,6 +816,27 @@ def main() -> int:
             "bh_max_abs_q_delta": b["max_abs_q_delta"],
             "site_summary_is_dead": c["dead"],
             "site_summary_tied_counts": c["tied_site_counts"],
+            # Added 2026-09-16. Cases A and E each persist their pin verdict;
+            # case C COMPUTED one and threw it away, so a regression in
+            # `barcodes.py`'s `kind="stable"` would have been invisible in this
+            # artefact -- the exact failure these files exist to prevent. Three
+            # cases carry a pin flag and only two were written down, with
+            # nothing recording why.
+            #
+            # NOTE THE ASYMMETRY THIS CREATES, which is deliberate and is
+            # recorded rather than tidied away: `sort_audit_darwin_arm64.json`
+            # gains this key on its next `--write`, and
+            # `sort_audit_linux_x86_64.json` does NOT. That file describes the
+            # PRE-FIX cluster tree, where `signatures_pins_stable` and
+            # `splits_pins_stable` are False -- and those two False values are
+            # the evidence that the shipped cluster source does not pin, which
+            # is what lets this script fire a true positive there. Re-writing it
+            # would mean either overwriting a file in the HPC4 project directory
+            # (forbidden) or running in the stable-sort checkout, whose output
+            # lands on the SAME filename (it is derived from platform.system()
+            # and platform.machine()) and would flip those flags to True. That
+            # trades the evidence for a field, so it is declined.
+            "site_summary_pins_stable": c["shipped_pins_stable"],
             "splits_tied_site_sizes": e["tied_site_sizes"],
             "splits_pins_stable": e["shipped_pins_stable"],
         }

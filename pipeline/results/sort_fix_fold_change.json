@@ -1,0 +1,91 @@
+{
+  "nsclc": {
+    "frozen_run": "nsclc_v3",
+    "corrected_run": "nsclc_v3_stablesort",
+    "n_patients": 944,
+    "n_sites": 68,
+    "n_sites_tied": 51,
+    "n_patients_in_tied_sites": 360,
+    "pct_patients_in_tied_sites": 38.13559322033898,
+    "n_patients_fold_changed": 216,
+    "pct_patients_fold_changed": 22.88135593220339,
+    "n_changed_in_untied_sites": 0,
+    "fold_sizes_frozen": [
+      189,
+      188,
+      189,
+      189,
+      189
+    ],
+    "fold_sizes_corrected": [
+      189,
+      188,
+      189,
+      189,
+      189
+    ],
+    "adjusted_rand_index": 0.5369123454681091,
+    "isi_frozen": 0.318240180054566,
+    "isi_corrected": 0.2922124012879651,
+    "isi_move": 0.026027778766600895,
+    "partition_sd_small_sweep": 0.008891522442932558,
+    "partition_sd_24": 0.007658304140287514,
+    "move_in_small_sweep_sds": 2.927257838424411,
+    "move_in_24_partition_sds": 3.3986347747249095,
+    "n_partition_pairs_24": 276,
+    "n_pairs_differing_by_at_least_the_move": 3,
+    "median_pairwise_abs_difference_24": 0.008029287503296595,
+    "range_across_24": 0.029206580463982057
+  },
+  "pancancer": {
+    "frozen_run": "pancancer_v3",
+    "corrected_run": "pancancer_v3_stablesort",
+    "n_patients": 7168,
+    "n_sites": 619,
+    "n_sites_tied": 600,
+    "n_patients_in_tied_sites": 5697,
+    "pct_patients_in_tied_sites": 79.47823660714286,
+    "n_patients_fold_changed": 3812,
+    "pct_patients_fold_changed": 53.18080357142857,
+    "n_changed_in_untied_sites": 0,
+    "fold_sizes_frozen": [
+      1433,
+      1434,
+      1433,
+      1434,
+      1434
+    ],
+    "fold_sizes_corrected": [
+      1433,
+      1434,
+      1433,
+      1434,
+      1434
+    ],
+    "adjusted_rand_index": 0.13055866229108345,
+    "isi_frozen": 0.2911443244377561,
+    "isi_corrected": 0.29684911595367525,
+    "isi_move": 0.005704791515919128,
+    "partition_sd_small_sweep": 0.006523311640647398,
+    "partition_sd_24": 0.0072255199249013306,
+    "move_in_small_sweep_sds": 0.8745238354660245,
+    "move_in_24_partition_sds": 0.789533704869969,
+    "n_partition_pairs_24": 276,
+    "n_pairs_differing_by_at_least_the_move": 153,
+    "median_pairwise_abs_difference_24": 0.0065613014760294575,
+    "range_across_24": 0.035738790412070565
+  },
+  "nsclc_platform_gap": {
+    "source": "frozen macOS NSCLC ISI minus the Linux shipped-sort ISI (scorer_sensitivity_hpc4, mean_z disattenuated arm)",
+    "linux_shipped_isi": 0.2963918792070625,
+    "gap": 0.0218483008475035,
+    "gap_in_small_sweep_sds": 2.4572058371026952,
+    "gap_in_24_partition_sds": 2.8528902022273632
+  },
+  "contrast": {
+    "nsclc_over_pancancer_in_small_sweep_sds": 3.3472590679755525,
+    "nsclc_over_pancancer_in_24_partition_sds": 4.304610118303489,
+    "raw_move_ratio": 4.562441711317724
+  },
+  "reading": "The fix reorders equally sized sites only: no patient in an untied site changed fold and every fold kept its size, in both cohorts. Pan-TCGA has more of its patients in tied sites, and the fix moved more of its partition (ARI near 0 means a nearly unrelated partition), yet the index moved by fewer partition sds. The share of the partition changed does not explain the contrast."
+}

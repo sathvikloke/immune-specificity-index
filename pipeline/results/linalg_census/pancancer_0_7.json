@@ -1,0 +1,92 @@
+{
+  "cohort": "pancancer",
+  "split_seeds": [
+    0,
+    7
+  ],
+  "platform": {
+    "system": "Linux",
+    "machine": "x86_64",
+    "python": "3.12.14",
+    "numpy": "2.1.3"
+  },
+  "baselines": [
+    "site_only",
+    "type_only",
+    "purity_only",
+    "covariates"
+  ],
+  "seeds_with_baseline_failure": [
+    6
+  ],
+  "seeds_with_decomposition_failure": [],
+  "seconds": 702.5,
+  "per_seed": [
+    {
+      "split_seed": 0,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 86.3
+    },
+    {
+      "split_seed": 1,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 89.4
+    },
+    {
+      "split_seed": 2,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 87.9
+    },
+    {
+      "split_seed": 3,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 83.9
+    },
+    {
+      "split_seed": 4,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 85.9
+    },
+    {
+      "split_seed": 5,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 84.0
+    },
+    {
+      "split_seed": 6,
+      "baseline_failures": [
+        {
+          "baseline": "covariates",
+          "fold": 2,
+          "design_shape": [
+            7168,
+            649
+          ],
+          "error": "SVD did not converge"
+        }
+      ],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 84.8
+    },
+    {
+      "split_seed": 7,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 85.8
+    }
+  ]
+}

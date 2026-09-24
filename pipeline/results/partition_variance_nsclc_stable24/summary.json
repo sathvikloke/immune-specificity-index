@@ -1,0 +1,20 @@
+{
+  "cohort": "nsclc",
+  "n_partitions_used": 24,
+  "n_partitions_refused": 0,
+  "refused": [],
+  "isi_mean": 0.3053045014498692,
+  "isi_sd_across_partitions": 0.007658304140287514,
+  "bootstrap_se": 0.02936654847782444,
+  "combined_se": 0.030348703296937708,
+  "reported_ci": [
+    0.24774712408308375,
+    0.36286187881665466
+  ],
+  "honest_ci": [
+    0.2458221360103793,
+    0.36478686688935913
+  ],
+  "interval_understated_by": 0.03344468008744461,
+  "ci_still_excludes_zero": true
+}

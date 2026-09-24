@@ -11,7 +11,7 @@
 
 WHY THIS EXISTS, AND WHAT IT REPLACED
 =====================================
-The NSCLC ISI is 0.318240180054566 on macOS 15 / arm64 / Python 3.13.9 and
+The NSCLC ISI is 0.318240180054566 on macOS 26.5.2 / arm64 / Python 3.13.9 and
 0.2964 on Einstein HPC4 / x86_64 / Python 3.12.14, from the same code, the same
 seeds and the same pinned versions (numpy 2.1.3, pandas 2.2.3, sklearn 1.6.1,
 scipy 1.15.3). `14_repro_probe.py` showed stages 1-6 -- input hashes, gene-axis
@@ -61,7 +61,8 @@ run.
 
 THE THREE REMAINING SUSPECTS
 ============================
-Reading `experiment.py:1099-1140`, everything after the alpha is:
+Reading `experiment._residualised_null_scores` (lines 1099-1140 at `8fe1187`),
+everything after the alpha is:
 
   S4  models.cross_val_predict_multi(X, stacked, split, patients,
                                      fixed_alpha=fold_alpha)
@@ -238,11 +239,13 @@ def _stage0_bootstrap_synthetic() -> np.ndarray:
         p = 0.4 * y + rng.standard_normal(n)
         Yn = rng.standard_normal((n, b))
         Pn = 0.05 * Yn + rng.standard_normal((n, b))
-        # Keys verified against experiment.py:826-831, NOT guessed.
+        # Keys verified against `experiment._immune_specific_excess` (lines
+        # 826-831 at `8fe1187`), NOT guessed.
         boot_inputs.append({
             "signature": f"SYNTH_{k}",
             "y": y, "p": p, "Yn": Yn, "Pn": Pn,
-            # `rel_null` is indexed COLUMN-WISE at experiment.py:988, so it is a
+            # `rel_null` is indexed COLUMN-WISE in `experiment._pooled_isi_bootstrap`
+            # (line 988 at `8fe1187`), so it is a
             # per-null-draw array, not a scalar. Passing a scalar raises
             # IndexError deep inside the bootstrap.
             "rel_obs": 0.9, "rel_null": np.full(b, 0.8),
@@ -320,7 +323,8 @@ def run(tag: str, n_null: int, n_sig_limit: int | None) -> int:
         expr = expr.reindex(frame["patient_id"])
     print(f"expression {expr.shape} ({time.time() - t_expr:.1f}s)", flush=True)
     cfg = experiment.AuditConfig(n_null_sets=n_null, seed=0)
-    # The SIG_ prefixing convention, from 05_run_nsclc.py:48-53: gene-SET names
+    # The SIG_ prefixing convention, from `05_run_nsclc.py`'s `load_cohort`
+    # (lines 48-53 at `8fe1187`): gene-SET names
     # in the GMT are bare, score COLUMNS in the cohort frame carry `SIG_`.
     raw_sigs = sig_mod.SignatureSet.from_gmt(GMT)
     sigs = sig_mod.SignatureSet(
@@ -344,7 +348,8 @@ def run(tag: str, n_null: int, n_sig_limit: int | None) -> int:
     for col in sig_cols:
         t_sig = time.time()
         # Null sets, matched on size and mean expression, exactly as
-        # experiment.py:1068-1078 builds them.
+        # `experiment._residualised_null_scores` built them at `8fe1187` (lines
+        # 1068-1078).
         single = sig_mod.SignatureSet(name=col, sets={col: filtered.sets[col]})
         family = sig_mod.random_gene_sets(
             sorted(expr.columns), single, n_per_signature=n_null,

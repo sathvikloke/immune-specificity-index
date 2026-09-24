@@ -1,0 +1,3437 @@
+{
+  "cohort": "pancancer",
+  "arm": "small",
+  "min_site_n": 5,
+  "platform": {
+    "system": "Linux",
+    "machine": "x86_64",
+    "python": "3.12.14",
+    "numpy": "2.1.3"
+  },
+  "seconds": 2880.4,
+  "runs": [
+    {
+      "fraction": 1.0,
+      "repeat": 0,
+      "n_patients": 7168,
+      "n_sites_evaluated": 320,
+      "median_auroc": 0.9980922288828158,
+      "min_auroc": 0.7692586904928103,
+      "frac_above_0.9": 0.96875,
+      "seconds": 1346.0,
+      "per_site": [
+        {
+          "site": "2F",
+          "n_patients": 6,
+          "auroc": 1.0
+        },
+        {
+          "site": "GR",
+          "n_patients": 6,
+          "auroc": 1.0
+        },
+        {
+          "site": "V4",
+          "n_patients": 32,
+          "auroc": 1.0
+        },
+        {
+          "site": "18",
+          "n_patients": 17,
+          "auroc": 1.0
+        },
+        {
+          "site": "NC",
+          "n_patients": 16,
+          "auroc": 1.0
+        },
+        {
+          "site": "QH",
+          "n_patients": 21,
+          "auroc": 1.0
+        },
+        {
+          "site": "E1",
+          "n_patients": 19,
+          "auroc": 1.0
+        },
+        {
+          "site": "C4",
+          "n_patients": 5,
+          "auroc": 1.0
+        },
+        {
+          "site": "SH",
+          "n_patients": 5,
+          "auroc": 1.0
+        },
+        {
+          "site": "KK",
+          "n_patients": 45,
+          "auroc": 0.9999968802158891
+        },
+        {
+          "site": "VD",
+          "n_patients": 25,
+          "auroc": 0.9999944001119978
+        },
+        {
+          "site": "CH",
+          "n_patients": 24,
+          "auroc": 0.9999941675998507
+        },
+        {
+          "site": "2G",
+          "n_patients": 80,
+          "auroc": 0.9999911822799098
+        },
+        {
+          "site": "2A",
+          "n_patients": 10,
+          "auroc": 0.9999860296172115
+        },
+        {
+          "site": "ZB",
+          "n_patients": 23,
+          "auroc": 0.9999817446070527
+        },
+        {
+          "site": "ZM",
+          "n_patients": 7,
+          "auroc": 0.9999800506712949
+        },
+        {
+          "site": "CJ",
+          "n_patients": 69,
+          "auroc": 0.9999795847955723
+        },
+        {
+          "site": "VF",
+          "n_patients": 6,
+          "auroc": 0.9999767290328586
+        },
+        {
+          "site": "23",
+          "n_patients": 27,
+          "auroc": 0.9999636942642124
+        },
+        {
+          "site": "G8",
+          "n_patients": 7,
+          "auroc": 0.9999601013425898
+        },
+        {
+          "site": "YL",
+          "n_patients": 27,
+          "auroc": 0.9999585077305285
+        },
+        {
+          "site": "CE",
+          "n_patients": 9,
+          "auroc": 0.9999534385621828
+        },
+        {
+          "site": "5P",
+          "n_patients": 15,
+          "auroc": 0.9999533995060348
+        },
+        {
+          "site": "SP",
+          "n_patients": 8,
+          "auroc": 0.9999476256983241
+        },
+        {
+          "site": "39",
+          "n_patients": 16,
+          "auroc": 0.9999475671140939
+        },
+        {
+          "site": "NH",
+          "n_patients": 9,
+          "auroc": 0.9999379180829103
+        },
+        {
+          "site": "HU",
+          "n_patients": 29,
+          "auroc": 0.9999323772768329
+        },
+        {
+          "site": "P5",
+          "n_patients": 14,
+          "auroc": 0.9999301090299134
+        },
+        {
+          "site": "N5",
+          "n_patients": 14,
+          "auroc": 0.9999301090299134
+        },
+        {
+          "site": "XJ",
+          "n_patients": 7,
+          "auroc": 0.9999202026851797
+        },
+        {
+          "site": "UD",
+          "n_patients": 7,
+          "auroc": 0.9999202026851796
+        },
+        {
+          "site": "3A",
+          "n_patients": 17,
+          "auroc": 0.9999177408342725
+        },
+        {
+          "site": "WC",
+          "n_patients": 14,
+          "auroc": 0.9999101401813171
+        },
+        {
+          "site": "E3",
+          "n_patients": 7,
+          "auroc": 0.9999002533564746
+        },
+        {
+          "site": "GS",
+          "n_patients": 10,
+          "auroc": 0.999888236937692
+        },
+        {
+          "site": "27",
+          "n_patients": 12,
+          "auroc": 0.9998835476057388
+        },
+        {
+          "site": "VS",
+          "n_patients": 53,
+          "auroc": 0.9998780148238507
+        },
+        {
+          "site": "G9",
+          "n_patients": 44,
+          "auroc": 0.9998660099025063
+        },
+        {
+          "site": "92",
+          "n_patients": 5,
+          "auroc": 0.9998603936897948
+        },
+        {
+          "site": "WY",
+          "n_patients": 7,
+          "auroc": 0.9998603546990644
+        },
+        {
+          "site": "M7",
+          "n_patients": 8,
+          "auroc": 0.9998603351955307
+        },
+        {
+          "site": "2Y",
+          "n_patients": 20,
+          "auroc": 0.99985310576385
+        },
+        {
+          "site": "P4",
+          "n_patients": 10,
+          "auroc": 0.9998463257893265
+        },
+        {
+          "site": "46",
+          "n_patients": 7,
+          "auroc": 0.9998404053703593
+        },
+        {
+          "site": "CQ",
+          "n_patients": 37,
+          "auroc": 0.9998370267617217
+        },
+        {
+          "site": "QU",
+          "n_patients": 5,
+          "auroc": 0.9998324724277537
+        },
+        {
+          "site": "QK",
+          "n_patients": 17,
+          "auroc": 0.9998272557519722
+        },
+        {
+          "site": "V1",
+          "n_patients": 31,
+          "auroc": 0.9998237264234092
+        },
+        {
+          "site": "12",
+          "n_patients": 7,
+          "auroc": 0.9998204560416541
+        },
+        {
+          "site": "US",
+          "n_patients": 6,
+          "auroc": 0.9998138322628688
+        },
+        {
+          "site": "JY",
+          "n_patients": 13,
+          "auroc": 0.9998064828253508
+        },
+        {
+          "site": "DB",
+          "n_patients": 34,
+          "auroc": 0.9998021075545441
+        },
+        {
+          "site": "26",
+          "n_patients": 7,
+          "auroc": 0.9998005067129492
+        },
+        {
+          "site": "KL",
+          "n_patients": 24,
+          "auroc": 0.9997608715938783
+        },
+        {
+          "site": "S7",
+          "n_patients": 15,
+          "auroc": 0.9997576774313808
+        },
+        {
+          "site": "UY",
+          "n_patients": 15,
+          "auroc": 0.9997483573325878
+        },
+        {
+          "site": "64",
+          "n_patients": 12,
+          "auroc": 0.9997438047326254
+        },
+        {
+          "site": "ET",
+          "n_patients": 54,
+          "auroc": 0.9997370859754892
+        },
+        {
+          "site": "B4",
+          "n_patients": 9,
+          "auroc": 0.9997206313730967
+        },
+        {
+          "site": "CA",
+          "n_patients": 10,
+          "auroc": 0.9997205923442302
+        },
+        {
+          "site": "2H",
+          "n_patients": 12,
+          "auroc": 0.9997205142537731
+        },
+        {
+          "site": "UF",
+          "n_patients": 18,
+          "auroc": 0.9997125097125097
+        },
+        {
+          "site": "CC",
+          "n_patients": 32,
+          "auroc": 0.9997109725336323
+        },
+        {
+          "site": "41",
+          "n_patients": 5,
+          "auroc": 0.9996928661175485
+        },
+        {
+          "site": "EB",
+          "n_patients": 45,
+          "auroc": 0.9996911413730171
+        },
+        {
+          "site": "94",
+          "n_patients": 9,
+          "auroc": 0.9996895904145521
+        },
+        {
+          "site": "IR",
+          "n_patients": 9,
+          "auroc": 0.999689590414552
+        },
+        {
+          "site": "CS",
+          "n_patients": 19,
+          "auroc": 0.9996834301448123
+        },
+        {
+          "site": "EP",
+          "n_patients": 7,
+          "auroc": 0.9996808107407186
+        },
+        {
+          "site": "B5",
+          "n_patients": 16,
+          "auroc": 0.9996766638702461
+        },
+        {
+          "site": "PC",
+          "n_patients": 6,
+          "auroc": 0.9996742064600205
+        },
+        {
+          "site": "FA",
+          "n_patients": 9,
+          "auroc": 0.9996585494560072
+        },
+        {
+          "site": "4X",
+          "n_patients": 5,
+          "auroc": 0.9996370235934665
+        },
+        {
+          "site": "J4",
+          "n_patients": 23,
+          "auroc": 0.999628807010071
+        },
+        {
+          "site": "KN",
+          "n_patients": 19,
+          "auroc": 0.9996245334275681
+        },
+        {
+          "site": "EM",
+          "n_patients": 76,
+          "auroc": 0.9996233710333363
+        },
+        {
+          "site": "XU",
+          "n_patients": 21,
+          "auroc": 0.9996002318655179
+        },
+        {
+          "site": "BQ",
+          "n_patients": 35,
+          "auroc": 0.9995994472371873
+        },
+        {
+          "site": "HW",
+          "n_patients": 15,
+          "auroc": 0.999589915653106
+        },
+        {
+          "site": "2L",
+          "n_patients": 6,
+          "auroc": 0.9995811225914549
+        },
+        {
+          "site": "D1",
+          "n_patients": 6,
+          "auroc": 0.9995578516243135
+        },
+        {
+          "site": "P3",
+          "n_patients": 15,
+          "auroc": 0.9995433151591406
+        },
+        {
+          "site": "RC",
+          "n_patients": 9,
+          "auroc": 0.9995343856218281
+        },
+        {
+          "site": "L5",
+          "n_patients": 21,
+          "auroc": 0.9995269410408629
+        },
+        {
+          "site": "FF",
+          "n_patients": 7,
+          "auroc": 0.9995212161110779
+        },
+        {
+          "site": "4V",
+          "n_patients": 11,
+          "auroc": 0.9995173193440624
+        },
+        {
+          "site": "EA",
+          "n_patients": 26,
+          "auroc": 0.9994991706697112
+        },
+        {
+          "site": "LN",
+          "n_patients": 35,
+          "auroc": 0.9994912979912279
+        },
+        {
+          "site": "GV",
+          "n_patients": 12,
+          "auroc": 0.9994876094652506
+        },
+        {
+          "site": "YZ",
+          "n_patients": 5,
+          "auroc": 0.9994694960212201
+        },
+        {
+          "site": "HT",
+          "n_patients": 102,
+          "auroc": 0.9994630459033317
+        },
+        {
+          "site": "25",
+          "n_patients": 42,
+          "auroc": 0.9994620638039106
+        },
+        {
+          "site": "D6",
+          "n_patients": 20,
+          "auroc": 0.9994473978735311
+        },
+        {
+          "site": "3U",
+          "n_patients": 7,
+          "auroc": 0.9994414187962575
+        },
+        {
+          "site": "DF",
+          "n_patients": 7,
+          "auroc": 0.9994214694675524
+        },
+        {
+          "site": "DJ",
+          "n_patients": 91,
+          "auroc": 0.9994068387455416
+        },
+        {
+          "site": "KO",
+          "n_patients": 14,
+          "auroc": 0.9994009345421143
+        },
+        {
+          "site": "XE",
+          "n_patients": 16,
+          "auroc": 0.9993970218120806
+        },
+        {
+          "site": "VQ",
+          "n_patients": 62,
+          "auroc": 0.9993871603279373
+        },
+        {
+          "site": "UZ",
+          "n_patients": 15,
+          "auroc": 0.9993289528869005
+        },
+        {
+          "site": "HF",
+          "n_patients": 6,
+          "auroc": 0.9993251419528995
+        },
+        {
+          "site": "DE",
+          "n_patients": 14,
+          "auroc": 0.9992911058748353
+        },
+        {
+          "site": "AA",
+          "n_patients": 32,
+          "auroc": 0.9992730521300449
+        },
+        {
+          "site": "S9",
+          "n_patients": 47,
+          "auroc": 0.999267972762611
+        },
+        {
+          "site": "UB",
+          "n_patients": 8,
+          "auroc": 0.9992667597765363
+        },
+        {
+          "site": "PG",
+          "n_patients": 6,
+          "auroc": 0.9992553290514753
+        },
+        {
+          "site": "R8",
+          "n_patients": 5,
+          "auroc": 0.9992461259248918
+        },
+        {
+          "site": "N9",
+          "n_patients": 6,
+          "auroc": 0.9991855161500512
+        },
+        {
+          "site": "4Z",
+          "n_patients": 16,
+          "auroc": 0.9991785514541387
+        },
+        {
+          "site": "R6",
+          "n_patients": 13,
+          "auroc": 0.99916142557652
+        },
+        {
+          "site": "DH",
+          "n_patients": 14,
+          "auroc": 0.9991413395103639
+        },
+        {
+          "site": "FD",
+          "n_patients": 48,
+          "auroc": 0.9991280430711611
+        },
+        {
+          "site": "MT",
+          "n_patients": 6,
+          "auroc": 0.999115703248627
+        },
+        {
+          "site": "ZP",
+          "n_patients": 7,
+          "auroc": 0.999102280208271
+        },
+        {
+          "site": "DU",
+          "n_patients": 85,
+          "auroc": 0.9990897841559325
+        },
+        {
+          "site": "06",
+          "n_patients": 48,
+          "auroc": 0.9990870786516853
+        },
+        {
+          "site": "DM",
+          "n_patients": 22,
+          "auroc": 0.9990840393863064
+        },
+        {
+          "site": "66",
+          "n_patients": 38,
+          "auroc": 0.9990477596515833
+        },
+        {
+          "site": "AK",
+          "n_patients": 24,
+          "auroc": 0.9990434863755133
+        },
+        {
+          "site": "G3",
+          "n_patients": 30,
+          "auroc": 0.9990193331465397
+        },
+        {
+          "site": "J2",
+          "n_patients": 5,
+          "auroc": 0.9989948345665224
+        },
+        {
+          "site": "VP",
+          "n_patients": 13,
+          "auroc": 0.9989894103101651
+        },
+        {
+          "site": "F2",
+          "n_patients": 8,
+          "auroc": 0.9989874301675978
+        },
+        {
+          "site": "YT",
+          "n_patients": 5,
+          "auroc": 0.9989389920424403
+        },
+        {
+          "site": "NA",
+          "n_patients": 7,
+          "auroc": 0.9989227362499252
+        },
+        {
+          "site": "58",
+          "n_patients": 5,
+          "auroc": 0.9988831495183582
+        },
+        {
+          "site": "63",
+          "n_patients": 24,
+          "auroc": 0.9988801791713325
+        },
+        {
+          "site": "W2",
+          "n_patients": 10,
+          "auroc": 0.998826487845767
+        },
+        {
+          "site": "BC",
+          "n_patients": 21,
+          "auroc": 0.9988206840032781
+        },
+        {
+          "site": "EJ",
+          "n_patients": 63,
+          "auroc": 0.9987288182925059
+        },
+        {
+          "site": "85",
+          "n_patients": 50,
+          "auroc": 0.9987103118853611
+        },
+        {
+          "site": "FE",
+          "n_patients": 16,
+          "auroc": 0.998689177852349
+        },
+        {
+          "site": "SC",
+          "n_patients": 6,
+          "auroc": 0.9986735548729405
+        },
+        {
+          "site": "BB",
+          "n_patients": 21,
+          "auroc": 0.9986474511450025
+        },
+        {
+          "site": "SX",
+          "n_patients": 14,
+          "auroc": 0.9986221494468629
+        },
+        {
+          "site": "FK",
+          "n_patients": 7,
+          "auroc": 0.9986035469906437
+        },
+        {
+          "site": "ZJ",
+          "n_patients": 16,
+          "auroc": 0.9985930508948546
+        },
+        {
+          "site": "EO",
+          "n_patients": 15,
+          "auroc": 0.9985926650822499
+        },
+        {
+          "site": "RW",
+          "n_patients": 20,
+          "auroc": 0.998559037493005
+        },
+        {
+          "site": "3H",
+          "n_patients": 6,
+          "auroc": 0.9985572000372336
+        },
+        {
+          "site": "DV",
+          "n_patients": 12,
+          "auroc": 0.9985326998323085
+        },
+        {
+          "site": "YU",
+          "n_patients": 10,
+          "auroc": 0.9985191394244203
+        },
+        {
+          "site": "CG",
+          "n_patients": 39,
+          "auroc": 0.9985001672475372
+        },
+        {
+          "site": "AY",
+          "n_patients": 8,
+          "auroc": 0.9984811452513966
+        },
+        {
+          "site": "B2",
+          "n_patients": 12,
+          "auroc": 0.9984744736351779
+        },
+        {
+          "site": "05",
+          "n_patients": 32,
+          "auroc": 0.998467278587444
+        },
+        {
+          "site": "62",
+          "n_patients": 8,
+          "auroc": 0.998463687150838
+        },
+        {
+          "site": "AH",
+          "n_patients": 7,
+          "auroc": 0.998443952361003
+        },
+        {
+          "site": "3B",
+          "n_patients": 16,
+          "auroc": 0.9984095357941835
+        },
+        {
+          "site": "QQ",
+          "n_patients": 11,
+          "auroc": 0.9983487240717923
+        },
+        {
+          "site": "RD",
+          "n_patients": 14,
+          "auroc": 0.9983326011422182
+        },
+        {
+          "site": "QR",
+          "n_patients": 44,
+          "auroc": 0.9983187433004951
+        },
+        {
+          "site": "R5",
+          "n_patients": 6,
+          "auroc": 0.9982779484315368
+        },
+        {
+          "site": "Y8",
+          "n_patients": 9,
+          "auroc": 0.9982461858422188
+        },
+        {
+          "site": "HE",
+          "n_patients": 9,
+          "auroc": 0.9982461858422188
+        },
+        {
+          "site": "HC",
+          "n_patients": 63,
+          "auroc": 0.998197111356858
+        },
+        {
+          "site": "77",
+          "n_patients": 44,
+          "auroc": 0.9981783727221684
+        },
+        {
+          "site": "CK",
+          "n_patients": 14,
+          "auroc": 0.9981628659291506
+        },
+        {
+          "site": "TQ",
+          "n_patients": 17,
+          "auroc": 0.998157394687703
+        },
+        {
+          "site": "MP",
+          "n_patients": 18,
+          "auroc": 0.9980963480963481
+        },
+        {
+          "site": "78",
+          "n_patients": 31,
+          "auroc": 0.9980881096692836
+        },
+        {
+          "site": "AD",
+          "n_patients": 13,
+          "auroc": 0.9980755792076547
+        },
+        {
+          "site": "DW",
+          "n_patients": 11,
+          "auroc": 0.9980565752537248
+        },
+        {
+          "site": "VM",
+          "n_patients": 8,
+          "auroc": 0.9980446927374301
+        },
+        {
+          "site": "DD",
+          "n_patients": 143,
+          "auroc": 0.9980310081377697
+        },
+        {
+          "site": "ER",
+          "n_patients": 7,
+          "auroc": 0.998005067129491
+        },
+        {
+          "site": "XV",
+          "n_patients": 7,
+          "auroc": 0.997985117800786
+        },
+        {
+          "site": "J8",
+          "n_patients": 12,
+          "auroc": 0.9979387926215764
+        },
+        {
+          "site": "DX",
+          "n_patients": 117,
+          "auroc": 0.9979126437784784
+        },
+        {
+          "site": "X6",
+          "n_patients": 11,
+          "auroc": 0.9978533412933301
+        },
+        {
+          "site": "N6",
+          "n_patients": 6,
+          "auroc": 0.9978358000558504
+        },
+        {
+          "site": "ZF",
+          "n_patients": 29,
+          "auroc": 0.9978022614970704
+        },
+        {
+          "site": "CZ",
+          "n_patients": 39,
+          "auroc": 0.9977916131654384
+        },
+        {
+          "site": "97",
+          "n_patients": 22,
+          "auroc": 0.997780067679312
+        },
+        {
+          "site": "BF",
+          "n_patients": 18,
+          "auroc": 0.9977389277389278
+        },
+        {
+          "site": "CM",
+          "n_patients": 32,
+          "auroc": 0.9976658842488789
+        },
+        {
+          "site": "F9",
+          "n_patients": 5,
+          "auroc": 0.9975987714644702
+        },
+        {
+          "site": "86",
+          "n_patients": 33,
+          "auroc": 0.997574908156548
+        },
+        {
+          "site": "BK",
+          "n_patients": 9,
+          "auroc": 0.9974546413993264
+        },
+        {
+          "site": "96",
+          "n_patients": 6,
+          "auroc": 0.9973936516801639
+        },
+        {
+          "site": "G4",
+          "n_patients": 26,
+          "auroc": 0.9973666070697715
+        },
+        {
+          "site": "AL",
+          "n_patients": 7,
+          "auroc": 0.9973467392822232
+        },
+        {
+          "site": "DQ",
+          "n_patients": 14,
+          "auroc": 0.99727425216662
+        },
+        {
+          "site": "95",
+          "n_patients": 12,
+          "auroc": 0.9971934972983044
+        },
+        {
+          "site": "MB",
+          "n_patients": 5,
+          "auroc": 0.9971799525338546
+        },
+        {
+          "site": "EL",
+          "n_patients": 80,
+          "auroc": 0.9971677483069977
+        },
+        {
+          "site": "RY",
+          "n_patients": 7,
+          "auroc": 0.9971472459951722
+        },
+        {
+          "site": "B0",
+          "n_patients": 104,
+          "auroc": 0.9969250914713825
+        },
+        {
+          "site": "MA",
+          "n_patients": 7,
+          "auroc": 0.9969078540507111
+        },
+        {
+          "site": "69",
+          "n_patients": 15,
+          "auroc": 0.9969057272007082
+        },
+        {
+          "site": "60",
+          "n_patients": 25,
+          "auroc": 0.9968304633907321
+        },
+        {
+          "site": "CV",
+          "n_patients": 134,
+          "auroc": 0.9967460819304105
+        },
+        {
+          "site": "NJ",
+          "n_patients": 9,
+          "auroc": 0.9966786174357064
+        },
+        {
+          "site": "OR",
+          "n_patients": 44,
+          "auroc": 0.9966438670818233
+        },
+        {
+          "site": "21",
+          "n_patients": 18,
+          "auroc": 0.9965501165501165
+        },
+        {
+          "site": "68",
+          "n_patients": 7,
+          "auroc": 0.9965487661340195
+        },
+        {
+          "site": "FU",
+          "n_patients": 15,
+          "auroc": 0.9964770026562281
+        },
+        {
+          "site": "IE",
+          "n_patients": 6,
+          "auroc": 0.9963464581588011
+        },
+        {
+          "site": "BR",
+          "n_patients": 109,
+          "auroc": 0.9962010888565707
+        },
+        {
+          "site": "52",
+          "n_patients": 5,
+          "auroc": 0.9960072595281306
+        },
+        {
+          "site": "XM",
+          "n_patients": 14,
+          "auroc": 0.996006230280762
+        },
+        {
+          "site": "Q1",
+          "n_patients": 11,
+          "auroc": 0.9959607250371537
+        },
+        {
+          "site": "SI",
+          "n_patients": 5,
+          "auroc": 0.9959234957420076
+        },
+        {
+          "site": "2Z",
+          "n_patients": 23,
+          "auroc": 0.9956673867404996
+        },
+        {
+          "site": "99",
+          "n_patients": 6,
+          "auroc": 0.9956250581774179
+        },
+        {
+          "site": "3X",
+          "n_patients": 5,
+          "auroc": 0.995616361859556
+        },
+        {
+          "site": "FG",
+          "n_patients": 41,
+          "auroc": 0.9955647879756474
+        },
+        {
+          "site": "XR",
+          "n_patients": 5,
+          "auroc": 0.9952813067150635
+        },
+        {
+          "site": "E8",
+          "n_patients": 18,
+          "auroc": 0.9949961149961151
+        },
+        {
+          "site": "A5",
+          "n_patients": 11,
+          "auroc": 0.9949826616027537
+        },
+        {
+          "site": "K4",
+          "n_patients": 13,
+          "auroc": 0.9949255496425308
+        },
+        {
+          "site": "FB",
+          "n_patients": 17,
+          "auroc": 0.9949163835580379
+        },
+        {
+          "site": "37",
+          "n_patients": 13,
+          "auroc": 0.9948717948717948
+        },
+        {
+          "site": "BJ",
+          "n_patients": 49,
+          "auroc": 0.9947596400549263
+        },
+        {
+          "site": "V5",
+          "n_patients": 6,
+          "auroc": 0.9946709485246207
+        },
+        {
+          "site": "CN",
+          "n_patients": 59,
+          "auroc": 0.9945044596131426
+        },
+        {
+          "site": "B8",
+          "n_patients": 32,
+          "auroc": 0.99449096132287
+        },
+        {
+          "site": "N8",
+          "n_patients": 8,
+          "auroc": 0.9942737430167597
+        },
+        {
+          "site": "TT",
+          "n_patients": 5,
+          "auroc": 0.9942202987575038
+        },
+        {
+          "site": "XK",
+          "n_patients": 10,
+          "auroc": 0.9940067057837385
+        },
+        {
+          "site": "GU",
+          "n_patients": 11,
+          "auroc": 0.9937632578403851
+        },
+        {
+          "site": "EY",
+          "n_patients": 18,
+          "auroc": 0.9936907536907537
+        },
+        {
+          "site": "HZ",
+          "n_patients": 30,
+          "auroc": 0.9929765573923601
+        },
+        {
+          "site": "DK",
+          "n_patients": 37,
+          "auroc": 0.9928632881935364
+        },
+        {
+          "site": "DG",
+          "n_patients": 5,
+          "auroc": 0.9925171017730001
+        },
+        {
+          "site": "55",
+          "n_patients": 91,
+          "auroc": 0.992163128661645
+        },
+        {
+          "site": "MI",
+          "n_patients": 5,
+          "auroc": 0.9920424403183025
+        },
+        {
+          "site": "VR",
+          "n_patients": 15,
+          "auroc": 0.9920033552355656
+        },
+        {
+          "site": "FV",
+          "n_patients": 11,
+          "auroc": 0.9918325352166347
+        },
+        {
+          "site": "75",
+          "n_patients": 16,
+          "auroc": 0.9917243428411633
+        },
+        {
+          "site": "F5",
+          "n_patients": 11,
+          "auroc": 0.9914260672958451
+        },
+        {
+          "site": "W5",
+          "n_patients": 18,
+          "auroc": 0.9913986013986014
+        },
+        {
+          "site": "DS",
+          "n_patients": 10,
+          "auroc": 0.991394244202291
+        },
+        {
+          "site": "BP",
+          "n_patients": 138,
+          "auroc": 0.9910445915022573
+        },
+        {
+          "site": "93",
+          "n_patients": 7,
+          "auroc": 0.9910028527540048
+        },
+        {
+          "site": "SR",
+          "n_patients": 11,
+          "auroc": 0.9903844932488218
+        },
+        {
+          "site": "BT",
+          "n_patients": 20,
+          "auroc": 0.9903049804141019
+        },
+        {
+          "site": "2J",
+          "n_patients": 17,
+          "auroc": 0.9901206741961224
+        },
+        {
+          "site": "TS",
+          "n_patients": 15,
+          "auroc": 0.9900740947854048
+        },
+        {
+          "site": "56",
+          "n_patients": 41,
+          "auroc": 0.989962595009702
+        },
+        {
+          "site": "FY",
+          "n_patients": 24,
+          "auroc": 0.9898457913400522
+        },
+        {
+          "site": "NK",
+          "n_patients": 5,
+          "auroc": 0.9897528968309367
+        },
+        {
+          "site": "IG",
+          "n_patients": 19,
+          "auroc": 0.9894795738822507
+        },
+        {
+          "site": "A3",
+          "n_patients": 50,
+          "auroc": 0.9894183759483001
+        },
+        {
+          "site": "B3",
+          "n_patients": 6,
+          "auroc": 0.9887368519035651
+        },
+        {
+          "site": "IB",
+          "n_patients": 39,
+          "auroc": 0.9884653150188288
+        },
+        {
+          "site": "KS",
+          "n_patients": 12,
+          "auroc": 0.9879122414756848
+        },
+        {
+          "site": "DC",
+          "n_patients": 13,
+          "auroc": 0.9872171155190024
+        },
+        {
+          "site": "57",
+          "n_patients": 6,
+          "auroc": 0.9871311551708088
+        },
+        {
+          "site": "D5",
+          "n_patients": 31,
+          "auroc": 0.9866348470261743
+        },
+        {
+          "site": "ED",
+          "n_patients": 15,
+          "auroc": 0.9863180949718068
+        },
+        {
+          "site": "G7",
+          "n_patients": 14,
+          "auroc": 0.9862814010144175
+        },
+        {
+          "site": "22",
+          "n_patients": 37,
+          "auroc": 0.9854688512660746
+        },
+        {
+          "site": "AF",
+          "n_patients": 16,
+          "auroc": 0.9852488814317674
+        },
+        {
+          "site": "38",
+          "n_patients": 11,
+          "auroc": 0.9850877081560329
+        },
+        {
+          "site": "QT",
+          "n_patients": 9,
+          "auroc": 0.984743368875231
+        },
+        {
+          "site": "F4",
+          "n_patients": 16,
+          "auroc": 0.9847070749440716
+        },
+        {
+          "site": "KM",
+          "n_patients": 9,
+          "auroc": 0.9846657664788688
+        },
+        {
+          "site": "C5",
+          "n_patients": 62,
+          "auroc": 0.9846472313265482
+        },
+        {
+          "site": "XF",
+          "n_patients": 49,
+          "auroc": 0.9845770588049799
+        },
+        {
+          "site": "CU",
+          "n_patients": 7,
+          "auroc": 0.9844993715961459
+        },
+        {
+          "site": "LK",
+          "n_patients": 9,
+          "auroc": 0.984401918331238
+        },
+        {
+          "site": "B9",
+          "n_patients": 16,
+          "auroc": 0.9838419323266219
+        },
+        {
+          "site": "F7",
+          "n_patients": 12,
+          "auroc": 0.9835336314514627
+        },
+        {
+          "site": "HD",
+          "n_patients": 15,
+          "auroc": 0.9833543035556177
+        },
+        {
+          "site": "JW",
+          "n_patients": 6,
+          "auroc": 0.9827794843153682
+        },
+        {
+          "site": "AZ",
+          "n_patients": 18,
+          "auroc": 0.981033411033411
+        },
+        {
+          "site": "WK",
+          "n_patients": 8,
+          "auroc": 0.9809706703910615
+        },
+        {
+          "site": "QG",
+          "n_patients": 5,
+          "auroc": 0.98048303783331
+        },
+        {
+          "site": "BL",
+          "n_patients": 5,
+          "auroc": 0.9799804551165713
+        },
+        {
+          "site": "A4",
+          "n_patients": 29,
+          "auroc": 0.9796455603267143
+        },
+        {
+          "site": "98",
+          "n_patients": 13,
+          "auroc": 0.9792614094500888
+        },
+        {
+          "site": "O2",
+          "n_patients": 5,
+          "auroc": 0.9788915258969706
+        },
+        {
+          "site": "GL",
+          "n_patients": 7,
+          "auroc": 0.9784746743272089
+        },
+        {
+          "site": "67",
+          "n_patients": 9,
+          "auroc": 0.9781626856637333
+        },
+        {
+          "site": "IQ",
+          "n_patients": 11,
+          "auroc": 0.977720477091722
+        },
+        {
+          "site": "44",
+          "n_patients": 45,
+          "auroc": 0.9776030698675652
+        },
+        {
+          "site": "A6",
+          "n_patients": 42,
+          "auroc": 0.9770658754661
+        },
+        {
+          "site": "D7",
+          "n_patients": 40,
+          "auroc": 0.9767746913580246
+        },
+        {
+          "site": "FP",
+          "n_patients": 13,
+          "auroc": 0.9765091651884105
+        },
+        {
+          "site": "AJ",
+          "n_patients": 30,
+          "auroc": 0.9752545063976839
+        },
+        {
+          "site": "WB",
+          "n_patients": 36,
+          "auroc": 0.9734802455287593
+        },
+        {
+          "site": "49",
+          "n_patients": 28,
+          "auroc": 0.9728891556622649
+        },
+        {
+          "site": "14",
+          "n_patients": 9,
+          "auroc": 0.972870202231845
+        },
+        {
+          "site": "TM",
+          "n_patients": 19,
+          "auroc": 0.9717001273641511
+        },
+        {
+          "site": "IM",
+          "n_patients": 8,
+          "auroc": 0.9706005586592179
+        },
+        {
+          "site": "EI",
+          "n_patients": 16,
+          "auroc": 0.9705938898210291
+        },
+        {
+          "site": "CD",
+          "n_patients": 28,
+          "auroc": 0.9697278911564626
+        },
+        {
+          "site": "IA",
+          "n_patients": 7,
+          "auroc": 0.9693977297663934
+        },
+        {
+          "site": "GC",
+          "n_patients": 11,
+          "auroc": 0.9683971191586114
+        },
+        {
+          "site": "19",
+          "n_patients": 11,
+          "auroc": 0.9682446936883153
+        },
+        {
+          "site": "ZH",
+          "n_patients": 6,
+          "auroc": 0.9676533556734618
+        },
+        {
+          "site": "DY",
+          "n_patients": 6,
+          "auroc": 0.9670715814949269
+        },
+        {
+          "site": "CF",
+          "n_patients": 22,
+          "auroc": 0.966147622318907
+        },
+        {
+          "site": "73",
+          "n_patients": 12,
+          "auroc": 0.9656931246506428
+        },
+        {
+          "site": "GD",
+          "n_patients": 6,
+          "auroc": 0.9648608396164945
+        },
+        {
+          "site": "H2",
+          "n_patients": 5,
+          "auroc": 0.9644003908976686
+        },
+        {
+          "site": "FC",
+          "n_patients": 7,
+          "auroc": 0.9640114110160193
+        },
+        {
+          "site": "G2",
+          "n_patients": 14,
+          "auroc": 0.9639961659810696
+        },
+        {
+          "site": "E7",
+          "n_patients": 22,
+          "auroc": 0.9629481210085745
+        },
+        {
+          "site": "FX",
+          "n_patients": 8,
+          "auroc": 0.9615572625698324
+        },
+        {
+          "site": "BA",
+          "n_patients": 31,
+          "auroc": 0.9611791346323341
+        },
+        {
+          "site": "X7",
+          "n_patients": 18,
+          "auroc": 0.9591841491841492
+        },
+        {
+          "site": "50",
+          "n_patients": 18,
+          "auroc": 0.9587878787878787
+        },
+        {
+          "site": "AG",
+          "n_patients": 8,
+          "auroc": 0.9544867318435755
+        },
+        {
+          "site": "43",
+          "n_patients": 20,
+          "auroc": 0.9519725797425854
+        },
+        {
+          "site": "33",
+          "n_patients": 17,
+          "auroc": 0.9432658533977148
+        },
+        {
+          "site": "MH",
+          "n_patients": 9,
+          "auroc": 0.91159535006441
+        },
+        {
+          "site": "L9",
+          "n_patients": 7,
+          "auroc": 0.9084724799010513
+        },
+        {
+          "site": "HV",
+          "n_patients": 8,
+          "auroc": 0.9051501396648045
+        },
+        {
+          "site": "EX",
+          "n_patients": 7,
+          "auroc": 0.8858100424920702
+        },
+        {
+          "site": "HB",
+          "n_patients": 5,
+          "auroc": 0.8829819907859836
+        },
+        {
+          "site": "FJ",
+          "n_patients": 5,
+          "auroc": 0.8793243054586067
+        },
+        {
+          "site": "CX",
+          "n_patients": 5,
+          "auroc": 0.8573223509702639
+        },
+        {
+          "site": "AX",
+          "n_patients": 6,
+          "auroc": 0.8551149585776785
+        },
+        {
+          "site": "34",
+          "n_patients": 11,
+          "auroc": 0.838251171770803
+        },
+        {
+          "site": "LP",
+          "n_patients": 7,
+          "auroc": 0.83649530193309
+        },
+        {
+          "site": "MQ",
+          "n_patients": 5,
+          "auroc": 0.8357671366745777
+        },
+        {
+          "site": "UT",
+          "n_patients": 5,
+          "auroc": 0.8240402066173392
+        },
+        {
+          "site": "F1",
+          "n_patients": 5,
+          "auroc": 0.7692586904928103
+        }
+      ]
+    },
+    {
+      "fraction": 0.25,
+      "repeat": 0,
+      "n_patients": 1792,
+      "n_sites_evaluated": 118,
+      "median_auroc": 0.9964575628457661,
+      "min_auroc": 0.8354119955156951,
+      "frac_above_0.9": 0.9576271186440678,
+      "seconds": 509.1,
+      "per_site": [
+        {
+          "site": "KK",
+          "n_patients": 15,
+          "auroc": 1.0
+        },
+        {
+          "site": "2G",
+          "n_patients": 15,
+          "auroc": 1.0
+        },
+        {
+          "site": "V4",
+          "n_patients": 10,
+          "auroc": 1.0
+        },
+        {
+          "site": "A3",
+          "n_patients": 9,
+          "auroc": 1.0
+        },
+        {
+          "site": "5P",
+          "n_patients": 7,
+          "auroc": 1.0
+        },
+        {
+          "site": "VD",
+          "n_patients": 8,
+          "auroc": 1.0
+        },
+        {
+          "site": "BF",
+          "n_patients": 6,
+          "auroc": 1.0
+        },
+        {
+          "site": "J4",
+          "n_patients": 5,
+          "auroc": 1.0
+        },
+        {
+          "site": "CH",
+          "n_patients": 7,
+          "auroc": 1.0
+        },
+        {
+          "site": "CS",
+          "n_patients": 7,
+          "auroc": 1.0
+        },
+        {
+          "site": "HU",
+          "n_patients": 7,
+          "auroc": 1.0
+        },
+        {
+          "site": "66",
+          "n_patients": 8,
+          "auroc": 1.0
+        },
+        {
+          "site": "27",
+          "n_patients": 5,
+          "auroc": 0.999776161163962
+        },
+        {
+          "site": "25",
+          "n_patients": 9,
+          "auroc": 0.9997507322240917
+        },
+        {
+          "site": "L5",
+          "n_patients": 6,
+          "auroc": 0.999720044792833
+        },
+        {
+          "site": "HZ",
+          "n_patients": 5,
+          "auroc": 0.9996642417459429
+        },
+        {
+          "site": "V1",
+          "n_patients": 11,
+          "auroc": 0.99964269307335
+        },
+        {
+          "site": "DU",
+          "n_patients": 28,
+          "auroc": 0.9996355685131195
+        },
+        {
+          "site": "CJ",
+          "n_patients": 15,
+          "auroc": 0.9995873194522604
+        },
+        {
+          "site": "22",
+          "n_patients": 8,
+          "auroc": 0.9995795964125561
+        },
+        {
+          "site": "ET",
+          "n_patients": 16,
+          "auroc": 0.9995073198198199
+        },
+        {
+          "site": "W5",
+          "n_patients": 5,
+          "auroc": 0.9994404029099049
+        },
+        {
+          "site": "OR",
+          "n_patients": 8,
+          "auroc": 0.999439461883408
+        },
+        {
+          "site": "D7",
+          "n_patients": 12,
+          "auroc": 0.9993913857677903
+        },
+        {
+          "site": "77",
+          "n_patients": 9,
+          "auroc": 0.9993768305602293
+        },
+        {
+          "site": "P5",
+          "n_patients": 6,
+          "auroc": 0.9993467711832773
+        },
+        {
+          "site": "D5",
+          "n_patients": 8,
+          "auroc": 0.9992993273542601
+        },
+        {
+          "site": "EM",
+          "n_patients": 18,
+          "auroc": 0.9992170863084054
+        },
+        {
+          "site": "CC",
+          "n_patients": 16,
+          "auroc": 0.9991905968468469
+        },
+        {
+          "site": "A6",
+          "n_patients": 12,
+          "auroc": 0.9989232209737828
+        },
+        {
+          "site": "2Y",
+          "n_patients": 5,
+          "auroc": 0.9988808058198096
+        },
+        {
+          "site": "06",
+          "n_patients": 12,
+          "auroc": 0.9988295880149812
+        },
+        {
+          "site": "AK",
+          "n_patients": 8,
+          "auroc": 0.9988088565022422
+        },
+        {
+          "site": "IB",
+          "n_patients": 10,
+          "auroc": 0.9987654320987654
+        },
+        {
+          "site": "05",
+          "n_patients": 10,
+          "auroc": 0.9987093153759821
+        },
+        {
+          "site": "LN",
+          "n_patients": 9,
+          "auroc": 0.9986913441764815
+        },
+        {
+          "site": "TQ",
+          "n_patients": 7,
+          "auroc": 0.998639455782313
+        },
+        {
+          "site": "B5",
+          "n_patients": 6,
+          "auroc": 0.9986002239641658
+        },
+        {
+          "site": "HC",
+          "n_patients": 16,
+          "auroc": 0.9985571509009009
+        },
+        {
+          "site": "G9",
+          "n_patients": 13,
+          "auroc": 0.9984001383664115
+        },
+        {
+          "site": "ZF",
+          "n_patients": 9,
+          "auroc": 0.9983797594565963
+        },
+        {
+          "site": "VS",
+          "n_patients": 10,
+          "auroc": 0.9982603815937149
+        },
+        {
+          "site": "F7",
+          "n_patients": 5,
+          "auroc": 0.9982092893116956
+        },
+        {
+          "site": "EL",
+          "n_patients": 18,
+          "auroc": 0.9981523236878367
+        },
+        {
+          "site": "G4",
+          "n_patients": 6,
+          "auroc": 0.9981336319522209
+        },
+        {
+          "site": "BR",
+          "n_patients": 27,
+          "auroc": 0.998132410030427
+        },
+        {
+          "site": "CQ",
+          "n_patients": 8,
+          "auroc": 0.9981081838565024
+        },
+        {
+          "site": "44",
+          "n_patients": 8,
+          "auroc": 0.9980381165919283
+        },
+        {
+          "site": "94",
+          "n_patients": 5,
+          "auroc": 0.9978735310576384
+        },
+        {
+          "site": "DJ",
+          "n_patients": 26,
+          "auroc": 0.9977567732380869
+        },
+        {
+          "site": "QR",
+          "n_patients": 15,
+          "auroc": 0.9976739823672857
+        },
+        {
+          "site": "A4",
+          "n_patients": 5,
+          "auroc": 0.9974258533855624
+        },
+        {
+          "site": "HW",
+          "n_patients": 7,
+          "auroc": 0.9972789115646259
+        },
+        {
+          "site": "BA",
+          "n_patients": 8,
+          "auroc": 0.9972673766816144
+        },
+        {
+          "site": "G3",
+          "n_patients": 8,
+          "auroc": 0.9972673766816144
+        },
+        {
+          "site": "DB",
+          "n_patients": 6,
+          "auroc": 0.9972004479283315
+        },
+        {
+          "site": "KN",
+          "n_patients": 6,
+          "auroc": 0.9972004479283315
+        },
+        {
+          "site": "DX",
+          "n_patients": 29,
+          "auroc": 0.9968509789348095
+        },
+        {
+          "site": "S9",
+          "n_patients": 7,
+          "auroc": 0.9965586234493797
+        },
+        {
+          "site": "EA",
+          "n_patients": 8,
+          "auroc": 0.9963565022421524
+        },
+        {
+          "site": "FD",
+          "n_patients": 13,
+          "auroc": 0.9963246421931077
+        },
+        {
+          "site": "XU",
+          "n_patients": 6,
+          "auroc": 0.996267263904442
+        },
+        {
+          "site": "UF",
+          "n_patients": 8,
+          "auroc": 0.9960061659192825
+        },
+        {
+          "site": "S7",
+          "n_patients": 5,
+          "auroc": 0.9959709009513151
+        },
+        {
+          "site": "97",
+          "n_patients": 7,
+          "auroc": 0.9959183673469387
+        },
+        {
+          "site": "CM",
+          "n_patients": 10,
+          "auroc": 0.9956790123456789
+        },
+        {
+          "site": "DH",
+          "n_patients": 7,
+          "auroc": 0.995438175270108
+        },
+        {
+          "site": "KL",
+          "n_patients": 7,
+          "auroc": 0.9953581432573029
+        },
+        {
+          "site": "AJ",
+          "n_patients": 8,
+          "auroc": 0.9953054932735427
+        },
+        {
+          "site": "EJ",
+          "n_patients": 14,
+          "auroc": 0.9952595211312871
+        },
+        {
+          "site": "DM",
+          "n_patients": 8,
+          "auroc": 0.9950952914798207
+        },
+        {
+          "site": "69",
+          "n_patients": 7,
+          "auroc": 0.9949579831932773
+        },
+        {
+          "site": "WB",
+          "n_patients": 11,
+          "auroc": 0.9949466591802358
+        },
+        {
+          "site": "DQ",
+          "n_patients": 5,
+          "auroc": 0.9948517067711249
+        },
+        {
+          "site": "RW",
+          "n_patients": 5,
+          "auroc": 0.9948517067711248
+        },
+        {
+          "site": "B0",
+          "n_patients": 30,
+          "auroc": 0.9945705637533107
+        },
+        {
+          "site": "33",
+          "n_patients": 5,
+          "auroc": 0.9941801902630106
+        },
+        {
+          "site": "XE",
+          "n_patients": 7,
+          "auroc": 0.9935974389755903
+        },
+        {
+          "site": "CV",
+          "n_patients": 38,
+          "auroc": 0.9934585608833943
+        },
+        {
+          "site": "DD",
+          "n_patients": 37,
+          "auroc": 0.9927773927773929
+        },
+        {
+          "site": "VQ",
+          "n_patients": 12,
+          "auroc": 0.9913857677902622
+        },
+        {
+          "site": "EB",
+          "n_patients": 16,
+          "auroc": 0.9913429054054054
+        },
+        {
+          "site": "F4",
+          "n_patients": 6,
+          "auroc": 0.9903882045539381
+        },
+        {
+          "site": "KO",
+          "n_patients": 6,
+          "auroc": 0.9880552444942142
+        },
+        {
+          "site": "85",
+          "n_patients": 13,
+          "auroc": 0.9876335019673975
+        },
+        {
+          "site": "BJ",
+          "n_patients": 12,
+          "auroc": 0.9875468164794007
+        },
+        {
+          "site": "G2",
+          "n_patients": 5,
+          "auroc": 0.9856743144935647
+        },
+        {
+          "site": "AA",
+          "n_patients": 8,
+          "auroc": 0.985145739910314
+        },
+        {
+          "site": "2Z",
+          "n_patients": 8,
+          "auroc": 0.9846552690582959
+        },
+        {
+          "site": "SX",
+          "n_patients": 6,
+          "auroc": 0.9822695035460993
+        },
+        {
+          "site": "86",
+          "n_patients": 9,
+          "auroc": 0.9807440643110862
+        },
+        {
+          "site": "HT",
+          "n_patients": 25,
+          "auroc": 0.980531975099038
+        },
+        {
+          "site": "TM",
+          "n_patients": 8,
+          "auroc": 0.9796804932735426
+        },
+        {
+          "site": "D6",
+          "n_patients": 7,
+          "auroc": 0.9784713885554222
+        },
+        {
+          "site": "55",
+          "n_patients": 23,
+          "auroc": 0.9784452036276943
+        },
+        {
+          "site": "CG",
+          "n_patients": 10,
+          "auroc": 0.9774971941638608
+        },
+        {
+          "site": "EI",
+          "n_patients": 6,
+          "auroc": 0.9769503546099291
+        },
+        {
+          "site": "4Z",
+          "n_patients": 5,
+          "auroc": 0.9767207610520425
+        },
+        {
+          "site": "C5",
+          "n_patients": 8,
+          "auroc": 0.9754063901345292
+        },
+        {
+          "site": "BP",
+          "n_patients": 30,
+          "auroc": 0.9748770336738555
+        },
+        {
+          "site": "BB",
+          "n_patients": 5,
+          "auroc": 0.9728035814213766
+        },
+        {
+          "site": "HD",
+          "n_patients": 8,
+          "auroc": 0.9721132286995515
+        },
+        {
+          "site": "DK",
+          "n_patients": 7,
+          "auroc": 0.9692677070828332
+        },
+        {
+          "site": "78",
+          "n_patients": 9,
+          "auroc": 0.9687168941235121
+        },
+        {
+          "site": "CN",
+          "n_patients": 16,
+          "auroc": 0.9667792792792793
+        },
+        {
+          "site": "BT",
+          "n_patients": 6,
+          "auroc": 0.9612728630085853
+        },
+        {
+          "site": "CZ",
+          "n_patients": 10,
+          "auroc": 0.9563973063973064
+        },
+        {
+          "site": "FB",
+          "n_patients": 5,
+          "auroc": 0.9542249580302182
+        },
+        {
+          "site": "CF",
+          "n_patients": 7,
+          "auroc": 0.9480592236894757
+        },
+        {
+          "site": "XF",
+          "n_patients": 13,
+          "auroc": 0.9456911834652139
+        },
+        {
+          "site": "B8",
+          "n_patients": 12,
+          "auroc": 0.9312265917602995
+        },
+        {
+          "site": "56",
+          "n_patients": 7,
+          "auroc": 0.9231692677070827
+        },
+        {
+          "site": "E7",
+          "n_patients": 8,
+          "auroc": 0.9020459641255606
+        },
+        {
+          "site": "G7",
+          "n_patients": 6,
+          "auroc": 0.8939902948861516
+        },
+        {
+          "site": "98",
+          "n_patients": 6,
+          "auroc": 0.8938036580813737
+        },
+        {
+          "site": "CD",
+          "n_patients": 6,
+          "auroc": 0.8624486748786862
+        },
+        {
+          "site": "GC",
+          "n_patients": 6,
+          "auroc": 0.8507838745800672
+        },
+        {
+          "site": "FG",
+          "n_patients": 8,
+          "auroc": 0.8354119955156951
+        }
+      ]
+    },
+    {
+      "fraction": 0.25,
+      "repeat": 1,
+      "n_patients": 1792,
+      "n_sites_evaluated": 123,
+      "median_auroc": 0.9963066592053721,
+      "min_auroc": 0.8382792086599476,
+      "frac_above_0.9": 0.975609756097561,
+      "seconds": 522.5,
+      "per_site": [
+        {
+          "site": "KK",
+          "n_patients": 13,
+          "auroc": 1.0
+        },
+        {
+          "site": "2G",
+          "n_patients": 20,
+          "auroc": 1.0
+        },
+        {
+          "site": "CJ",
+          "n_patients": 20,
+          "auroc": 1.0
+        },
+        {
+          "site": "QH",
+          "n_patients": 10,
+          "auroc": 1.0
+        },
+        {
+          "site": "66",
+          "n_patients": 9,
+          "auroc": 1.0
+        },
+        {
+          "site": "ZB",
+          "n_patients": 10,
+          "auroc": 1.0
+        },
+        {
+          "site": "VD",
+          "n_patients": 6,
+          "auroc": 1.0
+        },
+        {
+          "site": "G9",
+          "n_patients": 10,
+          "auroc": 0.9999438832772165
+        },
+        {
+          "site": "HU",
+          "n_patients": 8,
+          "auroc": 0.999929932735426
+        },
+        {
+          "site": "V4",
+          "n_patients": 8,
+          "auroc": 0.999929932735426
+        },
+        {
+          "site": "TQ",
+          "n_patients": 5,
+          "auroc": 0.999888080581981
+        },
+        {
+          "site": "CM",
+          "n_patients": 10,
+          "auroc": 0.9998316498316497
+        },
+        {
+          "site": "V1",
+          "n_patients": 9,
+          "auroc": 0.9998130491680688
+        },
+        {
+          "site": "G4",
+          "n_patients": 5,
+          "auroc": 0.999776161163962
+        },
+        {
+          "site": "97",
+          "n_patients": 5,
+          "auroc": 0.999776161163962
+        },
+        {
+          "site": "EB",
+          "n_patients": 12,
+          "auroc": 0.9996722846441948
+        },
+        {
+          "site": "YL",
+          "n_patients": 5,
+          "auroc": 0.9996642417459429
+        },
+        {
+          "site": "22",
+          "n_patients": 13,
+          "auroc": 0.9996540839711161
+        },
+        {
+          "site": "Y8",
+          "n_patients": 6,
+          "auroc": 0.9996267263904441
+        },
+        {
+          "site": "N5",
+          "n_patients": 5,
+          "auroc": 0.9995523223279239
+        },
+        {
+          "site": "S9",
+          "n_patients": 12,
+          "auroc": 0.9994850187265918
+        },
+        {
+          "site": "R6",
+          "n_patients": 5,
+          "auroc": 0.9994404029099049
+        },
+        {
+          "site": "25",
+          "n_patients": 12,
+          "auroc": 0.9992977528089888
+        },
+        {
+          "site": "G3",
+          "n_patients": 7,
+          "auroc": 0.999279711884754
+        },
+        {
+          "site": "DM",
+          "n_patients": 10,
+          "auroc": 0.9992143658810326
+        },
+        {
+          "site": "IB",
+          "n_patients": 10,
+          "auroc": 0.9992143658810325
+        },
+        {
+          "site": "LN",
+          "n_patients": 10,
+          "auroc": 0.9991582491582491
+        },
+        {
+          "site": "CQ",
+          "n_patients": 9,
+          "auroc": 0.999127562784321
+        },
+        {
+          "site": "CS",
+          "n_patients": 5,
+          "auroc": 0.9991046446558478
+        },
+        {
+          "site": "QK",
+          "n_patients": 6,
+          "auroc": 0.9990668159761105
+        },
+        {
+          "site": "AA",
+          "n_patients": 12,
+          "auroc": 0.999063670411985
+        },
+        {
+          "site": "23",
+          "n_patients": 6,
+          "auroc": 0.9989734975737216
+        },
+        {
+          "site": "3B",
+          "n_patients": 6,
+          "auroc": 0.9989734975737216
+        },
+        {
+          "site": "EM",
+          "n_patients": 17,
+          "auroc": 0.9989726594863297
+        },
+        {
+          "site": "HT",
+          "n_patients": 27,
+          "auroc": 0.9989717763088868
+        },
+        {
+          "site": "GU",
+          "n_patients": 5,
+          "auroc": 0.9988808058198098
+        },
+        {
+          "site": "D6",
+          "n_patients": 5,
+          "auroc": 0.9988808058198096
+        },
+        {
+          "site": "D7",
+          "n_patients": 5,
+          "auroc": 0.9988808058198096
+        },
+        {
+          "site": "XF",
+          "n_patients": 15,
+          "auroc": 0.998761958356781
+        },
+        {
+          "site": "CC",
+          "n_patients": 8,
+          "auroc": 0.9987387892376681
+        },
+        {
+          "site": "BJ",
+          "n_patients": 15,
+          "auroc": 0.9987244419433502
+        },
+        {
+          "site": "CG",
+          "n_patients": 11,
+          "auroc": 0.9986728599867286
+        },
+        {
+          "site": "85",
+          "n_patients": 8,
+          "auroc": 0.9986687219730942
+        },
+        {
+          "site": "BF",
+          "n_patients": 8,
+          "auroc": 0.9984585201793722
+        },
+        {
+          "site": "EJ",
+          "n_patients": 20,
+          "auroc": 0.9984480812641083
+        },
+        {
+          "site": "FV",
+          "n_patients": 5,
+          "auroc": 0.9984331281477336
+        },
+        {
+          "site": "DJ",
+          "n_patients": 21,
+          "auroc": 0.9983867064612406
+        },
+        {
+          "site": "ET",
+          "n_patients": 10,
+          "auroc": 0.9983164983164983
+        },
+        {
+          "site": "DB",
+          "n_patients": 7,
+          "auroc": 0.9982392957182873
+        },
+        {
+          "site": "HC",
+          "n_patients": 12,
+          "auroc": 0.9980337078651685
+        },
+        {
+          "site": "S7",
+          "n_patients": 5,
+          "auroc": 0.9979854504756575
+        },
+        {
+          "site": "DU",
+          "n_patients": 14,
+          "auroc": 0.9977502812148481
+        },
+        {
+          "site": "06",
+          "n_patients": 9,
+          "auroc": 0.9976942730728485
+        },
+        {
+          "site": "P5",
+          "n_patients": 5,
+          "auroc": 0.9972020145495244
+        },
+        {
+          "site": "95",
+          "n_patients": 5,
+          "auroc": 0.9970900951315054
+        },
+        {
+          "site": "G2",
+          "n_patients": 5,
+          "auroc": 0.9969781757134862
+        },
+        {
+          "site": "CN",
+          "n_patients": 18,
+          "auroc": 0.9968683452336214
+        },
+        {
+          "site": "SX",
+          "n_patients": 5,
+          "auroc": 0.9968662562954672
+        },
+        {
+          "site": "CD",
+          "n_patients": 11,
+          "auroc": 0.9966821499668215
+        },
+        {
+          "site": "A6",
+          "n_patients": 11,
+          "auroc": 0.9964779745801644
+        },
+        {
+          "site": "QR",
+          "n_patients": 12,
+          "auroc": 0.9963951310861423
+        },
+        {
+          "site": "ED",
+          "n_patients": 5,
+          "auroc": 0.9963066592053721
+        },
+        {
+          "site": "A3",
+          "n_patients": 12,
+          "auroc": 0.9959269662921348
+        },
+        {
+          "site": "BQ",
+          "n_patients": 9,
+          "auroc": 0.9958247647535365
+        },
+        {
+          "site": "VQ",
+          "n_patients": 14,
+          "auroc": 0.9957014301783705
+        },
+        {
+          "site": "4Z",
+          "n_patients": 6,
+          "auroc": 0.9946808510638298
+        },
+        {
+          "site": "05",
+          "n_patients": 5,
+          "auroc": 0.9944040290990486
+        },
+        {
+          "site": "EL",
+          "n_patients": 25,
+          "auroc": 0.9943859649122807
+        },
+        {
+          "site": "KL",
+          "n_patients": 6,
+          "auroc": 0.9941209406494961
+        },
+        {
+          "site": "B0",
+          "n_patients": 31,
+          "auroc": 0.9940466377241669
+        },
+        {
+          "site": "DX",
+          "n_patients": 25,
+          "auroc": 0.993616298811545
+        },
+        {
+          "site": "CV",
+          "n_patients": 27,
+          "auroc": 0.9933899905571294
+        },
+        {
+          "site": "55",
+          "n_patients": 27,
+          "auroc": 0.9932221173014374
+        },
+        {
+          "site": "44",
+          "n_patients": 9,
+          "auroc": 0.9932074531064997
+        },
+        {
+          "site": "60",
+          "n_patients": 8,
+          "auroc": 0.992853139013453
+        },
+        {
+          "site": "XE",
+          "n_patients": 7,
+          "auroc": 0.9927170868347339
+        },
+        {
+          "site": "EA",
+          "n_patients": 5,
+          "auroc": 0.9926133184107443
+        },
+        {
+          "site": "FD",
+          "n_patients": 12,
+          "auroc": 0.9923220973782771
+        },
+        {
+          "site": "DS",
+          "n_patients": 6,
+          "auroc": 0.9918812989921613
+        },
+        {
+          "site": "XU",
+          "n_patients": 8,
+          "auroc": 0.9915919282511211
+        },
+        {
+          "site": "69",
+          "n_patients": 5,
+          "auroc": 0.9913822048125349
+        },
+        {
+          "site": "BR",
+          "n_patients": 32,
+          "auroc": 0.9896661931818181
+        },
+        {
+          "site": "86",
+          "n_patients": 6,
+          "auroc": 0.9892683837252706
+        },
+        {
+          "site": "AK",
+          "n_patients": 8,
+          "auroc": 0.9885790358744394
+        },
+        {
+          "site": "77",
+          "n_patients": 9,
+          "auroc": 0.9875366112045866
+        },
+        {
+          "site": "ZF",
+          "n_patients": 10,
+          "auroc": 0.9874859708193041
+        },
+        {
+          "site": "ZJ",
+          "n_patients": 5,
+          "auroc": 0.987017347509793
+        },
+        {
+          "site": "W5",
+          "n_patients": 6,
+          "auroc": 0.9868421052631579
+        },
+        {
+          "site": "G7",
+          "n_patients": 6,
+          "auroc": 0.9860955580440464
+        },
+        {
+          "site": "3A",
+          "n_patients": 6,
+          "auroc": 0.9857222844344905
+        },
+        {
+          "site": "KM",
+          "n_patients": 5,
+          "auroc": 0.9854504756575266
+        },
+        {
+          "site": "21",
+          "n_patients": 6,
+          "auroc": 0.9850690556177678
+        },
+        {
+          "site": "FB",
+          "n_patients": 5,
+          "auroc": 0.9843312814773364
+        },
+        {
+          "site": "EY",
+          "n_patients": 5,
+          "auroc": 0.9839955232232792
+        },
+        {
+          "site": "2Z",
+          "n_patients": 6,
+          "auroc": 0.9821761851437104
+        },
+        {
+          "site": "D5",
+          "n_patients": 5,
+          "auroc": 0.9818690542809178
+        },
+        {
+          "site": "49",
+          "n_patients": 9,
+          "auroc": 0.9816165015267652
+        },
+        {
+          "site": "BP",
+          "n_patients": 33,
+          "auroc": 0.979568280875842
+        },
+        {
+          "site": "19",
+          "n_patients": 5,
+          "auroc": 0.9778399552322328
+        },
+        {
+          "site": "50",
+          "n_patients": 7,
+          "auroc": 0.9775910364145658
+        },
+        {
+          "site": "VS",
+          "n_patients": 10,
+          "auroc": 0.9757575757575758
+        },
+        {
+          "site": "OR",
+          "n_patients": 10,
+          "auroc": 0.9757575757575757
+        },
+        {
+          "site": "WB",
+          "n_patients": 15,
+          "auroc": 0.9754267492027762
+        },
+        {
+          "site": "AD",
+          "n_patients": 6,
+          "auroc": 0.9750839865621501
+        },
+        {
+          "site": "RD",
+          "n_patients": 7,
+          "auroc": 0.9743897559023609
+        },
+        {
+          "site": "DD",
+          "n_patients": 30,
+          "auroc": 0.9743094967839576
+        },
+        {
+          "site": "F4",
+          "n_patients": 6,
+          "auroc": 0.9716312056737588
+        },
+        {
+          "site": "CZ",
+          "n_patients": 9,
+          "auroc": 0.9700878668910077
+        },
+        {
+          "site": "78",
+          "n_patients": 6,
+          "auroc": 0.969484882418813
+        },
+        {
+          "site": "BA",
+          "n_patients": 6,
+          "auroc": 0.9622060470324748
+        },
+        {
+          "site": "FG",
+          "n_patients": 15,
+          "auroc": 0.9593697242543613
+        },
+        {
+          "site": "AZ",
+          "n_patients": 7,
+          "auroc": 0.9568627450980393
+        },
+        {
+          "site": "A5",
+          "n_patients": 5,
+          "auroc": 0.9497481813094573
+        },
+        {
+          "site": "MP",
+          "n_patients": 5,
+          "auroc": 0.9465025181869055
+        },
+        {
+          "site": "DK",
+          "n_patients": 6,
+          "auroc": 0.9363568495707355
+        },
+        {
+          "site": "56",
+          "n_patients": 12,
+          "auroc": 0.9321629213483146
+        },
+        {
+          "site": "E7",
+          "n_patients": 6,
+          "auroc": 0.9277715565509519
+        },
+        {
+          "site": "HZ",
+          "n_patients": 8,
+          "auroc": 0.9241872197309418
+        },
+        {
+          "site": "A4",
+          "n_patients": 8,
+          "auroc": 0.921314461883408
+        },
+        {
+          "site": "C5",
+          "n_patients": 13,
+          "auroc": 0.9139533878151079
+        },
+        {
+          "site": "CF",
+          "n_patients": 6,
+          "auroc": 0.8983762597984323
+        },
+        {
+          "site": "AJ",
+          "n_patients": 6,
+          "auroc": 0.8968831653602091
+        },
+        {
+          "site": "B8",
+          "n_patients": 6,
+          "auroc": 0.8382792086599476
+        }
+      ]
+    },
+    {
+      "fraction": 0.25,
+      "repeat": 2,
+      "n_patients": 1792,
+      "n_sites_evaluated": 114,
+      "median_auroc": 0.996899952800196,
+      "min_auroc": 0.8214885282596531,
+      "frac_above_0.9": 0.956140350877193,
+      "seconds": 493.0,
+      "per_site": [
+        {
+          "site": "KK",
+          "n_patients": 13,
+          "auroc": 1.0
+        },
+        {
+          "site": "CH",
+          "n_patients": 9,
+          "auroc": 1.0
+        },
+        {
+          "site": "VP",
+          "n_patients": 6,
+          "auroc": 1.0
+        },
+        {
+          "site": "V4",
+          "n_patients": 6,
+          "auroc": 1.0
+        },
+        {
+          "site": "L5",
+          "n_patients": 6,
+          "auroc": 1.0
+        },
+        {
+          "site": "23",
+          "n_patients": 5,
+          "auroc": 1.0
+        },
+        {
+          "site": "2J",
+          "n_patients": 5,
+          "auroc": 1.0
+        },
+        {
+          "site": "E1",
+          "n_patients": 7,
+          "auroc": 1.0
+        },
+        {
+          "site": "VD",
+          "n_patients": 7,
+          "auroc": 1.0
+        },
+        {
+          "site": "NC",
+          "n_patients": 5,
+          "auroc": 1.0
+        },
+        {
+          "site": "2G",
+          "n_patients": 20,
+          "auroc": 0.9999435665914221
+        },
+        {
+          "site": "5P",
+          "n_patients": 5,
+          "auroc": 0.999888080581981
+        },
+        {
+          "site": "CJ",
+          "n_patients": 20,
+          "auroc": 0.9998589164785553
+        },
+        {
+          "site": "HU",
+          "n_patients": 5,
+          "auroc": 0.999776161163962
+        },
+        {
+          "site": "CC",
+          "n_patients": 10,
+          "auroc": 0.9997755331088665
+        },
+        {
+          "site": "66",
+          "n_patients": 11,
+          "auroc": 0.9994895615333571
+        },
+        {
+          "site": "HT",
+          "n_patients": 24,
+          "auroc": 0.9994815233785822
+        },
+        {
+          "site": "HC",
+          "n_patients": 14,
+          "auroc": 0.9994777438534469
+        },
+        {
+          "site": "22",
+          "n_patients": 8,
+          "auroc": 0.9994394618834082
+        },
+        {
+          "site": "J4",
+          "n_patients": 8,
+          "auroc": 0.9994394618834082
+        },
+        {
+          "site": "EM",
+          "n_patients": 21,
+          "auroc": 0.9993815708101422
+        },
+        {
+          "site": "EJ",
+          "n_patients": 16,
+          "auroc": 0.9992961711711712
+        },
+        {
+          "site": "DU",
+          "n_patients": 21,
+          "auroc": 0.9991395767793283
+        },
+        {
+          "site": "63",
+          "n_patients": 9,
+          "auroc": 0.999127562784321
+        },
+        {
+          "site": "DM",
+          "n_patients": 6,
+          "auroc": 0.9990668159761105
+        },
+        {
+          "site": "E8",
+          "n_patients": 6,
+          "auroc": 0.9990668159761105
+        },
+        {
+          "site": "YL",
+          "n_patients": 7,
+          "auroc": 0.9990396158463386
+        },
+        {
+          "site": "DB",
+          "n_patients": 8,
+          "auroc": 0.9990190582959642
+        },
+        {
+          "site": "CF",
+          "n_patients": 9,
+          "auroc": 0.9990029288963669
+        },
+        {
+          "site": "FD",
+          "n_patients": 9,
+          "auroc": 0.9989406119523898
+        },
+        {
+          "site": "LN",
+          "n_patients": 9,
+          "auroc": 0.9989406119523898
+        },
+        {
+          "site": "B8",
+          "n_patients": 7,
+          "auroc": 0.9988795518207283
+        },
+        {
+          "site": "CQ",
+          "n_patients": 8,
+          "auroc": 0.9988789237668162
+        },
+        {
+          "site": "XF",
+          "n_patients": 11,
+          "auroc": 0.9988770353733858
+        },
+        {
+          "site": "EL",
+          "n_patients": 20,
+          "auroc": 0.9987584650112866
+        },
+        {
+          "site": "EB",
+          "n_patients": 13,
+          "auroc": 0.9987460543952955
+        },
+        {
+          "site": "06",
+          "n_patients": 13,
+          "auroc": 0.998702814891685
+        },
+        {
+          "site": "W5",
+          "n_patients": 5,
+          "auroc": 0.9986569669837717
+        },
+        {
+          "site": "FA",
+          "n_patients": 5,
+          "auroc": 0.9986569669837717
+        },
+        {
+          "site": "D6",
+          "n_patients": 6,
+          "auroc": 0.9986002239641658
+        },
+        {
+          "site": "BJ",
+          "n_patients": 14,
+          "auroc": 0.9985939257592801
+        },
+        {
+          "site": "CM",
+          "n_patients": 7,
+          "auroc": 0.9984793917567026
+        },
+        {
+          "site": "98",
+          "n_patients": 5,
+          "auroc": 0.9984331281477337
+        },
+        {
+          "site": "25",
+          "n_patients": 13,
+          "auroc": 0.9983568988628011
+        },
+        {
+          "site": "49",
+          "n_patients": 7,
+          "auroc": 0.9983193277310924
+        },
+        {
+          "site": "AA",
+          "n_patients": 10,
+          "auroc": 0.9982603815937149
+        },
+        {
+          "site": "G4",
+          "n_patients": 9,
+          "auroc": 0.998255125568642
+        },
+        {
+          "site": "S9",
+          "n_patients": 14,
+          "auroc": 0.9980314960629921
+        },
+        {
+          "site": "TS",
+          "n_patients": 5,
+          "auroc": 0.9979854504756575
+        },
+        {
+          "site": "VQ",
+          "n_patients": 17,
+          "auroc": 0.9979784589892295
+        },
+        {
+          "site": "BR",
+          "n_patients": 20,
+          "auroc": 0.9977426636568848
+        },
+        {
+          "site": "AK",
+          "n_patients": 9,
+          "auroc": 0.9976942730728485
+        },
+        {
+          "site": "UY",
+          "n_patients": 6,
+          "auroc": 0.9974804031354982
+        },
+        {
+          "site": "DC",
+          "n_patients": 7,
+          "auroc": 0.997358943577431
+        },
+        {
+          "site": "DJ",
+          "n_patients": 22,
+          "auroc": 0.9969440164355419
+        },
+        {
+          "site": "VS",
+          "n_patients": 13,
+          "auroc": 0.9969299952436546
+        },
+        {
+          "site": "CG",
+          "n_patients": 10,
+          "auroc": 0.9969135802469136
+        },
+        {
+          "site": "85",
+          "n_patients": 11,
+          "auroc": 0.9968863253534787
+        },
+        {
+          "site": "RW",
+          "n_patients": 6,
+          "auroc": 0.9968271743187757
+        },
+        {
+          "site": "ZF",
+          "n_patients": 8,
+          "auroc": 0.9965667040358744
+        },
+        {
+          "site": "BP",
+          "n_patients": 35,
+          "auroc": 0.996162289617042
+        },
+        {
+          "site": "G9",
+          "n_patients": 12,
+          "auroc": 0.9961142322097378
+        },
+        {
+          "site": "69",
+          "n_patients": 7,
+          "auroc": 0.9959183673469387
+        },
+        {
+          "site": "AZ",
+          "n_patients": 6,
+          "auroc": 0.9955207166853303
+        },
+        {
+          "site": "QR",
+          "n_patients": 10,
+          "auroc": 0.9955106621773289
+        },
+        {
+          "site": "BQ",
+          "n_patients": 7,
+          "auroc": 0.9950380152060825
+        },
+        {
+          "site": "KL",
+          "n_patients": 6,
+          "auroc": 0.9949608062709966
+        },
+        {
+          "site": "EA",
+          "n_patients": 6,
+          "auroc": 0.9949608062709966
+        },
+        {
+          "site": "C5",
+          "n_patients": 16,
+          "auroc": 0.9945805180180181
+        },
+        {
+          "site": "E7",
+          "n_patients": 7,
+          "auroc": 0.9943977591036415
+        },
+        {
+          "site": "55",
+          "n_patients": 21,
+          "auroc": 0.9941383668091742
+        },
+        {
+          "site": "B0",
+          "n_patients": 33,
+          "auroc": 0.9939704032938825
+        },
+        {
+          "site": "44",
+          "n_patients": 14,
+          "auroc": 0.993652579141893
+        },
+        {
+          "site": "DX",
+          "n_patients": 25,
+          "auroc": 0.9935031126202604
+        },
+        {
+          "site": "FE",
+          "n_patients": 7,
+          "auroc": 0.9933573429371748
+        },
+        {
+          "site": "CE",
+          "n_patients": 6,
+          "auroc": 0.9924412094064949
+        },
+        {
+          "site": "G2",
+          "n_patients": 5,
+          "auroc": 0.9922775601566872
+        },
+        {
+          "site": "DD",
+          "n_patients": 35,
+          "auroc": 0.9921619643873486
+        },
+        {
+          "site": "D7",
+          "n_patients": 10,
+          "auroc": 0.9921436588103255
+        },
+        {
+          "site": "CV",
+          "n_patients": 32,
+          "auroc": 0.9919389204545455
+        },
+        {
+          "site": "97",
+          "n_patients": 12,
+          "auroc": 0.9917134831460674
+        },
+        {
+          "site": "XM",
+          "n_patients": 7,
+          "auroc": 0.990876350540216
+        },
+        {
+          "site": "KN",
+          "n_patients": 5,
+          "auroc": 0.9903749300503637
+        },
+        {
+          "site": "HZ",
+          "n_patients": 11,
+          "auroc": 0.9885661783472002
+        },
+        {
+          "site": "AF",
+          "n_patients": 6,
+          "auroc": 0.988521836506159
+        },
+        {
+          "site": "DK",
+          "n_patients": 8,
+          "auroc": 0.9880184977578476
+        },
+        {
+          "site": "86",
+          "n_patients": 7,
+          "auroc": 0.9872749099639857
+        },
+        {
+          "site": "CD",
+          "n_patients": 7,
+          "auroc": 0.9856742697078832
+        },
+        {
+          "site": "78",
+          "n_patients": 6,
+          "auroc": 0.9854423292273236
+        },
+        {
+          "site": "FG",
+          "n_patients": 10,
+          "auroc": 0.9833333333333334
+        },
+        {
+          "site": "WB",
+          "n_patients": 13,
+          "auroc": 0.9812772949366542
+        },
+        {
+          "site": "ET",
+          "n_patients": 13,
+          "auroc": 0.9788991222380767
+        },
+        {
+          "site": "IG",
+          "n_patients": 9,
+          "auroc": 0.9777528510001869
+        },
+        {
+          "site": "56",
+          "n_patients": 11,
+          "auroc": 0.9776427951610434
+        },
+        {
+          "site": "CN",
+          "n_patients": 17,
+          "auroc": 0.9773322286661144
+        },
+        {
+          "site": "G3",
+          "n_patients": 8,
+          "auroc": 0.9771580717488789
+        },
+        {
+          "site": "77",
+          "n_patients": 9,
+          "auroc": 0.9765065121206457
+        },
+        {
+          "site": "OR",
+          "n_patients": 13,
+          "auroc": 0.969991784494314
+        },
+        {
+          "site": "FU",
+          "n_patients": 6,
+          "auroc": 0.9690182904068683
+        },
+        {
+          "site": "FB",
+          "n_patients": 6,
+          "auroc": 0.9567935796939157
+        },
+        {
+          "site": "A6",
+          "n_patients": 5,
+          "auroc": 0.9560156687185227
+        },
+        {
+          "site": "A3",
+          "n_patients": 16,
+          "auroc": 0.9556587837837839
+        },
+        {
+          "site": "CZ",
+          "n_patients": 9,
+          "auroc": 0.951953636193681
+        },
+        {
+          "site": "BA",
+          "n_patients": 6,
+          "auroc": 0.9509145203434117
+        },
+        {
+          "site": "37",
+          "n_patients": 6,
+          "auroc": 0.9263717805151176
+        },
+        {
+          "site": "BB",
+          "n_patients": 5,
+          "auroc": 0.9133743704532737
+        },
+        {
+          "site": "IB",
+          "n_patients": 8,
+          "auroc": 0.906810538116592
+        },
+        {
+          "site": "43",
+          "n_patients": 7,
+          "auroc": 0.9026010404161665
+        },
+        {
+          "site": "AJ",
+          "n_patients": 10,
+          "auroc": 0.9018518518518519
+        },
+        {
+          "site": "D5",
+          "n_patients": 10,
+          "auroc": 0.8965768799102133
+        },
+        {
+          "site": "MP",
+          "n_patients": 5,
+          "auroc": 0.8800223838836038
+        },
+        {
+          "site": "A4",
+          "n_patients": 5,
+          "auroc": 0.8554001119194181
+        },
+        {
+          "site": "FY",
+          "n_patients": 7,
+          "auroc": 0.8300120048019207
+        },
+        {
+          "site": "21",
+          "n_patients": 5,
+          "auroc": 0.8214885282596531
+        }
+      ]
+    }
+  ]
+}

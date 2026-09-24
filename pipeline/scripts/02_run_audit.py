@@ -217,7 +217,7 @@ def main() -> int:
     mode.add_argument("--real", action="store_true", help="run on fetched data")
     parser.add_argument("--outdir", type=Path, default=None)
     parser.add_argument("--folds", type=int, default=5)
-    parser.add_argument("--n-boot", type=int, default=2000)
+    parser.add_argument("--n-boot", type=int, default=1000)  # the registered count (E2)
     args = parser.parse_args()
 
     outdir = args.outdir or (ROOT / "results" / ("demo" if args.demo else "run01"))

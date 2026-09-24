@@ -1,0 +1,192 @@
+{
+  "cohort": "nsclc",
+  "split_seeds": [
+    0,
+    23
+  ],
+  "platform": {
+    "system": "Linux",
+    "machine": "x86_64",
+    "python": "3.12.14",
+    "numpy": "2.1.3"
+  },
+  "baselines": [
+    "site_only",
+    "type_only",
+    "purity_only",
+    "covariates"
+  ],
+  "seeds_with_baseline_failure": [],
+  "seeds_with_decomposition_failure": [],
+  "seconds": 430.0,
+  "per_seed": [
+    {
+      "split_seed": 0,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 19.3
+    },
+    {
+      "split_seed": 1,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 19.6
+    },
+    {
+      "split_seed": 2,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 15.4
+    },
+    {
+      "split_seed": 3,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 18.3
+    },
+    {
+      "split_seed": 4,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 16.3
+    },
+    {
+      "split_seed": 5,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 20.5
+    },
+    {
+      "split_seed": 6,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 19.4
+    },
+    {
+      "split_seed": 7,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 16.2
+    },
+    {
+      "split_seed": 8,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 18.8
+    },
+    {
+      "split_seed": 9,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 18.6
+    },
+    {
+      "split_seed": 10,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 17.2
+    },
+    {
+      "split_seed": 11,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 15.8
+    },
+    {
+      "split_seed": 12,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 16.4
+    },
+    {
+      "split_seed": 13,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 16.5
+    },
+    {
+      "split_seed": 14,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 18.8
+    },
+    {
+      "split_seed": 15,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 18.2
+    },
+    {
+      "split_seed": 16,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 17.5
+    },
+    {
+      "split_seed": 17,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 19.9
+    },
+    {
+      "split_seed": 18,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 20.7
+    },
+    {
+      "split_seed": 19,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 14.5
+    },
+    {
+      "split_seed": 20,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 19.0
+    },
+    {
+      "split_seed": 21,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 18.9
+    },
+    {
+      "split_seed": 22,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 16.3
+    },
+    {
+      "split_seed": 23,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 16.0
+    }
+  ]
+}

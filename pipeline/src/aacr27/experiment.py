@@ -51,7 +51,11 @@ class AuditConfig:
 
     n_folds: int = 5
     seed: int = 0
-    n_boot: int = 2000
+    # 1,000, the count every frozen run recorded in its config.json. It was
+    # 2,000 until 2026-09-24 (E2, decided in session 59): the cohort scripts
+    # always passed 1,000 explicitly, so nothing stored changes, but a bare
+    # `AuditConfig()` no longer gives a bootstrap the protocol did not use.
+    n_boot: int = 1000
     alpha: float = 0.05
 
     # Pre-registered primary endpoint.
@@ -99,7 +103,7 @@ class AuditConfig:
     # Scoring method, applied identically to observed AND null sets. Mixing them
     # is not a null: measured sd(mean_z)/sd(ssGSEA) ~ 3x, so a mean-z null
     # against ssGSEA observations compares different scales.
-    scorer: str = "mean_z"          # "mean_z" | "ssgsea"
+    scorer: str = "mean_z"          # "mean_z" | "ssgsea" | "plage" (E6, sensitivity only)
 
     # Reliability disattenuation. Curated modules are more internally consistent
     # than random draws and are therefore more predictable regardless of biology.
@@ -707,7 +711,10 @@ def _score_sets(expression: pd.DataFrame, sigset, config: AuditConfig) -> pd.Dat
         return sig_mod.score_mean_z(expression, sigset)
     if config.scorer == "ssgsea":
         return sig_mod.score_ssgsea(expression, sigset)
-    raise ValueError(f"unknown scorer {config.scorer!r}; expected 'mean_z' or 'ssgsea'")
+    if config.scorer == "plage":
+        return sig_mod.score_plage(expression, sigset)
+    raise ValueError(
+        f"unknown scorer {config.scorer!r}; expected 'mean_z', 'ssgsea' or 'plage'")
 
 
 def _immune_specific_excess(

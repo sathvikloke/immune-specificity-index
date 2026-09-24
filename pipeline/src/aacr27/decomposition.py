@@ -113,7 +113,30 @@ def _r2(
     n = int(ok.sum())
     if n <= p + 1:
         return np.nan, np.nan, p, n
-    model = sm.OLS(y[ok], design[ok]).fit()
+    try:
+        model = sm.OLS(y[ok], design[ok]).fit()
+    except np.linalg.LinAlgError as exc:
+        # Session 59 (B-19c / D3, decided 2026-09-24). statsmodels' default
+        # `pinv` fit goes through LAPACK gesdd, which fails to converge on some
+        # rank-deficient site designs (pan-cancer split_seed 15, MYC targets,
+        # rung `Mfull_+image`, HPC4 arrays 130202/130211). Retry the SAME
+        # least-squares problem with a pivoted-QR solver that handles rank
+        # deficiency. Only the failing calls take this path: every stored run
+        # completed without it, so no reported number moves. Loud, not silent.
+        import warnings
+
+        import scipy.linalg as sla
+
+        warnings.warn(f"OLS default SVD failed ({exc}); refit with pivoted QR "
+                      "(scipy gelsy)", RuntimeWarning, stacklevel=2)
+        Xd, yd = design[ok], y[ok]
+        beta, _, rank, _ = sla.lstsq(Xd, yd, lapack_driver="gelsy")
+        resid = yd - Xd @ beta
+        tss = float(((yd - yd.mean()) ** 2).sum())
+        r2 = 1.0 - float(resid @ resid) / tss
+        df_resid = n - int(rank)
+        adj = 1.0 - (n - 1) / df_resid * (1.0 - r2) if df_resid > 0 else np.nan
+        return float(r2), float(adj), p, n
     return float(model.rsquared), float(model.rsquared_adj), p, n
 
 
@@ -284,6 +307,7 @@ def label_site_variance(
 
     categorical = {site_col, type_col, plate_col} - {None}
     rows = []
+    plate_note = None
 
     for sig in signature_cols:
         y = pd.to_numeric(sub[sig], errors="coerce").to_numpy()
@@ -306,12 +330,27 @@ def label_site_variance(
         # PLATE within SITE: the technical-only lower bound. Plate is batch
         # with no plausible biological interpretation, so whatever variance it
         # explains is a floor for how much "site" variance is pure processing.
+        # Session 59 (B-19a, decided 2026-09-24): when the plate column carries
+        # no information -- entirely missing, or a single level -- the rung is
+        # NOT ESTIMABLE, and it is reported as NaN with a note rather than as
+        # the structural zero `_design` produced (dummy-coding one NaN level
+        # and dropping the constant). That zero was once read as "the label
+        # artefact is not technical" and had to be withdrawn (E17). Frozen
+        # `label_site_variance.csv` files are not rewritten; this governs any
+        # future run of `11_close_science_gaps.py`.
         if plate_col and plate_col in sub.columns:
-            r2_plate, _, _, _ = _r2(
-                y, _design(sub, [site_col, plate_col], categorical), lmask
-            )
-            row["r2_site_plus_plate"] = r2_plate
-            row["r2_plate_within_site"] = r2_plate - r2_site
+            if sub[plate_col].nunique(dropna=True) < 2:
+                row["r2_site_plus_plate"] = np.nan
+                row["r2_plate_within_site"] = np.nan
+                plate_note = (f"'{plate_col}' has {sub[plate_col].nunique(dropna=True)} "
+                              "non-missing level(s); plate-within-site is not "
+                              "estimable and is NaN, not 0")
+            else:
+                r2_plate, _, _, _ = _r2(
+                    y, _design(sub, [site_col, plate_col], categorical), lmask
+                )
+                row["r2_site_plus_plate"] = r2_plate
+                row["r2_plate_within_site"] = r2_plate - r2_site
 
         if purity_col and purity_col in sub.columns:
             r2_pur, _, _, _ = _r2(y, _design(sub, [purity_col], categorical), lmask)
@@ -323,6 +362,10 @@ def label_site_variance(
     if len(out):
         out = out.sort_values("r2_site_only", ascending=False)
         out.attrs["median_r2_site"] = float(out["r2_site_only"].median())
+    if plate_note is not None:
+        # `.attrs` does not survive `.to_csv()`; the NaN in the plate columns
+        # does, and is the durable record. The note is for in-process callers.
+        out.attrs["plate_note"] = plate_note
     return out
 
 

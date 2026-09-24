@@ -29,9 +29,10 @@ cannot claim to reproduce anything and should stop.
 
 WHAT IT DOES NOT DO
 ===================
-It checks the four packages whose arithmetic reaches the estimand. The lockfile
-pins the whole environment; a full audit of every transitive pin would fail on
-any platform with a different wheel set and would therefore be ignored. The four
+It checks the five packages whose arithmetic reaches the estimand (statsmodels
+joined numpy, pandas, scikit-learn and scipy on 2026-09-17). The lockfile pins
+the whole environment; a full audit of every transitive pin would fail on any
+platform with a different wheel set and would therefore be ignored. The five
 checked here are the ones a version change would silently move a number through.
 
 WHY `pyarrow` IS NOT ON THE LIST -- decided 2026-09-05, deliberately
@@ -78,11 +79,19 @@ WATCHED = [
     ("pandas", "pandas"),
     ("scikit-learn", "sklearn"),
     ("scipy", "scipy"),
+    # Added 2026-09-17 (session 50, ledger F6.10). statsmodels fits the OLS in
+    # globalaxis, decomposition, outcome and experiment -- the index's own path
+    # and the secondary tables -- and was pinned in the lockfile but never
+    # compared against it. 0.14.4 on macOS and on HPC4's environment alike.
+    ("statsmodels", "statsmodels"),
 ]
 
 # The platform the frozen results were produced on, so a mismatch report says
 # what the numbers are being compared against rather than just "expected X".
-FROZEN_ON = "macOS 15 / arm64, Python 3.13.9, BLAS openblas 0.3.21"
+# BLAS: the library LOADED when the results were produced, 0.3.29 (conda); numpy's
+# build record says 0.3.21, which is what this line said until 2026-09-16 (D5).
+FROZEN_ON = ("macOS 15 / arm64, Python 3.13.9, BLAS openblas 0.3.29 at run time "
+             "(numpy built against 0.3.21)")
 
 
 def pinned() -> dict[str, str]:
@@ -112,7 +121,14 @@ def main() -> int:
         cfg = _np.show_config(mode="dicts")
         blas = cfg.get("Build Dependencies", {}).get("blas", {})
         if blas:
-            print(f"BLAS    {blas.get('name', '?')} {blas.get('version', '?')}")
+            print(f"BLAS    {blas.get('name', '?')} {blas.get('version', '?')} "
+                  "(numpy's build record)")
+        import scipy.linalg  # noqa: F401 -- load scipy's BLAS too before asking
+        from threadpoolctl import threadpool_info
+        for d in threadpool_info():
+            if d.get("user_api") == "blas":
+                print(f"BLAS    {d.get('internal_api')} {d.get('version')} loaded at run time "
+                      f"({Path(str(d.get('filepath', ''))).name})")
     except Exception:  # noqa: BLE001 -- purely informational
         pass
     print(f"frozen results were produced on: {FROZEN_ON}\n")

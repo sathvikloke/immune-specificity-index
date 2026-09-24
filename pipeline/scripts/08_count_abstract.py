@@ -40,6 +40,12 @@ def extract(md: str) -> tuple[str, str]:
         return m.group(1).strip() if m else ""
 
     body = section("BODY")
+    # Drop a trailing horizontal rule. The section runs to the next `## `
+    # heading, and the draft closes the body with a `---` rule before its notes;
+    # the dry run says to paste "between ## BODY and the next ---", so the rule
+    # is never pasted. Until 2026-09-17 it was counted: 3 characters, which made
+    # every reported total 3 too high (2,515 for a pasted 2,512).
+    body = re.sub(r"\n\s*(?:-{3,}|\*{3,}|_{3,})\s*\Z", "", body).strip()
     # Drop the markdown bold markers used for the required element labels; they
     # are formatting for reading the draft, not characters in the submission.
     body = body.replace("**", "")

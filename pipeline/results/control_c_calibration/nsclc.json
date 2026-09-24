@@ -1,0 +1,160 @@
+{
+  "results_dir": "nsclc_v3_stablesort",
+  "n_patients": 944,
+  "n_perm": 200,
+  "probe_signature": "SIG_HALLMARK_ALLOGRAFT_REJECTION",
+  "probe_reproduces_stored_a4b_bitwise": true,
+  "median_observed_r2": 0.1767651275583163,
+  "median_perm_median_r2": 0.10360472487275313,
+  "median_calibrated_r2": 0.07021750881889874,
+  "min_calibrated_r2": 0.01817367176085627,
+  "max_calibrated_r2": 0.10513079892558014,
+  "n_perm_p_at_or_below_0.05": 15,
+  "seconds": 39.5,
+  "per_signature": {
+    "SIG_HALLMARK_ALLOGRAFT_REJECTION": {
+      "observed_r2": 0.15174109659422985,
+      "observed_adj_r2": 0.08686284713282966,
+      "perm_median_r2": 0.09796207963082348,
+      "calibrated_r2": 0.05377901696340637,
+      "perm_p": 0.004975124378109453,
+      "n_perm": 200,
+      "n": 944
+    },
+    "SIG_HALLMARK_ANGIOGENESIS": {
+      "observed_r2": 0.14243286838682823,
+      "observed_adj_r2": 0.07684268822919993,
+      "perm_median_r2": 0.06963710094436792,
+      "calibrated_r2": 0.0727957674424603,
+      "perm_p": 0.004975124378109453,
+      "n_perm": 200,
+      "n": 944
+    },
+    "SIG_HALLMARK_COAGULATION": {
+      "observed_r2": 0.23646695126506234,
+      "observed_adj_r2": 0.17806887561981033,
+      "perm_median_r2": 0.13870200782959657,
+      "calibrated_r2": 0.09776494343546577,
+      "perm_p": 0.004975124378109453,
+      "n_perm": 200,
+      "n": 944
+    },
+    "SIG_HALLMARK_COMPLEMENT": {
+      "observed_r2": 0.19321550415512212,
+      "observed_adj_r2": 0.1315093840391327,
+      "perm_median_r2": 0.10924737011468277,
+      "calibrated_r2": 0.08396813404043935,
+      "perm_p": 0.004975124378109453,
+      "n_perm": 200,
+      "n": 944
+    },
+    "SIG_HALLMARK_E2F_TARGETS": {
+      "observed_r2": 0.3208537080783441,
+      "observed_adj_r2": 0.2689098706825098,
+      "perm_median_r2": 0.28093431166529037,
+      "calibrated_r2": 0.039919396413053754,
+      "perm_p": 0.004975124378109453,
+      "n_perm": 200,
+      "n": 944
+    },
+    "SIG_HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION": {
+      "observed_r2": 0.1490177052186027,
+      "observed_adj_r2": 0.0839311598414868,
+      "perm_median_r2": 0.08118823294675082,
+      "calibrated_r2": 0.06782947227185188,
+      "perm_p": 0.004975124378109453,
+      "n_perm": 200,
+      "n": 944
+    },
+    "SIG_HALLMARK_G2M_CHECKPOINT": {
+      "observed_r2": 0.32497903381286686,
+      "observed_adj_r2": 0.2733507179058602,
+      "perm_median_r2": 0.27322292027156664,
+      "calibrated_r2": 0.05175611354130022,
+      "perm_p": 0.004975124378109453,
+      "n_perm": 200,
+      "n": 944
+    },
+    "SIG_HALLMARK_HYPOXIA": {
+      "observed_r2": 0.18847003556715447,
+      "observed_adj_r2": 0.1264009629450077,
+      "perm_median_r2": 0.1233590338754228,
+      "calibrated_r2": 0.06511100169173167,
+      "perm_p": 0.004975124378109453,
+      "n_perm": 200,
+      "n": 944
+    },
+    "SIG_HALLMARK_IL2_STAT5_SIGNALING": {
+      "observed_r2": 0.17330183318113024,
+      "observed_adj_r2": 0.11007263549064594,
+      "perm_median_r2": 0.07600667965508878,
+      "calibrated_r2": 0.09729515352604146,
+      "perm_p": 0.004975124378109453,
+      "n_perm": 200,
+      "n": 944
+    },
+    "SIG_HALLMARK_IL6_JAK_STAT3_SIGNALING": {
+      "observed_r2": 0.17203263144353964,
+      "observed_adj_r2": 0.10870636010417578,
+      "perm_median_r2": 0.09143806542791277,
+      "calibrated_r2": 0.08059456601562687,
+      "perm_p": 0.004975124378109453,
+      "n_perm": 200,
+      "n": 944
+    },
+    "SIG_HALLMARK_INFLAMMATORY_RESPONSE": {
+      "observed_r2": 0.18022842193550237,
+      "observed_adj_r2": 0.11752899758582058,
+      "perm_median_r2": 0.08455880216475109,
+      "calibrated_r2": 0.09566961977075128,
+      "perm_p": 0.004975124378109453,
+      "n_perm": 200,
+      "n": 944
+    },
+    "SIG_HALLMARK_INTERFERON_ALPHA_RESPONSE": {
+      "observed_r2": 0.14484442026965394,
+      "observed_adj_r2": 0.0794386852902782,
+      "perm_median_r2": 0.12667074850879767,
+      "calibrated_r2": 0.01817367176085627,
+      "perm_p": 0.06965174129353234,
+      "n_perm": 200,
+      "n": 944
+    },
+    "SIG_HALLMARK_INTERFERON_GAMMA_RESPONSE": {
+      "observed_r2": 0.14646932463281193,
+      "observed_adj_r2": 0.08118786886842666,
+      "perm_median_r2": 0.11129078987486907,
+      "calibrated_r2": 0.03517853475794286,
+      "perm_p": 0.004975124378109453,
+      "n_perm": 200,
+      "n": 944
+    },
+    "SIG_HALLMARK_MYC_TARGETS_V1": {
+      "observed_r2": 0.31596322456539483,
+      "observed_adj_r2": 0.2636453433392322,
+      "perm_median_r2": 0.2626324164045664,
+      "calibrated_r2": 0.05333080816082841,
+      "perm_p": 0.014925373134328358,
+      "n_perm": 200,
+      "n": 944
+    },
+    "SIG_HALLMARK_TGF_BETA_SIGNALING": {
+      "observed_r2": 0.18068591777174825,
+      "observed_adj_r2": 0.11802148454196193,
+      "perm_median_r2": 0.07555511884616811,
+      "calibrated_r2": 0.10513079892558014,
+      "perm_p": 0.004975124378109453,
+      "n_perm": 200,
+      "n": 944
+    },
+    "SIG_HALLMARK_TNFA_SIGNALING_VIA_NFKB": {
+      "observed_r2": 0.1420983441938347,
+      "observed_adj_r2": 0.07648257828171945,
+      "perm_median_r2": 0.06949279882788911,
+      "calibrated_r2": 0.0726055453659456,
+      "perm_p": 0.004975124378109453,
+      "n_perm": 200,
+      "n": 944
+    }
+  }
+}

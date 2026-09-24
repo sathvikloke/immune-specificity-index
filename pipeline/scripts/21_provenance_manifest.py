@@ -75,6 +75,7 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -109,10 +110,54 @@ TRACKED_DIRS = [
     "nsclc_v3_stablesort",                 # A9/A10 -- Limitations 8's second number
     "scorer_sensitivity_ssgsea_stable",    # A10 -- the pinned ssGSEA arm
     "partition_variance_pancancer",        # the pan-cancer partition-variance run
+    # Added 2026-09-16, for exactly the reason given for nsclc_v3_stablesort
+    # above: 19_check_numbers.py now reads `pcsortaudit_isi`, its two CI bounds
+    # and a DERIVED `pcsortaudit_shift` out of this directory as the authority
+    # behind Limitations 8's second pan-cancer number, and an authority that is
+    # not hashed is an authority that can drift. This is the run that closed the
+    # project's longest-blocked item -- HPC4 job 129159, 2026-09-16 -- and it is
+    # the counterpart to nsclc_v3_stablesort, not a replacement for pancancer_v3.
+    "pancancer_v3_stablesort",             # A9/A10 -- Limitations 8's pan-cancer number
+    # Added 2026-09-17 (session 49, ledger B5), all for the same reason as the
+    # entries above: each is now read by 19_check_numbers.py as the authority
+    # behind prose in the manuscript, and an authority that is not hashed can
+    # drift. None is a frozen primary; each is a sensitivity or derived record.
+    "partition_variance_nsclc_stable24",   # B3/B7 -- 24 partitions, NSCLC
+    "partition_variance_pancancer_stable24",  # B3/B7 -- 24 partitions, pan-cancer
+    "nsclc_sensitivity",                   # E1/E3/E4/E5 -- Results, sensitivity
+    "pancancer_sensitivity",               # E1 -- Results, sensitivity
+    "nsclc_v3_tumouronly",                 # A16 -- Results, sensitivity
+    "pancancer_tumouronly",                # A16 -- Results, sensitivity
+    "control_c_calibration",               # E14 -- Results, Control C
+    # Added 2026-09-17 (session 50, ledger F3.4). Session 49's B5 hashed the
+    # authorities that existed when it ran; E6, E8 and E16 landed after it, and
+    # 19_check_numbers.py read all three as authorities, unhashed, until a
+    # reconciliation of the checker's reads against this manifest found them.
+    # `test_every_file_the_checker_reads_as_an_authority_is_hashed` now keeps the
+    # two sets reconciled.
+    "scorer_sensitivity_plage",            # E6 -- Results, the third scorer
+    "omega_reliability",                   # E8 -- Results, omega beside alpha
+    "site_auroc_stress",                   # E16 -- Negative controls, subsample AUROC
+    # Added 2026-09-24 (session 60, ledger H86): the pinned-split NSCLC run, the
+    # author's A12 decision (option b) made permanent. Reported BESIDE nsclc_v3
+    # and nsclc_v3_stablesort; its secondary numbers are quoted both ways.
+    "nsclc_v3_pinned",                     # A12 -- the pinned random-patient split
+    # Added 2026-09-24 (session 60, ledger H89): the E9 null-reliability
+    # records, read as authorities for the science audit's E9 table.
+    "null_reliability",                    # E9 -- the mean-z null's reliability floor
+    # Added 2026-09-24 (session 60, ledger H86 step 5): the pinned-split
+    # pan-cancer run, made on macOS because the VPN was down.
+    "pancancer_v3_pinned",                 # A12 -- the pinned random-patient split
 ]
 
 # Standalone files read as an authority by 19_check_numbers.py, or quoted.
 TRACKED_FILES = [
+    # Added 2026-09-22 (session 57): 19_check_numbers.py now reads all fifteen
+    # numbers of the deposited README's demo table out of this file, and
+    # `test_every_file_the_checker_reads_as_an_authority_is_hashed` refused an
+    # authority nothing hashed. Nothing regenerates it -- `reproduce.sh` does not
+    # run the demo, and no test writes into results/demo/ -- so the hash is stable.
+    "demo/immune_excess.csv",
     "bisect_macos.npz",
     # Added 2026-09-06 with its macOS counterpart's reasoning: 19_check_numbers.py
     # now reads `pooled_z_excess` out of this file as the authority behind three
@@ -148,6 +193,25 @@ TRACKED_FILES = [
     # the two whenever data/ is present, but a reader of the snapshot has no
     # data/ and therefore no way to notice drift. Hashing is their check.
     "gene_set_sizes.csv",
+    # Added 2026-09-17 (session 49, ledger B5): session 49's standalone
+    # authorities, each read by 19_check_numbers.py.
+    "partition_variance_scaling_stable24.json",   # B8 -- the scaling paragraph
+    "groupkfold_order_darwin_arm64.json",         # C9 -- A12's two-platform assertion
+    "groupkfold_order_linux_x86_64_login.json",
+    "type_only_concordance.json",                 # E13 -- Methods, C = 0.676
+    "outcome_power_nsclc.json",                   # E10 -- Results, power curve
+    "outcome_power_pancancer.json",               # E10 -- its pan-cancer counterpart
+    "outcome_category_test.json",                 # E11 -- Results, composition
+    # Added 2026-09-17 (session 50, ledger F1.1): the authority behind
+    # Limitation 8's fold census and its six yardstick ratios.
+    "sort_fix_fold_change.json",
+    # Added 2026-09-24 (session 59, B-35's companion lead): HPC4's corrected-
+    # ordering NSCLC run (job 129151), copied into the diagnostics directory in
+    # session 49 (A6). 19_check_numbers.py now reads its `secondary_delta_mae`
+    # as the authority behind the "0.00481 [0.00199, 0.00748] on HPC4" in
+    # 14-SCIENCE-AUDIT.md and the manuscript's "0.0048 [0.0020, 0.0075] on
+    # Linux", and an authority that is not hashed can drift.
+    "session48_diagnostics/job129151_nsclc_stablesort_hpc4/summary.json",
 ]
 
 TRACKED_SUFFIXES = {".json", ".csv", ".npz", ".npy", ".tsv"}
@@ -163,22 +227,28 @@ def _is_public_deposit() -> bool:
     return not BUILDER.is_file()
 
 
-def _snapshot_rules() -> tuple[set[str], set[str]]:
-    """The builder's OWN (suffix, name) keep-sets, loaded from source once.
+def _snapshot_rules() -> tuple[set[str], set[str], "re.Pattern"]:
+    """The builder's OWN (suffix, name) keep-sets and its exclusion regex,
+    loaded from source once.
 
     Deliberately not reimplemented here: two definitions of "what is staged"
     would be free to disagree, and every defect in this class so far has lived
-    in exactly that gap."""
+    in exactly that gap. Session 59 found the next one: this function returned
+    the keep-sets but not `EXCLUDE_NAME_RE`, so the first artefact hashed from
+    under `results/sessionNN_diagnostics/` (which the builder never stages)
+    was flagged `deposited`, and the public deposit reported it MISSING."""
     spec = importlib.util.spec_from_file_location("_snapshot_builder", BUILDER)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
-    return mod.RESULT_KEEP_SUFFIX, mod.RESULT_KEEP_NAMES
+    return mod.RESULT_KEEP_SUFFIX, mod.RESULT_KEEP_NAMES, mod.EXCLUDE_NAME_RE
 
 
-def _deposited(rel: str, rules: tuple[set[str], set[str]]) -> bool:
+def _deposited(rel: str, rules: tuple[set[str], set[str], "re.Pattern"]) -> bool:
     """Does the public snapshot stage `results/<rel>`?"""
-    keep_suffix, keep_names = rules
+    keep_suffix, keep_names, exclude = rules
     p = Path(rel)
+    if exclude.search(str(RESULTS / rel)):
+        return False
     return p.suffix in keep_suffix or p.name in keep_names
 
 

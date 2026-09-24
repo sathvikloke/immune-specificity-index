@@ -1,13 +1,37 @@
 cff-version: 1.2.0
 title: >-
-  Proliferation, not immunity: H&E-inferred tumour microenvironment
+  Proliferation, not immunity: H&E-inferred tumor microenvironment
   signatures are immune-specific but carry no prognostic advantage
   over random gene sets
 message: If you use this software or its results, please cite it.
 type: software
+# FINAL author list, supplied by the author 2026-09-23: seven authors in this
+# order (six, in a different order, from 2026-09-09). ORCIDs are given where they
+# are on file — four of seven were still uncollected on that date; S. Kodilkar's,
+# A. Raut's and S. Raut's arrived 2026-09-24, S. Bestavemula's is awaited, and an
+# `orcid:` field is omitted rather than guessed. Affiliations are recorded for nobody yet, including the corresponding
+# author, so no `affiliation:` field appears here at all.
 authors:
   - family-names: Loke
     given-names: Sathvik
+    orcid: "https://orcid.org/0009-0007-1668-176X"
+  - family-names: Kodilkar
+    given-names: Sohum
+    orcid: "https://orcid.org/0009-0009-2715-1590"
+  - family-names: Movva
+    given-names: Neeraj
+    orcid: "https://orcid.org/0009-0004-4744-3877"
+  - family-names: Hota
+    given-names: Mishka
+    orcid: "https://orcid.org/0009-0004-2405-3593"
+  - family-names: Raut
+    given-names: Aditya
+    orcid: "https://orcid.org/0009-0002-1122-8900"
+  - family-names: Raut
+    given-names: Sagar
+    orcid: "https://orcid.org/0009-0000-0364-8978"
+  - family-names: Bestavemula
+    given-names: Suhrit
 # RESOLVED 2026-09-07. The curated public snapshot is pushed and live. This is a
 # SEPARATE repository from the private working one
 # (sathvikloke/hne-tme-immune-specificity-audit), which stays private — its
@@ -16,15 +40,15 @@ authors:
 # this field at the private name.
 repository-code: "https://github.com/sathvikloke/immune-specificity-index"
 abstract: >-
-  Analysis code for an audit of H&E-inferred tumour microenvironment
+  Analysis code for an audit of H&E-inferred tumor microenvironment
   signatures across 7,168 TCGA patients in 31 cancer types. Defines an
-  immune-specificity index (ISI) that residualises signatures on the
+  immune-specificity index (ISI) that residualizes signatures on the
   within-cancer-type global expression axis and disattenuates for the
-  reliability of the residualised score, and runs the identical
+  reliability of the residualized score, and runs the identical
   random-gene-set null against progression-free interval.
 keywords:
   - computational pathology
-  - tumour microenvironment
+  - tumor microenvironment
   - gene signatures
   - reproducibility
   - foundation models
@@ -32,7 +56,7 @@ license: MIT
 # `version` and `date-released` name the frozen analysis snapshot every quoted
 # number comes from -- the annotated tag `prereg-2026-08-18`, which is the only
 # tag in the author's PRIVATE working repository. The previous
-# `date-released: "2026-08-19"` matched no tag, no release and no artefact; it
+# `date-released: "2026-08-19"` matched no tag, no release and no artifact; it
 # was a date someone typed. If a public release is ever cut, both fields move to
 # that release and not before.
 #
@@ -44,6 +68,7 @@ license: MIT
 # "the only tag in the repository", which read as a claim about whichever
 # repository the reader was holding. Do not add a tag to the public snapshot to
 # make this resolve: its only commit is dated 2026-09-07, so the tag would assert
-# a timestamp that does not exist. See `16-YOUR-TASKS.md` for the open decision.
+# a timestamp that does not exist. The open decision is tracked in the private
+# working repository (`16-YOUR-TASKS.md`), which is not part of this deposit.
 version: "prereg-2026-08-18"
 date-released: "2026-08-18"

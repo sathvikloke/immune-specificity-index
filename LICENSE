@@ -19,11 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-NOTE ON DATA. This licence covers the CODE only. Every dataset used is obtained
-from its own source under its own terms: Prov-GigaPath TCGA embeddings
-(CC-BY-4.0), MSigDB Hallmark v2024.1 (CC-BY-4.0), Xena TOIL expression,
-PanCanAtlas ABSOLUTE purity, TCGA-CDR, and the UCSF ancestry calls. No data is
-redistributed here. BostonGene/MFP signature definitions are deliberately NOT
-used: their licence restricts use to academic and non-profit purposes and
-defines "Source Form" to include data.

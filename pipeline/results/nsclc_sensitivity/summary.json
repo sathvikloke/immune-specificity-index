@@ -1,0 +1,95 @@
+{
+  "reference_source": "results/nsclc_v3_stablesort/summary.json",
+  "reference_reproduced_bitwise": true,
+  "variants": [
+    {
+      "variant": "reference",
+      "change": {},
+      "isi": 0.2922124012879651,
+      "lo": 0.23552139004939532,
+      "hi": 0.3527272668764091,
+      "signatures_beating_null": 16,
+      "seconds": 464.9,
+      "has_per_signature": true,
+      "shift_from_reference": 0.0
+    },
+    {
+      "variant": "global_axis",
+      "change": {
+        "axis_within_type": false
+      },
+      "isi": -0.00962625821666168,
+      "lo": -0.06302461097085384,
+      "hi": 0.046575222922916035,
+      "signatures_beating_null": 1,
+      "seconds": 492.3,
+      "has_per_signature": true,
+      "shift_from_reference": -0.3018386595046268
+    },
+    {
+      "variant": "unmatched_null",
+      "change": {
+        "match_null_expression": false
+      },
+      "isi": 0.3041263042921097,
+      "lo": 0.24339101186562037,
+      "hi": 0.3536050132115368,
+      "signatures_beating_null": 16,
+      "seconds": 2251.7,
+      "has_per_signature": true,
+      "shift_from_reference": 0.011913903004144577
+    },
+    {
+      "variant": "null_boot_400",
+      "change": {
+        "_max_null_for_boot": 400
+      },
+      "isi": 0.2922124012879651,
+      "lo": 0.23363600630555914,
+      "hi": 0.3512005948194495,
+      "signatures_beating_null": 16,
+      "seconds": 749.8,
+      "has_per_signature": true,
+      "shift_from_reference": 0.0
+    },
+    {
+      "variant": "null_boot_1000",
+      "change": {
+        "_max_null_for_boot": 1000
+      },
+      "isi": 0.2922124012879651,
+      "lo": 0.23330461193207663,
+      "hi": 0.35110047337707095,
+      "signatures_beating_null": 16,
+      "seconds": 807.3,
+      "has_per_signature": true,
+      "shift_from_reference": 0.0
+    },
+    {
+      "variant": "k3",
+      "change": {
+        "n_folds": 3
+      },
+      "isi": 0.21877623818445868,
+      "lo": 0.1672704158310714,
+      "hi": 0.27217405603510497,
+      "signatures_beating_null": 15,
+      "seconds": 181.1,
+      "has_per_signature": true,
+      "shift_from_reference": -0.07343616310350642
+    },
+    {
+      "variant": "k10",
+      "change": {
+        "n_folds": 10
+      },
+      "isi": 0.31537650818039087,
+      "lo": 0.26067379065322055,
+      "hi": 0.37110273959154333,
+      "signatures_beating_null": 16,
+      "seconds": 5208.6,
+      "has_per_signature": true,
+      "shift_from_reference": 0.023164106892425762
+    }
+  ]
+}

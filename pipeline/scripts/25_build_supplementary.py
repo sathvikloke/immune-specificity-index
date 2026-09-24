@@ -22,8 +22,8 @@ FORMAT
 ======
 One TSV per item plus `MANIFEST.md`. TSV rather than XLSX deliberately: *Cancer
 Research*'s supplementary packaging rules are **unverified** -- `aacrjournals.org`
-returns HTTP 403 to an automated request, and that block is recorded in
-`16-YOUR-TASKS.md`. A plain delimited table converts to whatever the journal
+returns HTTP 403 to an automated request, and that block is recorded in the
+private working repository, not here. A plain delimited table converts to whatever the journal
 turns out to want; a styled workbook does not convert back. Revisit once the
 Instructions for Authors are in the repo.
 
@@ -48,6 +48,21 @@ RESULTS = REPO / "results"
 OUT = RESULTS / "supplementary"
 sys.path.insert(0, str(REPO / "src"))
 
+# pandas' default CSV float parser is NOT round-trip exact, and it is not the
+# same on every platform. Measured 2026-09-16: 16 of 44 cells of S6 sat one ULP
+# from their source (the NSCLC headline's upper bound among them), and on Linux
+# the default parser read S6 and S1 differently from macOS -- which is why
+# reproduce.sh's pre-flight suite failed on HPC4 (job 129695). Every table now
+# transcribes its source exactly.
+EXACT = {"float_precision": "round_trip"}
+
+# Significant digits kept in the multiplicity columns this script DERIVES (S1,
+# NSCLC). They are normal tail probabilities as small as 1e-41, and scipy
+# returns them with platform-dependent last digits (HPC4 and macOS disagreed in
+# 22 cells, all beyond the 15th significant digit). Twelve digits are more than
+# any reader can use and identical on both machines.
+DERIVED_SIG_DIGITS = 12
+
 
 def _authority() -> dict:
     """Import 19_check_numbers.py by path -- its name is not an identifier."""
@@ -64,7 +79,7 @@ def _add_bh(frame: pd.DataFrame) -> pd.DataFrame:
     Imported rather than reimplemented on purpose: `11_close_science_gaps.py`
     `add_bh` is what produced pan-cancer's stored columns, so deriving NSCLC's
     with the same code guarantees one definition of p across the table. A local
-    copy could drift from it silently, which is the whole failure mode S3's
+    copy could drift from it silently, which is the whole failure mode S1's
     caption was worried about.
     """
     spec = importlib.util.spec_from_file_location(
@@ -79,7 +94,7 @@ def _csv(rel: str) -> pd.DataFrame:
     if not p.exists():
         raise SystemExit(f"MISSING SOURCE {p.relative_to(REPO)} -- refusing to "
                          "render a supplement from a file that is not there.")
-    return pd.read_csv(p)
+    return pd.read_csv(p, **EXACT)
 
 
 def _json(rel: str) -> dict:
@@ -105,7 +120,7 @@ def s1_ancestry():
     ]
     return (pd.DataFrame(rows),
             "Ancestry arm: composition and the site-confounding check. The "
-            "manuscript calls this a supplementary table by name, so it is S1.",
+            "manuscript calls this a supplementary table by name, so it is S8.",
             ["ancestry/summary.json"])
 
 
@@ -141,6 +156,9 @@ def s3_per_signature_excess():
         missing = [c for c in optional if c not in d.columns]
         if missing:
             d = _add_bh(d)
+            for c in ("p_two_sided", "q_bh"):
+                if c in missing:
+                    d[c] = [float(f"{v:.{DERIVED_SIG_DIGITS}g}") for v in d[c]]
             still = [c for c in optional if c not in d.columns]
             assert not still, f"{label}: {still} still absent after derivation"
             derived.append(f"{label} ({', '.join(missing)})")
@@ -155,7 +173,9 @@ def s3_per_signature_excess():
                  + ": that run predates the columns, so they are recomputed "
                  "from the stored excess and its interval by the same normal "
                  "approximation that produced the other cohort's stored "
-                 "values. No cell is imputed and no frozen file is modified.")
+                 "values, and rounded to "
+                 f"{DERIVED_SIG_DIGITS} significant digits. No cell is imputed "
+                 "and no frozen file is modified.")
     return (pd.concat(frames, ignore_index=True), note,
             ["pancancer_v3/immune_excess.csv", "nsclc_v3/immune_excess.csv"])
 
@@ -171,7 +191,7 @@ def s4_reliability():
         frames.append(d)
     return (pd.concat(frames, ignore_index=True),
             "Cronbach's alpha and the curated-versus-random reliability gap, "
-            "per signature, residualised and raw. NOTE ON CONVENTION: the "
+            "per signature, residualized and raw. NOTE ON CONVENTION: the "
             "manuscript quotes alpha levels as MEDIANS across signatures and "
             "reliability gaps as MEANS. That mix was recorded only in a "
             "handoff document until now; it is stated here where a reader "
@@ -207,6 +227,27 @@ def s6_label_site_variance():
             ["pancancer_v3/label_site_variance.csv"])
 
 
+def s10_label_site_variance_nsclc():
+    """Control C on the NSCLC scope -- S4's missing counterpart.
+
+    THE SOURCE IS THE SENSITIVITY DIRECTORY AND THAT IS NOT A COMPROMISE.
+    `11_close_science_gaps.py` was never run against `nsclc_v3/`, so the frozen
+    NSCLC primary carries no `label_site_variance.csv`. Rather than assume the
+    sensitivity run's copy would do, it was CHECKED on 2026-09-16: the script
+    was run against a COPY of `nsclc_v3/` (the frozen directory itself was not
+    written to) and its `label_site_variance.csv` came back **byte-identical**
+    to `nsclc_v3_stablesort/`'s. That is the expected result and now a measured
+    one -- Control C regresses the ground-truth score on site with no image and
+    no folds, so neither corrected ordering can reach it.
+    """
+    d = _csv("nsclc_v3_stablesort/label_site_variance.csv")
+    return (d,
+            "Control C on the NSCLC scope: the per-signature counterpart to "
+            "S4, whose median this table's prose has quoted since 2026-09-06 "
+            "without tabulating it.",
+            ["nsclc_v3_stablesort/label_site_variance.csv"])
+
+
 def s7_decomposition():
     frames = []
     for cohort, label in (("pancancer_v3", "pan-TCGA"), ("nsclc_v3", "NSCLC")):
@@ -219,25 +260,38 @@ def s7_decomposition():
             ["pancancer_v3/decomposition.csv", "nsclc_v3/decomposition.csv"])
 
 
+# The two partition sweeps S6 tabulates, in order. `frozen` is A5's six- and
+# five-partition run under the original ordering; `stable24` is the 24-partition
+# run per cohort under the pinned ordering (session 49). Both stay reported.
+S8_SWEEPS = (("frozen", ""), ("stable24", "_stable24"))
+
+
 def s8_partition_variance():
-    frames = []
-    for cohort, label in (("nsclc", "NSCLC"), ("pancancer", "pan-TCGA")):
-        p = RESULTS / f"partition_variance_{cohort}" / "per_partition.csv"
-        if not p.exists():
-            continue
-        d = pd.read_csv(p).copy()
-        d.insert(0, "cohort", label)
-        frames.append(d)
+    frames, sources = [], []
+    for sweep, suffix in S8_SWEEPS:
+        for cohort, label in (("nsclc", "NSCLC"), ("pancancer", "pan-TCGA")):
+            rel = f"partition_variance_{cohort}{suffix}/per_partition.csv"
+            p = RESULTS / rel
+            if not p.exists():
+                continue
+            d = pd.read_csv(p, **EXACT).copy()
+            # Only the merged pan-cancer 24-partition table records how each
+            # partition was computed; every other row ran in default mode.
+            if "mode" not in d.columns:
+                d["mode"] = "default"
+            d.insert(0, "cohort", label)
+            d.insert(0, "sweep", sweep)
+            frames.append(d)
+            sources.append(rel)
     if not frames:
         raise SystemExit("no partition-variance artefacts at all")
     note = ("Per-partition ISI under varying site-to-fold assignments "
-            "(split_seed only; every other random choice held fixed).")
-    if len(frames) == 1:
-        note += (" PAN-CANCER IS ABSENT: it had not finished when this was "
-                 "rendered. Re-run this script once it has.")
-    return (pd.concat(frames, ignore_index=True), note,
-            [f"partition_variance_{c}/per_partition.csv"
-             for c in ("nsclc", "pancancer")])
+            "(split_seed only; every other random choice held fixed), for both "
+            "sweeps.")
+    if len(frames) < 2 * len(S8_SWEEPS):
+        note += (" A SWEEP OR COHORT IS ABSENT: its artifact was missing when "
+                 "this was rendered.")
+    return pd.concat(frames, ignore_index=True), note, sources
 
 
 def s9_platform():
@@ -272,16 +326,22 @@ def s9_platform():
              "split_determinism_linux_x86_64.json"])
 
 
+# Session 59 (B-20, decided 2026-09-24): numbered in the order the manuscript
+# first cites them, as journals require. The builder functions keep their
+# original names (s1_ancestry ... s10_...), which are the OLD numbers:
+# old -> new  S3->S1, S4->S2, S2->S3, S6->S4, S10->S5, S8->S6, S5->S7,
+# S1->S8, S7->S9, S9->S10. Records written before 2026-09-24 use the old ones.
 TABLES = [
-    ("S1_ancestry", s1_ancestry),
-    ("S2_small_panel_bracket", s2_small_panel),
-    ("S3_per_signature_excess", s3_per_signature_excess),
-    ("S4_reliability_alpha", s4_reliability),
-    ("S5_negative_controls", s5_negative_controls),
-    ("S6_label_site_variance", s6_label_site_variance),
-    ("S7_decomposition", s7_decomposition),
-    ("S8_partition_variance", s8_partition_variance),
-    ("S9_platform_reproducibility", s9_platform),
+    ("S1_per_signature_excess", s3_per_signature_excess),
+    ("S2_reliability_alpha", s4_reliability),
+    ("S3_small_panel_bracket", s2_small_panel),
+    ("S4_label_site_variance", s6_label_site_variance),
+    ("S5_label_site_variance_nsclc", s10_label_site_variance_nsclc),
+    ("S6_partition_variance", s8_partition_variance),
+    ("S7_negative_controls", s5_negative_controls),
+    ("S8_ancestry", s1_ancestry),
+    ("S9_decomposition", s7_decomposition),
+    ("S10_platform_reproducibility", s9_platform),
 ]
 
 # Journal-style captions. MANIFEST.md's one-liners are internal notes -- they
@@ -293,11 +353,11 @@ TABLES = [
 #
 # Written here rather than in a separate document so they regenerate with the
 # tables and cannot drift out of step with them. Where a table has a defect a
-# reviewer would otherwise discover for themselves -- S3's missing NSCLC
-# multiplicity columns, S8's absent pan-cancer arm -- the caption states it.
+# reviewer would otherwise discover for themselves -- S1's missing NSCLC
+# multiplicity columns, S6's absent pan-cancer arm -- the caption states it.
 # Concealing a gap in a supplement is how a reviewer stops trusting the rest.
 CAPTIONS = {
-    "S1_ancestry": (
+    "S8_ancestry": (
         "Genetic-ancestry composition of the pan-TCGA cohort and the "
         "site-confounding check.",
         "Counts and proportions by inferred ancestry group, with Cramer's V "
@@ -306,7 +366,7 @@ CAPTIONS = {
         "permutation null is the identifiability result: ancestry and "
         "collection site are not separable in this cohort, so no "
         "ancestry-stratified claim is made anywhere in the manuscript."),
-    "S2_small_panel_bracket": (
+    "S3_small_panel_bracket": (
         "Curated-versus-random reliability gap as a function of gene-panel "
         "size, pan-TCGA.",
         "Signatures were subsampled to fixed panel sizes and the "
@@ -315,7 +375,7 @@ CAPTIONS = {
         "given here. The gap grows monotonically as panels shrink "
         "(Spearman rho = -1.00), so the smallest panels are the most "
         "misleading, not the least."),
-    "S3_per_signature_excess": (
+    "S1_per_signature_excess": (
         "Immune-specificity excess for each of the 16 Hallmark signatures, "
         "both cohorts.",
         "Residualized image-signature correlation, the mean of its size- and "
@@ -329,10 +389,12 @@ CAPTIONS = {
         "not carry two definitions of p: pan-TCGA's stored p is itself the "
         "normal approximation from its interval, which recomputing reproduces "
         "to within 4e-121, so the same function applied to NSCLC yields the "
-        "same quantity. NSCLC's frozen file is read, never modified. Both "
+        "same quantity. The derived values are given to twelve significant "
+        "digits, because their trailing digits differ between platforms. "
+        "NSCLC's frozen file is read, never modified. Both "
         "cohorts give 16 of 16 signatures beating their null after "
         "Benjamini-Hochberg, so the correction changes no conclusion."),
-    "S4_reliability_alpha": (
+    "S2_reliability_alpha": (
         "Per-signature reliability, residualized and raw, both cohorts.",
         "Cronbach's alpha for each curated signature, the mean alpha of its "
         "matched random sets, and the difference. Reported on both the "
@@ -340,14 +402,18 @@ CAPTIONS = {
         "CONVENTION: the manuscript quotes alpha levels as MEDIANS across "
         "signatures and reliability gaps as MEANS; both are given per "
         "signature here so either can be recomputed."),
-    "S5_negative_controls": (
+    "S7_negative_controls": (
         "Negative controls: recoverability of tissue source site from the "
         "image embedding, with and without batch correction.",
         "One-versus-rest AUROC for predicting collection site from the "
         "embedding, per site, in both cohorts, plus the ComBat-corrected NSCLC "
         "arm. Site is almost perfectly recoverable (median AUROC 0.998 "
         "pan-TCGA, 0.992 NSCLC), which is why preserved-site cross-validation "
-        "is used throughout. The ComBat arm is tabulated so that the "
+        "is used throughout. The 128 rows are 98 pan-TCGA sites plus 15 NSCLC "
+        "sites twice over -- once from the embedding and once from the "
+        "ComBat-corrected embedding -- and not a single analysis at three "
+        "scales; pan-TCGA has no ComBat arm, because the correction was only "
+        "ever fitted on NSCLC (ledger F7.9). The ComBat arm is tabulated so that the "
         "post-correction AUROCs can be seen rather than described, and it is "
         "NOT offered as a corrected confounding estimate: per-site centring "
         "imposes a within-site zero-sum constraint that drives the site "
@@ -357,43 +423,85 @@ CAPTIONS = {
         "point rather than a property of this table, ComBat is estimable for "
         "0% of held-out samples under site-disjoint folds by construction, "
         "which is the position of a model meeting a new hospital."),
-    "S6_label_site_variance": (
+    "S5_label_site_variance_nsclc": (
+        "Control C on the NSCLC scope: site-attributable variance on the "
+        "LABEL side, per signature.",
+        "The per-signature counterpart to Supplementary Table S4, which covers "
+        "pan-TCGA. Columns are identical to S4's and are read the same way: "
+        "each signature's ground-truth score regressed on tissue source site "
+        "with no image involved. "
+        "Only sites contributing at least 10 patients enter (202 of 619 "
+        "pan-TCGA, 31 of 68 NSCLC). The two plate columns are zero by "
+        "construction and are evidence of nothing: no input carries a plate "
+        "identifier, so the plate term never enters the design. "
+        "**The two tables are not the same analysis at "
+        "a different scale.** NSCLC contributes 796 patients across 31 usable "
+        "sites against pan-TCGA's 5,775 across 202, and the median "
+        "site-attributable R-squared is 0.145 here against 0.444 there -- a "
+        "threefold difference that S4's caption states in prose and this table "
+        "makes checkable signature by signature. Produced by "
+        "`11_close_science_gaps.py` against the corrected-ordering NSCLC run "
+        "because the pre-registered run was never passed through that script; "
+        "the same script run against a copy of the pre-registered run returns "
+        "this table **byte-identical**, which is what should happen given that "
+        "Control C uses no image and no cross-validation folds, and was "
+        "verified rather than assumed."),
+    "S4_label_site_variance": (
         "Control C: site-attributable variance on the LABEL side, from RNA "
         "alone.",
         "Each signature's ground-truth score regressed on tissue source site "
         "with no image involved, so the quantity measured is how much of the "
         "target is site structure before any prediction is attempted. "
-        "Permutation-calibrated. **Pan-cancer only.** Unlike S5 and S7, this "
+        "Not permutation-calibrated here: the within-type calibration for each "
+        "signature is in results/control_c_calibration/. "
+        "Only sites contributing at least 10 patients enter (202 of 619 "
+        "pan-TCGA, 31 of 68 NSCLC). The two plate columns are zero by "
+        "construction and are evidence of nothing: no input carries a plate "
+        "identifier, so the plate term never enters the design. "
+        "**Pan-cancer only.** Unlike S7 and S9, this "
         "table covers a single cohort, and which cohort it is matters: the "
         "same control computed on the NSCLC scope gives a median R-squared of "
-        "0.145, against 0.444 here -- a threefold difference. The scoping is "
+        "0.145, against 0.444 here -- a threefold difference, tabulated per "
+        "signature in Supplementary Table S5. The scoping is "
         "stated in the caption rather than left to be inferred from the source "
         "filename because getting it wrong is not hypothetical: audit item A11 "
         "was exactly that, a runner that silently computed this control on the "
         "full cohort while reporting it as the requested one. Referred to in "
         "the manuscript's prose but not previously tabulated."),
-    "S7_decomposition": (
+    "S9_decomposition": (
         "Nested-model decomposition of the image signal over purity, cancer "
         "type and site.",
         "Partial correlations and incremental image R-squared as covariates "
         "are added in a fixed order, both cohorts. This is the basis for the "
-        "statement that pan-cancer the embedding adds nothing over covariates."),
-    "S8_partition_variance": (
+        "statement that pan-cancer the embedding adds nothing over covariates. "
+        "The M columns are ordinary R-squared at each rung; "
+        "incremental_image_r2 is the gain in ADJUSTED R-squared from adding the "
+        "image to the full covariate model, so it is not the difference of the "
+        "two M columns beside it (pan-TCGA epithelial-mesenchymal transition: "
+        "0.059 unadjusted, 0.065 adjusted)."),
+    "S6_partition_variance": (
         "Sensitivity of the index to the choice of site-to-fold partition.",
         "The index recomputed under repeated site-to-fold assignments, varying "
         "only split_seed and holding every other random choice fixed, so the "
         "spread is attributable to the partition alone. The between-partition "
         "standard deviation is the quantity the manuscript compares against "
-        "the bootstrap standard error. Both cohorts are present as of "
-        "2026-09-05. Six assignments were requested per cohort; NSCLC yielded "
-        "six and pan-TCGA five, because one pan-TCGA assignment was refused by "
-        "the degeneracy guard when the residualization SVD failed to converge. "
-        "That refusal is reported rather than replaced: the estimand is not "
-        "computable for every valid partition, and substituting another seed "
-        "would have concealed it. Runtime per partition is included because "
-        "the pan-TCGA figures (3,364-11,404 s) are the first measured for that "
-        "cohort and correct an estimate that three handoffs carried."),
-    "S9_platform_reproducibility": (
+        "the bootstrap standard error. Two sweeps are tabulated, marked in "
+        "the sweep column. frozen: six assignments requested per cohort under "
+        "the original tie ordering; NSCLC yielded six and pan-TCGA five. The "
+        "sixth pan-TCGA assignment stopped when a singular value decomposition "
+        "failed to converge in the covariate-baseline regression, a secondary "
+        "analysis under the random-patient split that the index does not use; "
+        "the partition itself was not degenerate. It is reported rather than "
+        "replaced with another seed. stable24: 24 assignments per cohort "
+        "(split_seed 0-23) under the pinned tie ordering, all computed. The "
+        "mode column says how each was computed: default is the full "
+        "configuration; isi_only switches off the two secondary analyses the "
+        "index never reads; fast_isi_only and retry_fast_isi_only add a "
+        "shared-factorization shortcut for the null refits. Both variants "
+        "reproduce the index bit for bit. Runtime per partition is in seconds "
+        "on the machine that ran it (frozen: macOS; stable24: the HPC4 "
+        "cluster, 8 CPUs)."),
+    "S10_platform_reproducibility": (
         "Cross-platform reproducibility of the fold assignment, and the "
         "non-stable sort responsible.",
         "Hashes of the inputs and of the resulting site-to-fold partition, "
@@ -410,15 +518,15 @@ CAPTIONS = {
 # the rendered file, not the source -- otherwise this would only prove pandas
 # can round-trip a CSV.
 CHECKS = [
-    ("S1_ancestry", "value", ("quantity", "patients analysed"),
+    ("S8_ancestry", "value", ("quantity", "patients analysed"),
      "ancestry_n", 0.5),
-    ("S1_ancestry", "value",
+    ("S8_ancestry", "value",
      ("quantity", "Cramer's V, ancestry vs tissue source site"),
      "ancestry_cramers_v", 5e-4),
-    ("S3_per_signature_excess", "excess_z", None, "pancancer_isi", 5e-3),
-    ("S9_platform_reproducibility", "synthetic_isi_shipped",
+    ("S1_per_signature_excess", "excess_z", None, "pancancer_isi", 5e-3),
+    ("S10_platform_reproducibility", "synthetic_isi_shipped",
      ("platform", "macOS arm64"), "splitdet_macos_isi_shipped", 1e-12),
-    ("S9_platform_reproducibility", "synthetic_isi_stable",
+    ("S10_platform_reproducibility", "synthetic_isi_stable",
      ("platform", "Linux x86_64"), "splitdet_hpc4_isi_stable", 1e-12),
 ]
 
@@ -431,7 +539,7 @@ def run_checks(table: dict) -> int:
             print(f"  FAIL {name}: not rendered")
             bad += 1
             continue
-        d = pd.read_csv(p, sep="\t")
+        d = pd.read_csv(p, sep="\t", **EXACT)
         if sel is None:
             # The mean over the pan-TCGA rows must reproduce the headline ISI.
             got = float(d[d["cohort"] == "pan-TCGA"][col].mean())
@@ -481,13 +589,14 @@ def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     manifest = ["# Supplementary tables — rendered, do not hand-edit", "",
                 "Generated by `pipeline/scripts/25_build_supplementary.py` from "
-                "the frozen artefacts in `pipeline/results/`. Re-run it rather "
+                "the frozen artifacts in `pipeline/results/`. Re-run it rather "
                 "than editing a cell; `--check` verifies these files against "
                 "the same authority table the manuscript is checked against.",
                 "",
                 "Format is TSV because *Cancer Research*'s supplementary "
                 "packaging rules are still unverified (HTTP 403 to an "
-                "automated request). See `16-YOUR-TASKS.md`.", ""]
+                "automated request). The block is recorded in the private "
+                "working repository, not in this deposit.", ""]
     # A table without a caption is not submittable, so this is an assertion and
     # not a warning: adding a table to TABLES and forgetting CAPTIONS should
     # stop the build, not produce a silently incomplete package.

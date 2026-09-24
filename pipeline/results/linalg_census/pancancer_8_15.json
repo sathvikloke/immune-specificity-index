@@ -1,0 +1,116 @@
+{
+  "cohort": "pancancer",
+  "split_seeds": [
+    8,
+    15
+  ],
+  "platform": {
+    "system": "Linux",
+    "machine": "x86_64",
+    "python": "3.12.14",
+    "numpy": "2.1.3"
+  },
+  "baselines": [
+    "site_only",
+    "type_only",
+    "purity_only",
+    "covariates"
+  ],
+  "seeds_with_baseline_failure": [
+    11,
+    12
+  ],
+  "seeds_with_decomposition_failure": [
+    15
+  ],
+  "seconds": 736.2,
+  "per_seed": [
+    {
+      "split_seed": 8,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 88.6
+    },
+    {
+      "split_seed": 9,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 87.6
+    },
+    {
+      "split_seed": 10,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 93.0
+    },
+    {
+      "split_seed": 11,
+      "baseline_failures": [
+        {
+          "baseline": "covariates",
+          "fold": 2,
+          "design_shape": [
+            7168,
+            649
+          ],
+          "error": "SVD did not converge"
+        }
+      ],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 89.3
+    },
+    {
+      "split_seed": 12,
+      "baseline_failures": [
+        {
+          "baseline": "covariates",
+          "fold": 1,
+          "design_shape": [
+            7168,
+            649
+          ],
+          "error": "SVD did not converge"
+        }
+      ],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 88.1
+    },
+    {
+      "split_seed": 13,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 89.9
+    },
+    {
+      "split_seed": 14,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [],
+      "seconds": 92.4
+    },
+    {
+      "split_seed": 15,
+      "baseline_failures": [],
+      "decomposition_ran": true,
+      "decomposition_failures": [
+        {
+          "function": "decompose_signature",
+          "signature": "SIG_HALLMARK_MYC_TARGETS_V1",
+          "rung": "Mfull_+image",
+          "design_shape": [
+            7168,
+            651
+          ],
+          "error": "SVD did not converge"
+        }
+      ],
+      "seconds": 92.5
+    }
+  ]
+}

@@ -22,6 +22,7 @@
   "bh_max_abs_q_delta": 0.0,
   "site_summary_is_dead": true,
   "site_summary_tied_counts": 51,
+  "site_summary_pins_stable": true,
   "splits_tied_site_sizes": 51,
   "splits_pins_stable": true
 }

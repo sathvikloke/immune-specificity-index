@@ -159,6 +159,39 @@ def score_mean_z(expr: pd.DataFrame, sig: SignatureSet) -> pd.DataFrame:
     return pd.DataFrame(out, index=expr.index)
 
 
+def score_plage(expr: pd.DataFrame, sig: SignatureSet) -> pd.DataFrame:
+    """PLAGE: the first singular vector of each set's gene-standardised matrix.
+
+    Tomfohr, Lu and Kepler, BMC Bioinformatics 2005; implemented as GSVA does it
+    (`.plage`): every gene is centred and scaled across samples (ddof=1, R's
+    `scale`), and a set's score is the leading left singular vector of its
+    samples x genes block -- a unit-norm vector over samples. Added 2026-09-17
+    as a third scorer (ledger E6), for the scorer-sensitivity comparison only;
+    the registered scorer is `score_mean_z`.
+
+    SVD leaves the sign free. It is fixed here so the score rises with the
+    set's mean z-score, which makes the score deterministic without changing
+    any correlation the index uses (a ridge fitted to -y predicts -y_hat).
+    Genes with zero variance are dropped from the set, as their z-scores are
+    undefined; `score_mean_z` skips them the same way.
+    """
+    X = expr.to_numpy(dtype=float)
+    sd = X.std(axis=0, ddof=1)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        Z = (X - X.mean(axis=0)) / np.where(sd > 0, sd, np.nan)
+    out = {}
+    for name, idx in _member_positions(expr.columns, sig).items():
+        block = Z[:, idx]
+        block = block[:, np.isfinite(block).all(axis=0)]
+        if block.shape[1] == 0:
+            continue
+        u = np.linalg.svd(block, full_matrices=False)[0][:, 0]
+        if float(u @ block.mean(axis=1)) < 0:
+            u = -u
+        out[name] = u
+    return pd.DataFrame(out, index=expr.index)
+
+
 # Cells per sample-block in `score_ssgsea`. The two dense per-sample tables are
 # materialised one block at a time so peak memory does not scale with the cohort:
 # pan-cancer is ~11k patients x 20k genes, which as one float64 table would be

@@ -1,0 +1,4 @@
+{
+  "what": "Ledger E9: how far the mean-z null draws sit from the disattenuation guards (a draw is dropped when its reliability is <= 0.01 or |r / sqrt(alpha)| >= 1).",
+  "produced_by": "cluster/e9_null_reliability.py (sha256 96f2b85fd64b93ed...), HPC4 array 130185 (task 0 NSCLC, 258 s; task 1 pan-cancer, 4,148 s; cpu-848, 2026-09-17), ISI-only configuration at split_seed 0, fast path on. Each task's index equals its cohort's corrected-ordering primary bit for bit."
+}

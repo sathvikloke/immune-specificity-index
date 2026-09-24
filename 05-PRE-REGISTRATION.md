@@ -164,7 +164,12 @@ answer:
 > 4.9 slides/subject purely as a cost lever. Neither had read the manifest.
 > `scripts/07_triage_cptac.py` now does. TCIA's "qualification workflow" wording
 > is confirmed verbatim, and the discovery side is **99.48% DX** (10,117 of
-> 10,170 slides, parsed from the embeddings parquet). What the manifest adds:
+> 10,170 slides, parsed from the embeddings parquet). *[Corrected 2026-09-17,
+> in this addendum only; the tagged protocol never carried the figure. All
+> 10,170 are diagnostic slides from primary-tumour samples: the 53 the parse
+> missed carry lettered suffixes, DXA to DXU, which a digit-only pattern does not
+> match. They belong to 7 patients (SARC, THYM, LGG, TGCT).]* What the manifest
+> adds:
 >
 > | | slides |
 > |---|---|
@@ -286,3 +291,44 @@ python -m pytest tests/ -q          # 67 tests
 Every run writes `config.json` (the full frozen configuration) and
 `summary.json` (estimand, CI, method string, and all run notes) into its output
 directory.
+
+## Appendix A — deviations after filing, recorded 2026-09-17
+
+§8 requires each change to go here, dated and with its reason, **before** the
+affected result is reported. The two changes below were made on 2026-08-19, the
+day after filing, and the results they affect were reported without this
+appendix. It was written on 2026-09-17, when the tagged protocol
+(`prereg-2026-08-18`, commit `2d3f6fa`) was compared line by line with the code
+that produced the frozen results; both changes are in commit `39664aa`.
+Recording them late is itself a deviation from §8.
+
+1. **The outcome arm's concordance is stratified by cancer type.** §3 fixed the
+   reduction to a scalar as Harrell's C and said nothing about pooling across
+   types. Run pan-TCGA, a C-index pooled over 31 cancer types mostly measures
+   which cancer a sample is: cancer type alone reaches C = 0.676 on PFI, and
+   unstratified, 94% of signatures "beat" their null. Only within-type pairs are
+   now comparable whenever a cohort has more than one type, so NSCLC is
+   stratified by LUAD and LUSC too. The change was made after the unstratified
+   pan-cancer outcome had been seen. Every reported outcome figure, in both
+   cohorts, is the stratified one; NSCLC's count, 0 of 32, is the same under
+   both.
+2. **The pooled bootstrap uses one complete-case mask across signatures.**
+   Pan-TCGA, 19 of the 7,168 patients carry no cancer type and therefore no
+   within-type axis value. One non-finite value made every bootstrap draw's
+   correlation undefined while the point estimate masked it, so the interval
+   came back empty. The bootstrap now drops those patients from every signature
+   together, which keeps the patient-cluster structure, and reports the count.
+   NSCLC has no such patient: its primary result, 0.3182 [0.2614, 0.3763], is
+   the one §6 recorded at filing.
+
+3. **The pan-TCGA cohort was added.** This protocol registers the NSCLC
+   analysis (Part A) and a CPTAC validation (Part B); it does not mention a
+   pan-cancer cohort. Pan-TCGA (7,168 patients, 31 cancer types) was added on
+   2026-08-19 as a replication under the same estimand and the settings §2
+   fixed, and it is where both changes above were found. Its results are
+   therefore not pre-registered in the sense Part B is, and the manuscript no
+   longer calls them so.
+
+Neither change alters the primary estimand in §2: the point estimate, the null,
+the disattenuation and the settings fixed in advance are as filed. The
+manuscript's Methods state all three items and their dates.

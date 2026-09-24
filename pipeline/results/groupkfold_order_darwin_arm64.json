@@ -1,0 +1,21 @@
+{
+  "case": "F sklearn GroupKFold  random-patient group order  [A12]",
+  "library_line": "indices = np.argsort(n_samples_per_group)[::-1]",
+  "library_pins_stable": false,
+  "all_ties_argsort_hash_944": "cb54ec6dc2893b62",
+  "all_ties_argsort_hash_7168": "9085a1f89f19e541",
+  "fold_hash_library": "8fdee48c0ac8a457",
+  "fold_hash_stable": "caf92a3f83ddb5b9",
+  "ties_exist": true,
+  "output_changes": true,
+  "shipped_pins_stable": false,
+  "documented": "A12 (decision open; the index does not use this partition)",
+  "verdict": "DOCUMENTED, NOT PINNED -- A12 (decision open; the index does not use this partition)",
+  "platform": {
+    "system": "Darwin",
+    "machine": "arm64",
+    "python": "3.13.9",
+    "numpy": "2.1.3",
+    "sklearn": "1.6.1"
+  }
+}

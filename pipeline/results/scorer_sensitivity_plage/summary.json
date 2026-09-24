@@ -1,0 +1,83 @@
+{
+  "cohort": "nsclc",
+  "n_patients": 944,
+  "n_null_sets": 1000,
+  "n_null_sets_matches_main_analysis": true,
+  "n_boot": 1000,
+  "arms": {
+    "mean_z__uncorrected": {
+      "isi": 0.2962774233920632,
+      "lo": 0.2441658471318609,
+      "hi": 0.3514174196331129,
+      "n_signatures": 16,
+      "method": "mean-immune-specific-excess-z-patient-clustered-bootstrap [null subsampled to 200 draws]",
+      "seconds": 196.4,
+      "beats_null": 16
+    },
+    "plage__uncorrected": {
+      "isi": 0.13528824254842386,
+      "lo": 0.08889703586211395,
+      "hi": 0.18335995253926862,
+      "n_signatures": 16,
+      "method": "mean-immune-specific-excess-z-patient-clustered-bootstrap [null subsampled to 200 draws]",
+      "seconds": 519.1,
+      "beats_null": 13
+    },
+    "plage__disattenuated": {
+      "isi": null,
+      "lo": null,
+      "hi": null,
+      "n_signatures": null,
+      "method": null,
+      "seconds": 494.9,
+      "beats_null": 0
+    }
+  },
+  "reconstructed": {
+    "mean_z": {
+      "isi": 0.2918660740397929,
+      "lo": 0.25863624139436125,
+      "hi": 0.3250959066852246,
+      "n_signatures": 16,
+      "beats_null": 16,
+      "method": "excess-over-null-z-disattenuated-with-split-half-reliability; CI is the across-signature SE, NOT the registered patient-clustered bootstrap"
+    },
+    "plage": {
+      "isi": 0.0771644177777586,
+      "lo": 0.03539351008404562,
+      "hi": 0.11893532547147159,
+      "n_signatures": 16,
+      "beats_null": 11,
+      "method": "excess-over-null-z-disattenuated-with-split-half-reliability; CI is the across-signature SE, NOT the registered patient-clustered bootstrap"
+    }
+  },
+  "split_half_reliability": {
+    "mean_z": {
+      "observed_mean": 0.9619780095308824,
+      "null_mean": 0.7993110427435005
+    },
+    "plage": {
+      "observed_mean": 0.9604997967898428,
+      "null_mean": 0.667022604771673
+    }
+  },
+  "ssgsea_pinned_from": "results/scorer_sensitivity_ssgsea_stable/summary.json",
+  "ssgsea_pinned": {
+    "uncorrected": {
+      "isi": 0.17377773241035724,
+      "lo": 0.13325771984752488,
+      "hi": 0.21018161815588407,
+      "n_signatures": 16,
+      "method": "mean-immune-specific-excess-z-patient-clustered-bootstrap [null subsampled to 200 draws]"
+    },
+    "reconstructed": {
+      "isi": -0.13986374583533862,
+      "lo": -0.18601790340193958,
+      "hi": -0.09370958826873765,
+      "n_signatures": 16,
+      "beats_null": 0,
+      "method": "excess-over-null-z-disattenuated-with-split-half-reliability; CI is the across-signature SE, NOT the registered patient-clustered bootstrap"
+    }
+  },
+  "runtime_s": 1424.6
+}

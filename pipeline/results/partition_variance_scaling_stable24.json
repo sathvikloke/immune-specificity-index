@@ -1,0 +1,33 @@
+{
+  "nsclc_source": "results/partition_variance_nsclc_stable24/derived.json",
+  "pancancer_source": "results/partition_variance_pancancer_stable24/derived.json",
+  "k": {
+    "nsclc": 24,
+    "pancancer": 24
+  },
+  "cohort_size": {
+    "nsclc": {
+      "patients": 944,
+      "sites": 68
+    },
+    "pancancer": {
+      "patients": 7168,
+      "sites": 619
+    }
+  },
+  "sqrt_patients_prediction": 2.7555798553086883,
+  "sqrt_sites_prediction": 3.017108081668701,
+  "bootstrap_component_ratio": 2.652000948007097,
+  "bootstrap_observed_over_sqrt_patients": 0.9624112118899243,
+  "partition_component_ratio": 1.059896619189254,
+  "partition_component_ratio_f_95ci": [
+    0.6971132713242111,
+    1.6114753363321817
+  ],
+  "partition_observed_over_sqrt_patients": 0.3846365102239148,
+  "partition_observed_over_sqrt_sites": 0.35129554212159575,
+  "sqrt_patients_inside_ratio_ci": false,
+  "sqrt_sites_inside_ratio_ci": false,
+  "one_inside_ratio_ci": true,
+  "sd_chi2_95ci_overlap": true
+}

@@ -63,20 +63,35 @@ So `models.cross_val_predict_multi` is exonerated, and so is BLAS. The alpha
 flips (11 of 80, each one grid step) are a CONSEQUENCE of the different
 partition -- different training sets select different penalties -- not a cause.
 
-THE FIX, VERIFIED BUT NOT APPLIED
----------------------------------
-`kind="stable"` at splits.py:177 makes the partition byte-identical across both
-architectures (H_FOLD 9f31e33c2caaf1e3 on both). It is NOT applied here,
-because changing the partition changes every frozen number in
-`results/nsclc_v3/` and `results/pancancer_v3/`. That is the maintainer's call.
+THE FIX, APPLIED 2026-09-05
+---------------------------
+`kind="stable"` in `splits.py`'s site ordering makes the partition
+byte-identical across both architectures (H_FOLD 9f31e33c2caaf1e3 on both), and
+it IS applied in the shipped source -- which is why `--check` below reports the
+*shipped* partition as identical to the stable one. The author's call was to
+apply the fix AND keep the frozen numbers in `results/nsclc_v3/` and
+`results/pancancer_v3/` as the reported primary, reporting both values, because
+re-partitioning changes every one of them.
 
-Two further non-stable sorts are latent, not implicated on this data:
-  * `signatures.py:212` `np.argsort(-ranks[i])` -- its own comment already notes
-    tied genes are ordered by argsort's tie-breaking. Empirically harmless here:
-    the residualised scores downstream (S2) agree across platforms to 1.0e-14,
-    so continuous expression evidently produces no exact rank ties.
-  * `stats.py:180` `np.argsort(p)` in the BH-FDR path -- tied p-values.
-`outcome.py:173,181` already pass `kind="stable"` deliberately.
+This section said "VERIFIED BUT NOT APPLIED" until 2026-09-08, three days after
+the fix landed, and cited splits.py:177 after the line had moved. It therefore
+contradicted the output of the very script it documents. Recorded rather than
+quietly corrected, because the defect class -- a docstring that a reader trusts
+instead of running the tool -- is the one this project keeps finding.
+
+The two sorts that were latent when this was written have DIFFERENT resolutions,
+and the difference is worth keeping straight:
+  * `signatures.py` `np.argsort(-ranks[i])` -- now PINNED with `kind="stable"`
+    (2026-09-05). The claim that used to sit here, that "continuous expression
+    evidently produces no exact rank ties", was WRONG and is retracted: ties are
+    common in log-expression because every gene at the floor shares a rank, as
+    that function's own comment now states.
+  * `stats.py`'s `np.argsort(p)` in `bh_fdr` -- deliberately left unstable, and
+    harmless by DERIVATION rather than by measurement. The step-up
+    monotonisation (`np.minimum.accumulate` over the reversed q vector) forces
+    tied p-values to the same final q whatever order argsort put them in, so the
+    tie order cannot reach the output at all.
+`outcome.py` and `barcodes.py` already pass `kind="stable"` deliberately.
 
 USAGE
 -----

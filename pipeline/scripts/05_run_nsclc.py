@@ -8,10 +8,12 @@ construction all have to be reproducible from the manuscript.
 
     python scripts/05_run_nsclc.py --outdir results/nsclc_v2
 
-Inputs are the interim artefacts written by scripts/01_fetch_data.py:
+Inputs are the interim artefacts written by scripts/00_build_interim.py (not by
+01_fetch_data.py, which only downloads; see 14-SCIENCE-AUDIT.md A13 and A16):
     data/interim/cohort_nsclc.parquet   944 patients, TCGA-CDR merged
     data/interim/X_nsclc.npy            944 x 768 Prov-GigaPath slide embeddings
-    data/interim/expr_nsclc.parquet     944 x 41,046 log2(TPM+1), HUGO symbols
+    data/interim/expr_nsclc.parquet     944 x 41,046 log2(TPM + 0.001) (TOIL's own
+                                        scale, not TPM + 1), HUGO symbols
 
 NAMING CONVENTION, AND WHY IT MATTERS
 -------------------------------------

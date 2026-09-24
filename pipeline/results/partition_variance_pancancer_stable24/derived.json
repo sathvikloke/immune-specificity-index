@@ -1,0 +1,56 @@
+{
+  "cohort": "pancancer",
+  "source": "results/partition_variance_pancancer_stable24/per_partition.csv",
+  "n_partitions_used": 24,
+  "split_seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23
+  ],
+  "isi_mean": 0.3006840500454911,
+  "isi_min": 0.28073935159622077,
+  "isi_max": 0.31647814200829133,
+  "isi_sd_across_partitions": 0.0072255199249013306,
+  "isi_sd_chi2_95ci": [
+    0.005615772265792284,
+    0.010135674750777625
+  ],
+  "bootstrap_se": 0.011073355196155779,
+  "combined_se": 0.013222228763917841,
+  "reported_ci": [
+    0.2789806726730063,
+    0.3223874274179759
+  ],
+  "honest_ci": [
+    0.27476895787286254,
+    0.32659914221811964
+  ],
+  "interval_understated_by": 0.1940580365838951,
+  "partition_share_of_total_variance": 0.29862686311298775,
+  "partition_share_from_sd_chi2_95ci": [
+    0.20457769418771193,
+    0.4558748707522208
+  ],
+  "ci_still_excludes_zero": true
+}

@@ -26,10 +26,12 @@ from dataclasses import dataclass, field
 
 import numpy as np
 import pandas as pd
+from scipy import linalg
 from sklearn.linear_model import Ridge, RidgeCV
 from sklearn.preprocessing import StandardScaler
+from sklearn.utils._array_api import _average
 
-from .splits import SplitResult
+from .splits import SplitResult, stable_group_kfold
 
 
 @dataclass
@@ -60,6 +62,62 @@ class FoldPredictions:
 
 
 ALPHAS = np.logspace(-2, 5, 24)
+
+# SHARED-MASK FAST PATH (session 48). See `_ridge_shared_mask_predict`. A module
+# switch rather than a parameter so a verification run can compare the two paths
+# through the real call chain without threading a flag through `experiment`.
+#
+# VERIFIED ON REAL DATA, LINUX (HPC4 job 129737, 2026-09-16): both paths on the
+# first two signatures' null calls of pan-cancer split_seed=7, each a
+# 7,168 x 1,001 prediction matrix, were BITWISE equal (max abs diff 0.0, same
+# NaN pattern). Reference 561.3 s and 550.83 s, fast 290.87 s and 279.76 s: about
+# 1.9x on the null call. The per-column solves are kept (only the centring and
+# X'X are shared); how the remaining time divides has not been profiled. Record:
+# results/session48_diagnostics/job129737_verify_fast_path/.
+SHARED_MASK_FAST_PATH = True
+
+
+def _ridge_shared_mask_predict(Xtr_ok, Y_ok, Xte, alpha):
+    """Per-column `Ridge(alpha).fit(Xtr_ok, Y_ok[:, j]).predict(Xte)`, bit for bit.
+
+    WHY. Pan-cancer has 19 patients with no cancer type and therefore a NaN
+    within-type axis, so their residualised scores are NaN in EVERY null column.
+    Every preserved-site training fold contains some of them (all 24 partitions,
+    HPC4 job 129663), so `cross_val_predict_multi` found every target non-usable
+    and refitted ~1,001 columns one at a time per fold, per signature — at least
+    12 minutes per signature on HPC4 (job 129664), the bulk of a partition.
+
+    WHAT. The columns in one call share one row mask, so the centred design and
+    X'X are the same for all of them. They are computed once. Everything that is
+    per-column in sklearn 1.6.1's dense, unweighted, `solver="auto"` (cholesky)
+    path is kept per-column and done with the SAME operations on the SAME
+    inputs: `_average` centring, `X.T @ y[:, None]`, `A.flat[::p+1] += alpha`,
+    `scipy.linalg.solve(..., assume_a="pos", overwrite_a=True)`, the intercept
+    `y_offset - X_offset @ coef` and `Xte @ coef + intercept`. It is NOT the
+    batched multi-target solve, which uses a multi-column right-hand side and a
+    different kernel path. Equality is asserted BITWISE by
+    `test_shared_mask_fast_path_is_bitwise_equal_to_per_column_ridge`; if the
+    installed sklearn changes this path, that test is what notices.
+    """
+    X = np.array(Xtr_ok, dtype=np.float64, copy=True)
+    X_offset = _average(X, axis=0, weights=None, xp=np).astype(X.dtype, copy=False)
+    X -= X_offset
+    p = X.shape[1]
+    A0 = X.T @ X
+    a = np.asarray(alpha, dtype=X.dtype).ravel()[0]
+    ones = np.ones(p, dtype=X.dtype)
+    out = np.empty((Xte.shape[0], Y_ok.shape[1]))
+    for j in range(Y_ok.shape[1]):
+        y = np.array(Y_ok[:, j], dtype=np.float64, copy=True)
+        y_offset = _average(y, axis=0, weights=None, xp=np)
+        y -= y_offset
+        Xy = X.T @ y.reshape(-1, 1)
+        A = A0.copy()
+        A.flat[:: p + 1] += a
+        coef = np.divide(
+            linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T.ravel(), ones)
+        out[:, j] = Xte @ coef + (y_offset - X_offset @ coef)
+    return out
 
 
 def cross_val_predict_multi(
@@ -150,7 +208,25 @@ def cross_val_predict_multi(
                 block.reshape(-1, 1) if block.ndim == 1 else block
             )
 
-        for j in np.where(~usable)[0]:
+        remaining = list(np.where(~usable)[0])
+        if SHARED_MASK_FAST_PATH and fixed_alpha is not None and len(remaining) > 1:
+            groups: dict[bytes, list[int]] = {}
+            for j in remaining:
+                groups.setdefault(np.isfinite(Ytr[:, j]).tobytes(), []).append(j)
+            remaining = []
+            for cols in groups.values():
+                ok = np.isfinite(Ytr[:, cols[0]])
+                if len(cols) < 2 or ok.sum() < 10:
+                    remaining.extend(cols)
+                    continue
+                try:
+                    preds[np.ix_(test_idx, cols)] = _ridge_shared_mask_predict(
+                        Xtr[ok], Ytr[np.ix_(ok, cols)], Xte, fixed_alpha)
+                except linalg.LinAlgError:
+                    # sklearn would fall back to its SVD solver here; so do we,
+                    # by handing these columns to the reference loop below.
+                    remaining.extend(cols)
+        for j in remaining:
             ok = np.isfinite(Ytr[:, j])
             if ok.sum() < 10:
                 continue
@@ -302,7 +378,6 @@ def site_prediction_control(
     """
     from sklearn.linear_model import LogisticRegression
     from sklearn.metrics import roc_auc_score
-    from sklearn.model_selection import GroupKFold
 
     X = np.asarray(X, dtype=float)
     counts = sites.value_counts()
@@ -315,8 +390,11 @@ def site_prediction_control(
             continue
 
         oof = np.full(len(y), np.nan)
-        splitter = GroupKFold(n_splits=min(n_folds, len(np.unique(patients))))
-        for train_idx, test_idx in splitter.split(X, y, groups=patients.to_numpy()):
+        # Patient-disjoint folds with the group order pinned (A12, 2026-09-24):
+        # scikit-learn's GroupKFold ordered these one-row groups by its
+        # platform's tie rule. Runs before 2026-09-24 used the library's.
+        n_splits = min(n_folds, len(np.unique(patients)))
+        for train_idx, test_idx in stable_group_kfold(patients.to_numpy(), n_splits):
             if y[train_idx].sum() < 2 or (1 - y[train_idx]).sum() < 2:
                 continue
             scaler = StandardScaler().fit(X[train_idx])
@@ -345,6 +423,14 @@ def site_prediction_control(
     # p-value. The reported median site AUROC is computed where it is used, by
     # `19_check_numbers.py` reading `site_control.csv`, which is a channel that
     # survives being written to disk.
+    # Session 59 (B-19b, decided 2026-09-24): with no qualifying site this used
+    # to raise `KeyError: 'auroc'` from `sort_values` on a column-less frame
+    # (found by E16's subsample stress test, array 130207). An empty frame WITH
+    # its columns is the honest answer -- "no site was evaluable" -- and every
+    # caller already treats an empty site table as "no site evaluated". No
+    # registered run reaches this branch, so no stored result changes.
+    if not rows:
+        return pd.DataFrame(columns=["site", "n_patients", "auroc"])
     return pd.DataFrame(rows).sort_values("auroc", ascending=False)
 
 
@@ -485,8 +571,6 @@ def site_prediction_control_oof_combat(
 
     Returns (per_site_auroc_table, diagnostics).
     """
-    from sklearn.model_selection import GroupKFold
-
     X = np.asarray(X, dtype=float)
     sites = pd.Series(sites).reset_index(drop=True)
     patients = pd.Series(patients).reset_index(drop=True)
@@ -494,8 +578,9 @@ def site_prediction_control_oof_combat(
     corrected = np.array(X, dtype=float, copy=True)
     estimable_all = np.zeros(len(X), dtype=bool)
 
-    splitter = GroupKFold(n_splits=min(n_folds, patients.nunique()))
-    for train_idx, test_idx in splitter.split(X, groups=patients.to_numpy()):
+    # The group order is pinned, as in `site_prediction_control` (A12).
+    n_splits = min(n_folds, patients.nunique())
+    for train_idx, test_idx in stable_group_kfold(patients.to_numpy(), n_splits):
         params = fit_combat(X[train_idx], sites.iloc[train_idx])
         corrected[test_idx], est = apply_combat(
             X[test_idx], sites.iloc[test_idx], params

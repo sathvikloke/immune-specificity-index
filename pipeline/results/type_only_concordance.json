@@ -1,0 +1,16 @@
+{
+  "cohort": "pancancer",
+  "endpoint": "PFI",
+  "stratified": false,
+  "in_sample": true,
+  "n_patients": 7168,
+  "n_valid": 7068,
+  "n_events": 2442,
+  "n_types": 31,
+  "c_index": {
+    "event_proportion": 0.6764550508960626,
+    "events_per_person_time": 0.6779659498042317,
+    "cox_type_dummies": 0.6805978739876681
+  },
+  "reported_as": "event_proportion"
+}

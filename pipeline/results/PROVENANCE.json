@@ -56,9 +56,34 @@
    "bytes": 2182700,
    "deposited": false
   },
+  "control_c_calibration/nsclc.json": {
+   "sha256": "60e3de2e4f8aa5eba9e2b6e471a96443081ec4b12667e8ed877e3bf74b4d697f",
+   "bytes": 5258,
+   "deposited": true
+  },
+  "control_c_calibration/pancancer.json": {
+   "sha256": "7a71ab85613b1c9026016f3372df0d2d9740eae2665eb1286345298c7d482190",
+   "bytes": 5238,
+   "deposited": true
+  },
+  "demo/immune_excess.csv": {
+   "sha256": "11a6e1c51644f9405c53a9c81038541f205f868b934993ab67de97323e539e25",
+   "bytes": 550,
+   "deposited": true
+  },
   "gene_set_sizes.csv": {
    "sha256": "0a1bd4f0b9898df8d1a90e11910f9ff6162f19b2da11b28b4e8ee0a1a5257e5a",
    "bytes": 379,
+   "deposited": true
+  },
+  "groupkfold_order_darwin_arm64.json": {
+   "sha256": "1637b9e13dc21a5ed3b9d6a0feb55e433d48e93127bc887edd4ade465febf920",
+   "bytes": 758,
+   "deposited": true
+  },
+  "groupkfold_order_linux_x86_64_login.json": {
+   "sha256": "05088a858c4e32a5526c255f00975addd3fe70abb07f1dfd02c84920f188a67c",
+   "bytes": 759,
    "deposited": true
   },
   "nsclc_fixed/config.json": {
@@ -161,6 +186,256 @@
    "bytes": 2868,
    "deposited": true
   },
+  "nsclc_sensitivity/global_axis/config.json": {
+   "sha256": "d74bcd1f64df900ffbdfd1e8d7155b8d11d9cf9583a6b733d3ed03e71d3087be",
+   "bytes": 1045,
+   "deposited": true
+  },
+  "nsclc_sensitivity/global_axis/immune_excess.csv": {
+   "sha256": "4297eeeee3c06ea95dd7b2f027941fdf5d6a69bf3f50b604da1f4790c07cdead",
+   "bytes": 5163,
+   "deposited": true
+  },
+  "nsclc_sensitivity/global_axis/null_draws.npz": {
+   "sha256": "e4cd5059a00a3c2d8ef66a6d19c99a70142933743879550a84acb7497d26c9f4",
+   "bytes": 122086,
+   "deposited": true
+  },
+  "nsclc_sensitivity/global_axis/per_signature.csv": {
+   "sha256": "03a3fbbd82e893ecb3a460927678e0fcbdd6ac85194dc7442646318491766b9c",
+   "bytes": 2897,
+   "deposited": true
+  },
+  "nsclc_sensitivity/global_axis/site_control.csv": {
+   "sha256": "712514f5008d5f778321a487afed807db9b0d9da5189bbc569d310e458c89088",
+   "bytes": 381,
+   "deposited": true
+  },
+  "nsclc_sensitivity/global_axis/summary.json": {
+   "sha256": "27409b2a3603d8bbbdc42b391ce2e0b7420e3e961655c71320674452d2a19736",
+   "bytes": 982,
+   "deposited": true
+  },
+  "nsclc_sensitivity/global_axis/three_way.csv": {
+   "sha256": "662b9085c9766fc6ccea5ba20fa892e7237490773c6509238bde082583b71128",
+   "bytes": 1886,
+   "deposited": true
+  },
+  "nsclc_sensitivity/k10/config.json": {
+   "sha256": "2f21954065315562375066a33c421cdd8cbe26ebbb1e8447a62c0748475e69e7",
+   "bytes": 1045,
+   "deposited": true
+  },
+  "nsclc_sensitivity/k10/immune_excess.csv": {
+   "sha256": "8d64cf6812f88fb898ae4b2e7eb750c98a4ddc7ffea30b1c0e1306d9bdfa7db3",
+   "bytes": 5058,
+   "deposited": true
+  },
+  "nsclc_sensitivity/k10/null_draws.npz": {
+   "sha256": "2f6e326af571f17fbe97204b6415f7377e95a4aa2cf78539abe57c333f1a07e5",
+   "bytes": 125389,
+   "deposited": true
+  },
+  "nsclc_sensitivity/k10/per_signature.csv": {
+   "sha256": "f48ce0907e7c673c981e41c23470d4df4057562379aa1f63d25317c888c23277",
+   "bytes": 2887,
+   "deposited": true
+  },
+  "nsclc_sensitivity/k10/site_control.csv": {
+   "sha256": "97a3c138a6f827ece9e1611434932054a73b87088fa10df534cc21e6e44da363",
+   "bytes": 382,
+   "deposited": true
+  },
+  "nsclc_sensitivity/k10/summary.json": {
+   "sha256": "114797efafb8eba67d1bc10a8837ddb45a52a50136283111de234a21ca70828f",
+   "bytes": 978,
+   "deposited": true
+  },
+  "nsclc_sensitivity/k10/three_way.csv": {
+   "sha256": "16bdf022429d17ed9f508cb0047c4285471bc665ad11f2e61488ca40e5edcc1e",
+   "bytes": 1886,
+   "deposited": true
+  },
+  "nsclc_sensitivity/k3/config.json": {
+   "sha256": "a490dc4612c6f1039f88e6f0329b7fbb7b17db32cbe6596440f7aeaf694078d3",
+   "bytes": 1044,
+   "deposited": true
+  },
+  "nsclc_sensitivity/k3/immune_excess.csv": {
+   "sha256": "85c15330623a7259a90741e45c61c62a7ca8cd9c7dda3723d3a508b1513c0818",
+   "bytes": 5078,
+   "deposited": true
+  },
+  "nsclc_sensitivity/k3/null_draws.npz": {
+   "sha256": "0bd0bf738e111977c2b38e3664ed0fbf088cd4970a253f78d2b98f2994267865",
+   "bytes": 124714,
+   "deposited": true
+  },
+  "nsclc_sensitivity/k3/per_signature.csv": {
+   "sha256": "77554bdaf7d1c8e4c485d9c7b4b7ef0f78b553d2182d194d6ec87acce017f099",
+   "bytes": 2892,
+   "deposited": true
+  },
+  "nsclc_sensitivity/k3/site_control.csv": {
+   "sha256": "e9a1df7f0790eb8cb6d1bb5f9c4644f487d85c6bbf61cb0e0d0c5cebb4ad029a",
+   "bytes": 379,
+   "deposited": true
+  },
+  "nsclc_sensitivity/k3/summary.json": {
+   "sha256": "9561f7aa1a21d4f2542275f8d3c0e54774fbfd9a5e5619aa1b86cb4b36a5c689",
+   "bytes": 976,
+   "deposited": true
+  },
+  "nsclc_sensitivity/k3/three_way.csv": {
+   "sha256": "556546e0e8e21dae1c8849b795a27045d80d6e53c3a6ad84248573032dfa95a1",
+   "bytes": 1892,
+   "deposited": true
+  },
+  "nsclc_sensitivity/null_boot_1000/config.json": {
+   "sha256": "2b8d446f1c6a68b91e71d94b90c93fb28c0f00fdb51026afbefb4e813eae3d61",
+   "bytes": 1044,
+   "deposited": true
+  },
+  "nsclc_sensitivity/null_boot_1000/immune_excess.csv": {
+   "sha256": "1a1ca1e05a207d1cc8de3a214e90544b76cf6665dde04c2c051134b65a624ae4",
+   "bytes": 5060,
+   "deposited": true
+  },
+  "nsclc_sensitivity/null_boot_1000/null_draws.npz": {
+   "sha256": "43e18f8caf93cb66e9b78dbbd8faba4ca7637eadafaa53a4a30719fb8684dc6e",
+   "bytes": 125065,
+   "deposited": true
+  },
+  "nsclc_sensitivity/null_boot_1000/per_signature.csv": {
+   "sha256": "03a3fbbd82e893ecb3a460927678e0fcbdd6ac85194dc7442646318491766b9c",
+   "bytes": 2897,
+   "deposited": true
+  },
+  "nsclc_sensitivity/null_boot_1000/site_control.csv": {
+   "sha256": "712514f5008d5f778321a487afed807db9b0d9da5189bbc569d310e458c89088",
+   "bytes": 381,
+   "deposited": true
+  },
+  "nsclc_sensitivity/null_boot_1000/summary.json": {
+   "sha256": "a307c34654562b214061d787fedc55a62d83dc9dc523d6781f143a04536b159c",
+   "bytes": 980,
+   "deposited": true
+  },
+  "nsclc_sensitivity/null_boot_1000/three_way.csv": {
+   "sha256": "a3adfc55797884320402a4995620fdfaa43bee741d640676a3302dc9c9284ced",
+   "bytes": 1893,
+   "deposited": true
+  },
+  "nsclc_sensitivity/null_boot_400/config.json": {
+   "sha256": "2b8d446f1c6a68b91e71d94b90c93fb28c0f00fdb51026afbefb4e813eae3d61",
+   "bytes": 1044,
+   "deposited": true
+  },
+  "nsclc_sensitivity/null_boot_400/immune_excess.csv": {
+   "sha256": "1a1ca1e05a207d1cc8de3a214e90544b76cf6665dde04c2c051134b65a624ae4",
+   "bytes": 5060,
+   "deposited": true
+  },
+  "nsclc_sensitivity/null_boot_400/null_draws.npz": {
+   "sha256": "43e18f8caf93cb66e9b78dbbd8faba4ca7637eadafaa53a4a30719fb8684dc6e",
+   "bytes": 125065,
+   "deposited": true
+  },
+  "nsclc_sensitivity/null_boot_400/per_signature.csv": {
+   "sha256": "03a3fbbd82e893ecb3a460927678e0fcbdd6ac85194dc7442646318491766b9c",
+   "bytes": 2897,
+   "deposited": true
+  },
+  "nsclc_sensitivity/null_boot_400/site_control.csv": {
+   "sha256": "712514f5008d5f778321a487afed807db9b0d9da5189bbc569d310e458c89088",
+   "bytes": 381,
+   "deposited": true
+  },
+  "nsclc_sensitivity/null_boot_400/summary.json": {
+   "sha256": "4beec72a8757703543d7d41b152b1581f2ea5c9eff9df27ee6c9ca8769b7a3c4",
+   "bytes": 977,
+   "deposited": true
+  },
+  "nsclc_sensitivity/null_boot_400/three_way.csv": {
+   "sha256": "a3adfc55797884320402a4995620fdfaa43bee741d640676a3302dc9c9284ced",
+   "bytes": 1893,
+   "deposited": true
+  },
+  "nsclc_sensitivity/reference/config.json": {
+   "sha256": "2b8d446f1c6a68b91e71d94b90c93fb28c0f00fdb51026afbefb4e813eae3d61",
+   "bytes": 1044,
+   "deposited": true
+  },
+  "nsclc_sensitivity/reference/immune_excess.csv": {
+   "sha256": "1a1ca1e05a207d1cc8de3a214e90544b76cf6665dde04c2c051134b65a624ae4",
+   "bytes": 5060,
+   "deposited": true
+  },
+  "nsclc_sensitivity/reference/null_draws.npz": {
+   "sha256": "43e18f8caf93cb66e9b78dbbd8faba4ca7637eadafaa53a4a30719fb8684dc6e",
+   "bytes": 125065,
+   "deposited": true
+  },
+  "nsclc_sensitivity/reference/per_signature.csv": {
+   "sha256": "03a3fbbd82e893ecb3a460927678e0fcbdd6ac85194dc7442646318491766b9c",
+   "bytes": 2897,
+   "deposited": true
+  },
+  "nsclc_sensitivity/reference/site_control.csv": {
+   "sha256": "712514f5008d5f778321a487afed807db9b0d9da5189bbc569d310e458c89088",
+   "bytes": 381,
+   "deposited": true
+  },
+  "nsclc_sensitivity/reference/summary.json": {
+   "sha256": "863740ee3a6e9bbd276fb86eb45d8e35dd32082a3eae8b80393d66b532c098ba",
+   "bytes": 977,
+   "deposited": true
+  },
+  "nsclc_sensitivity/reference/three_way.csv": {
+   "sha256": "a3adfc55797884320402a4995620fdfaa43bee741d640676a3302dc9c9284ced",
+   "bytes": 1893,
+   "deposited": true
+  },
+  "nsclc_sensitivity/summary.json": {
+   "sha256": "bee1eb68b1fd92f9b6b4506623a3982f1f94793e505221e945ea3cb754891a05",
+   "bytes": 2459,
+   "deposited": true
+  },
+  "nsclc_sensitivity/unmatched_null/config.json": {
+   "sha256": "0b19f653f482800801999fa7cef641df0e2bbbdb65d3a5e6d9f56305ec7cdc72",
+   "bytes": 1045,
+   "deposited": true
+  },
+  "nsclc_sensitivity/unmatched_null/immune_excess.csv": {
+   "sha256": "e5f9f26eaf3e250396d5ed8c3c5fd79ae47ba945b30b41603502876be73b54e2",
+   "bytes": 5068,
+   "deposited": true
+  },
+  "nsclc_sensitivity/unmatched_null/null_draws.npz": {
+   "sha256": "f177c4d6b44bbb8ddb2862277c3909d22e254b650973f9dbc4380e0ac0e751f2",
+   "bytes": 125450,
+   "deposited": true
+  },
+  "nsclc_sensitivity/unmatched_null/per_signature.csv": {
+   "sha256": "03a3fbbd82e893ecb3a460927678e0fcbdd6ac85194dc7442646318491766b9c",
+   "bytes": 2897,
+   "deposited": true
+  },
+  "nsclc_sensitivity/unmatched_null/site_control.csv": {
+   "sha256": "712514f5008d5f778321a487afed807db9b0d9da5189bbc569d310e458c89088",
+   "bytes": 381,
+   "deposited": true
+  },
+  "nsclc_sensitivity/unmatched_null/summary.json": {
+   "sha256": "75c049547b274de43aef0e8bc619c9b41e5c319bd76f291f53016ed6c17abd92",
+   "bytes": 978,
+   "deposited": true
+  },
+  "nsclc_sensitivity/unmatched_null/three_way.csv": {
+   "sha256": "a3adfc55797884320402a4995620fdfaa43bee741d640676a3302dc9c9284ced",
+   "bytes": 1893,
+   "deposited": true
+  },
   "nsclc_v2/config.json": {
    "sha256": "fba1a5d679aab995f9a0cb62b094b32f3c39717ca2794939fd3fbf89c1ff77cb",
    "bytes": 1039,
@@ -261,6 +536,61 @@
    "bytes": 2868,
    "deposited": true
   },
+  "nsclc_v3_pinned/config.json": {
+   "sha256": "415df3f6f24a50365fe7b011dd731c170d12c0ac34fd084f4aad167c54cf446a",
+   "bytes": 1094,
+   "deposited": true
+  },
+  "nsclc_v3_pinned/decomposition.csv": {
+   "sha256": "63a529d3e507884fde88a9c7f8df2e69dc3cdcb6de680f6b28dd3d30887e9c7a",
+   "bytes": 3997,
+   "deposited": true
+  },
+  "nsclc_v3_pinned/immune_excess.csv": {
+   "sha256": "1a1ca1e05a207d1cc8de3a214e90544b76cf6665dde04c2c051134b65a624ae4",
+   "bytes": 5060,
+   "deposited": true
+  },
+  "nsclc_v3_pinned/null_draws.npz": {
+   "sha256": "43e18f8caf93cb66e9b78dbbd8faba4ca7637eadafaa53a4a30719fb8684dc6e",
+   "bytes": 125065,
+   "deposited": true
+  },
+  "nsclc_v3_pinned/outcome_arm.csv": {
+   "sha256": "00990c317ebd6aeb2b31789a650bb361df57edba50b3ddff244cfa2e5f022b6c",
+   "bytes": 7717,
+   "deposited": true
+  },
+  "nsclc_v3_pinned/per_signature.csv": {
+   "sha256": "81a9b0fe558eba2e247944afc2722d56dc8e1f20e3ce774f2e853f933e07076f",
+   "bytes": 4563,
+   "deposited": true
+  },
+  "nsclc_v3_pinned/site_control.csv": {
+   "sha256": "5008dd647ccbb45b2357a957345e1bc4598ce0c284876a3d028f174d0cd3e990",
+   "bytes": 381,
+   "deposited": true
+  },
+  "nsclc_v3_pinned/site_control_combat.csv": {
+   "sha256": "8478d9b845733d51b680c7dc19d8940b6d910a947a9599a13a4cd5ef69586da7",
+   "bytes": 425,
+   "deposited": true
+  },
+  "nsclc_v3_pinned/summary.json": {
+   "sha256": "bdfa4ef86448c1decc14de0611e65d67b1a11fcfd4a507fa47f02b8c93e8a553",
+   "bytes": 1410,
+   "deposited": true
+  },
+  "nsclc_v3_pinned/three_way.csv": {
+   "sha256": "a3adfc55797884320402a4995620fdfaa43bee741d640676a3302dc9c9284ced",
+   "bytes": 1893,
+   "deposited": true
+  },
+  "nsclc_v3_pinned/venet_null.csv": {
+   "sha256": "afbb48cb489f4f04de658ca054ffc64eaeb82d3495215e4650716d68b133c4fe",
+   "bytes": 2878,
+   "deposited": true
+  },
   "nsclc_v3_stablesort/config.json": {
    "sha256": "415df3f6f24a50365fe7b011dd731c170d12c0ac34fd084f4aad167c54cf446a",
    "bytes": 1094,
@@ -331,6 +661,101 @@
    "bytes": 2878,
    "deposited": true
   },
+  "nsclc_v3_tumouronly/config.json": {
+   "sha256": "415df3f6f24a50365fe7b011dd731c170d12c0ac34fd084f4aad167c54cf446a",
+   "bytes": 1094,
+   "deposited": true
+  },
+  "nsclc_v3_tumouronly/decomposition.csv": {
+   "sha256": "8f0fc19c33513bfedd70f016775580934949c8d983eb011e4c23ef3887bc2d3e",
+   "bytes": 3996,
+   "deposited": true
+  },
+  "nsclc_v3_tumouronly/immune_excess.csv": {
+   "sha256": "b35f412d2ddc7bd1586fc7f5805ea7cc5eba06e269c41e2e983f14b4e6ec735f",
+   "bytes": 5038,
+   "deposited": true
+  },
+  "nsclc_v3_tumouronly/null_draws.npz": {
+   "sha256": "8fc1542f4b8760691a9222bd4b3c41197afa68064c10b73508ecbbec7c9ccb3b",
+   "bytes": 124757,
+   "deposited": true
+  },
+  "nsclc_v3_tumouronly/outcome_arm.csv": {
+   "sha256": "29422b31cacfad6cac36fe92ca504f02696c437df14abe2fb6dea25c7ea911bc",
+   "bytes": 7717,
+   "deposited": true
+  },
+  "nsclc_v3_tumouronly/per_signature.csv": {
+   "sha256": "220fe4bde838ce49ebb58f14d84870d4951c61650b8a67eb19960f1b6ab3a8e3",
+   "bytes": 4549,
+   "deposited": true
+  },
+  "nsclc_v3_tumouronly/site_control.csv": {
+   "sha256": "09c00a3ee28d126707545aec8cfaa3bd63b02e0f02ae82d19ae3c9e82f17fb02",
+   "bytes": 381,
+   "deposited": true
+  },
+  "nsclc_v3_tumouronly/site_control_combat.csv": {
+   "sha256": "a86c4a318181ddf019a12e3669e42dd6afe24b5c313423e63050c745ef7af930",
+   "bytes": 429,
+   "deposited": true
+  },
+  "nsclc_v3_tumouronly/summary.json": {
+   "sha256": "52bf2161fcbb5f4b8cdaf5e7c81137e07679971828cf69f7b3034212d3ef9c77",
+   "bytes": 1409,
+   "deposited": true
+  },
+  "nsclc_v3_tumouronly/three_way.csv": {
+   "sha256": "7746f80ebbcac21f03c903280af29c0dc9f36fc2af034e7d05c7091b8612d75b",
+   "bytes": 1876,
+   "deposited": true
+  },
+  "nsclc_v3_tumouronly/venet_null.csv": {
+   "sha256": "501776385a775b7b39e2bb2043048793d32c4bdf577d04ac6a4e6e9a8e8e7f12",
+   "bytes": 2863,
+   "deposited": true
+  },
+  "null_reliability/README.json": {
+   "sha256": "0d84bc3b7c088c9a4bb8c994e8388456b226c66c7cd43436193e43a0788594a6",
+   "bytes": 474,
+   "deposited": true
+  },
+  "null_reliability/nsclc.json": {
+   "sha256": "bb85989597fc9df07b5ed863d6cf6944c4728fd12869644e00b41d6273197188",
+   "bytes": 7998,
+   "deposited": true
+  },
+  "null_reliability/pancancer.json": {
+   "sha256": "1d4a9fb922078d5340af5951d47960373ac0666bbe8f6628205dadf7b9042973",
+   "bytes": 8005,
+   "deposited": true
+  },
+  "omega_reliability/per_signature.csv": {
+   "sha256": "1f5f8f6d3ff3a1cf64c228ee655d74e6cd37632065aea9a464704b65eb7e40ad",
+   "bytes": 3607,
+   "deposited": true
+  },
+  "omega_reliability/summary.json": {
+   "sha256": "ca73eeabfa405e64273f79b8b4c0dd310a0e4de7418f339cb4d0994ff1a9ce12",
+   "bytes": 1150,
+   "deposited": true
+  },
+  "outcome_category_test.json": {
+   "sha256": "06aba8a6ecdec3f723f475ba3b2edb390f6d27f7a6153c6a6ca55016d045a3ea",
+   "bytes": 1118,
+   "deposited": true
+  },
+  "outcome_power_nsclc.json": {
+   "sha256": "01edfbbb48e70e33b7f7268443a0edb31c98328c59d5984ed881214d454da2e3",
+   "bytes": 819,
+   "deposited": true
+  },
+  "outcome_power_pancancer.json": {
+   "sha256": "e0cd1c2cd21af6766ae5482890485cc0be0bfc7b04ae9f6fe23f2761b49c9528",
+   "bytes": 825,
+   "deposited": true
+  },
   "pancancer/config.json": {
    "sha256": "cc85b1aeb2afd4efc64480e76224ab9e01e89957f7f00f8172e18746a408a2c2",
    "bytes": 1037,
@@ -374,6 +799,56 @@
   "pancancer/venet_null.csv": {
    "sha256": "0397a2c8568c592896672fd365ef01bd22e7a6ba47afac1787ab9cde4019a0c5",
    "bytes": 2854,
+   "deposited": true
+  },
+  "pancancer_sensitivity/global_axis/config.json": {
+   "sha256": "56590497e0b51a60192d2e76492eb7aa59e7001c545703a338c7ba01888e37c3",
+   "bytes": 1039,
+   "deposited": true
+  },
+  "pancancer_sensitivity/global_axis/immune_excess.csv": {
+   "sha256": "6f374adbefa3ed39b1f0ee0d92c789a62af63efd479b6901878ed447395bd603",
+   "bytes": 5043,
+   "deposited": true
+  },
+  "pancancer_sensitivity/global_axis/null_draws.npz": {
+   "sha256": "aea057d93fcc4ed485c65efe3f3d26431160aced24af2294d9139bb687f01f9c",
+   "bytes": 123750,
+   "deposited": true
+  },
+  "pancancer_sensitivity/global_axis/per_signature.csv": {
+   "sha256": "3765c7a407bb30ecc364a8e163a7e9947102cd8242de6cbc6278dac0e6b62d94",
+   "bytes": 2864,
+   "deposited": true
+  },
+  "pancancer_sensitivity/global_axis/site_control.csv": {
+   "sha256": "0d6698da8601c2cfbfee46a254cb8b8664c686790e16860cbf31df170c398b0c",
+   "bytes": 2432,
+   "deposited": true
+  },
+  "pancancer_sensitivity/global_axis/summary.json": {
+   "sha256": "62e7ef40a279eb88544514d9e51e67cfee24df27145085ae3e557edcfe248194",
+   "bytes": 978,
+   "deposited": true
+  },
+  "pancancer_sensitivity/global_axis/three_way.csv": {
+   "sha256": "156c003328beb5756cb231fb8e0b87e3f435b07f848b0d11245a535a9dbdb61a",
+   "bytes": 1861,
+   "deposited": true
+  },
+  "pancancer_sensitivity/summary.json": {
+   "sha256": "80bd337bfdbe83a112878ca735defbf560d679214dd4c1d24d1663367cb9c4cb",
+   "bytes": 1349,
+   "deposited": true
+  },
+  "pancancer_tumouronly/per_partition.csv": {
+   "sha256": "2757f7ecc73c6c74c46a6b7e27ec9ed82b8a14ecf391bc594234a24c25ff7968",
+   "bytes": 124,
+   "deposited": true
+  },
+  "pancancer_tumouronly/summary.json": {
+   "sha256": "c175a0f02670e8a9e5435e7bec53575425ba8e6857cfb9e0b0e3c5de9666ea84",
+   "bytes": 1023,
    "deposited": true
   },
   "pancancer_v2/config.json": {
@@ -501,6 +976,106 @@
    "bytes": 2854,
    "deposited": true
   },
+  "pancancer_v3_pinned/config.json": {
+   "sha256": "b1343329cdeac02c845b34f3d5d96c4fe18630cfd7f2245c0969402ad24d42ba",
+   "bytes": 1092,
+   "deposited": true
+  },
+  "pancancer_v3_pinned/decomposition.csv": {
+   "sha256": "c91a183acdf02e422f17b2beb4b726d3c8a7e727adc85ad71920750772baf50b",
+   "bytes": 3676,
+   "deposited": true
+  },
+  "pancancer_v3_pinned/immune_excess.csv": {
+   "sha256": "225b1b23f72a856f1d50694962157d2d5dcd55ef006adf972e3ef2fa609b277f",
+   "bytes": 5070,
+   "deposited": true
+  },
+  "pancancer_v3_pinned/null_draws.npz": {
+   "sha256": "c7ba4084e4078f422a85bb6ad50d14e0aa3d2b8f9f205d6b6ed3927cf36edf75",
+   "bytes": 124187,
+   "deposited": true
+  },
+  "pancancer_v3_pinned/outcome_arm.csv": {
+   "sha256": "9d436b99bc07095e6807e782a2df07195fe85e47016dae9b0cf544e4fae64c68",
+   "bytes": 7776,
+   "deposited": true
+  },
+  "pancancer_v3_pinned/per_signature.csv": {
+   "sha256": "0388fdc592f6bdeb0a9ddafca342eb634b96313426c18c7e8989b74ecb93eb6d",
+   "bytes": 4499,
+   "deposited": true
+  },
+  "pancancer_v3_pinned/site_control.csv": {
+   "sha256": "936dfbd8cbf60c78fcdf9c7c0e20cefddcd9534d9be53a9c58b87c537d3322de",
+   "bytes": 2426,
+   "deposited": true
+  },
+  "pancancer_v3_pinned/summary.json": {
+   "sha256": "996cdd7a93feb57aa55c6c651f104708e7a6bed43a57c2d7ac7ac4a577dbc146",
+   "bytes": 1271,
+   "deposited": true
+  },
+  "pancancer_v3_pinned/three_way.csv": {
+   "sha256": "0a05f86061f8d50885122b7d8be971fd937a7719325f9c8e32a761e281993314",
+   "bytes": 1887,
+   "deposited": true
+  },
+  "pancancer_v3_pinned/venet_null.csv": {
+   "sha256": "7c90bb04ee9367a1cb67b35cd8cbb7bd236879a4c93a4e25db22c42406792fc7",
+   "bytes": 2845,
+   "deposited": true
+  },
+  "pancancer_v3_stablesort/config.json": {
+   "sha256": "b1343329cdeac02c845b34f3d5d96c4fe18630cfd7f2245c0969402ad24d42ba",
+   "bytes": 1092,
+   "deposited": true
+  },
+  "pancancer_v3_stablesort/decomposition.csv": {
+   "sha256": "b330ef263aa2372b6ac1ae7561365d8e5bd6bbae634dfb3f986936b69b952dc7",
+   "bytes": 3676,
+   "deposited": true
+  },
+  "pancancer_v3_stablesort/immune_excess.csv": {
+   "sha256": "3dd5fb30315cb6f329ee1542a1259228cf56b9687f37826260a2a3e05a1ce644",
+   "bytes": 5082,
+   "deposited": true
+  },
+  "pancancer_v3_stablesort/null_draws.npz": {
+   "sha256": "5c48585ad3667c0cf64594d50c58eef19a9f1d961ea3352538518e3e9f0ec386",
+   "bytes": 124181,
+   "deposited": true
+  },
+  "pancancer_v3_stablesort/outcome_arm.csv": {
+   "sha256": "47b12adee2d01d52ce99d9cb39d4475a8c873254a45c6f07052b54260e374c05",
+   "bytes": 7772,
+   "deposited": true
+  },
+  "pancancer_v3_stablesort/per_signature.csv": {
+   "sha256": "de9aa9dd4f18a768da8ffbc9d24419621e4a99f216726900afd01446f360e87c",
+   "bytes": 4500,
+   "deposited": true
+  },
+  "pancancer_v3_stablesort/site_control.csv": {
+   "sha256": "0d6698da8601c2cfbfee46a254cb8b8664c686790e16860cbf31df170c398b0c",
+   "bytes": 2432,
+   "deposited": true
+  },
+  "pancancer_v3_stablesort/summary.json": {
+   "sha256": "a097e5eee8aa1320c979d46eef7aba87322540fb6efbca95cfeb7e2f3748b55e",
+   "bytes": 1271,
+   "deposited": true
+  },
+  "pancancer_v3_stablesort/three_way.csv": {
+   "sha256": "e641bf5e1adb2799f676c01b024738ca14e2c1cfc6542a08a73cfe03314c9923",
+   "bytes": 1882,
+   "deposited": true
+  },
+  "pancancer_v3_stablesort/venet_null.csv": {
+   "sha256": "62f15686e8f56d67db34c7c52b6a9dbcec6eb14fe5f2788977428a9c924b9e80",
+   "bytes": 2856,
+   "deposited": true
+  },
   "partition_variance_nsclc/per_partition.csv": {
    "sha256": "46ed4d59907a08216a105bab743ffbd87a6300b61dda368e184a1e7ac2299266",
    "bytes": 535,
@@ -508,6 +1083,21 @@
   },
   "partition_variance_nsclc/summary.json": {
    "sha256": "05a489543acaba6153da4043c2a99746e4a6be719c506af311456879c974c218",
+   "bytes": 487,
+   "deposited": true
+  },
+  "partition_variance_nsclc_stable24/derived.json": {
+   "sha256": "9bf7872f05a9a0a5834bc30cb175074f99df941cf26b318711c6bdf35f8cd64f",
+   "bytes": 1023,
+   "deposited": true
+  },
+  "partition_variance_nsclc_stable24/per_partition.csv": {
+   "sha256": "5042c330c5bf0cea2d6bd4cfcc0cdbb5534ed0ac7aa45c22f0f6be7fe3a77c99",
+   "bytes": 2018,
+   "deposited": true
+  },
+  "partition_variance_nsclc_stable24/summary.json": {
+   "sha256": "4a6658047af339da5ea1e7a3f720149e83ef1ffc653a7a07145acd5a1d37a747",
    "bytes": 487,
    "deposited": true
   },
@@ -519,6 +1109,31 @@
   "partition_variance_pancancer/summary.json": {
    "sha256": "fefa9ba3a444b7699949c1282c9cff6e8258e4db47f4093c0e92f6d97a36bad7",
    "bytes": 567,
+   "deposited": true
+  },
+  "partition_variance_pancancer_stable24/derived.json": {
+   "sha256": "f71ad86db97022d6271952c7b7765770eec04f7eeb218f37c93bcb9340ab3066",
+   "bytes": 1032,
+   "deposited": true
+  },
+  "partition_variance_pancancer_stable24/not_computed.csv": {
+   "sha256": "376dc885848d4f647ca84bd31a9b1908c85c54924f064050870263eacb04aecf",
+   "bytes": 32,
+   "deposited": true
+  },
+  "partition_variance_pancancer_stable24/per_partition.csv": {
+   "sha256": "0fe7c78003f5fcc95bbed0c644e10b2c1d914af9377b7e1ab7e4e700ca3d46e9",
+   "bytes": 2279,
+   "deposited": true
+  },
+  "partition_variance_pancancer_stable24/summary.json": {
+   "sha256": "a7d71b2a2f43c26ee396248bccf918a361864ebee1292db52e1e515eeea73f0d",
+   "bytes": 3492,
+   "deposited": true
+  },
+  "partition_variance_scaling_stable24.json": {
+   "sha256": "8f4b1182d4e353c451bac78b1113006d1709963fc1d6f9e2a442d2c68f044b38",
+   "bytes": 988,
    "deposited": true
   },
   "scorer_sensitivity_hpc4/per_signature.csv": {
@@ -541,6 +1156,16 @@
    "bytes": 7664,
    "deposited": true
   },
+  "scorer_sensitivity_plage/per_signature.csv": {
+   "sha256": "91f4ffaaeef149d76399a76d314ea52c29f0b4ca08bd5936045c3fe18dfbb606",
+   "bytes": 8864,
+   "deposited": true
+  },
+  "scorer_sensitivity_plage/summary.json": {
+   "sha256": "9d0597c6fe9024a37d4252dd0e2a5c626b2d99f6c8363b26b759d5241111f6a3",
+   "bytes": 2618,
+   "deposited": true
+  },
   "scorer_sensitivity_ssgsea_stable/per_signature.csv": {
    "sha256": "cf43f0ca24359f223b103ea4674114e5e727afd35466013d589c00d52cca1a06",
    "bytes": 6270,
@@ -551,14 +1176,44 @@
    "bytes": 4790,
    "deposited": true
   },
+  "session48_diagnostics/job129151_nsclc_stablesort_hpc4/summary.json": {
+   "sha256": "a4fff6f36cd05e514929766b80e17482e7d25d666f12f8ab1818de33fb7d1e36",
+   "bytes": 1408,
+   "deposited": false
+  },
+  "site_auroc_stress/nsclc_registered.json": {
+   "sha256": "713f92a9cdc78ea92158966ec90fd3b5eafc2ca2b361fd6f726c9fa72258a175",
+   "bytes": 7037,
+   "deposited": true
+  },
+  "site_auroc_stress/nsclc_small.json": {
+   "sha256": "07249f1ae55aeda007ac89c5f2aacc96df8376ff5fb8fdeae75bd72ab2cf28cc",
+   "bytes": 12503,
+   "deposited": true
+  },
+  "site_auroc_stress/pancancer_registered.json": {
+   "sha256": "900626fc7afa636b680677caecd7dfbbe6585277bfa7d1ed071632a1febd56d7",
+   "bytes": 32005,
+   "deposited": true
+  },
+  "site_auroc_stress/pancancer_small.json": {
+   "sha256": "5cded65f0dd4bece80c1ef9b04bf60af793bf2e16bdb86f55100d1bdcc2171c2",
+   "bytes": 75299,
+   "deposited": true
+  },
   "sort_audit_darwin_arm64.json": {
-   "sha256": "6552dfda213aef15d394aab64994d9861591f404619da3ec62606d277e6e73b2",
-   "bytes": 761,
+   "sha256": "288e74cf4ffd9e124426b01bee354e319aef33d149ba81e593c8129a53a51bf3",
+   "bytes": 797,
    "deposited": true
   },
   "sort_audit_linux_x86_64.json": {
    "sha256": "9b8528e8c4cda0e117b1e90663f7eb2615ad81a3619b37a649826cd382ad58de",
    "bytes": 764,
+   "deposited": true
+  },
+  "sort_fix_fold_change.json": {
+   "sha256": "248fb6310b81551ffab4bb4c8fda9ba588a638337f5b535e74b1b855a6d2194d",
+   "bytes": 3168,
    "deposited": true
   },
   "split_determinism_darwin_arm64.json": {
@@ -569,6 +1224,11 @@
   "split_determinism_linux_x86_64.json": {
    "sha256": "5b31bda7a462f1e0676524ffbf291827d8656242ed2b9c7159a27818f0fd52a6",
    "bytes": 579,
+   "deposited": true
+  },
+  "type_only_concordance.json": {
+   "sha256": "18178e43ac4a341ce96bdc15aacf03f7ec5223b7442bd342a654687b89ad829d",
+   "bytes": 365,
    "deposited": true
   }
  }

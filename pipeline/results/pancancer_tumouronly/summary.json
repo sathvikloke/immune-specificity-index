@@ -1,0 +1,16 @@
+{
+  "what": "Ledger A16, pan-cancer: the index on TUMOUR-ONLY expression (TOIL sample code 01 only; the 40 patients without one are dropped, 7,128 remain). Sensitivity analysis; not the reported primary.",
+  "produced_by": "12_partition_variance.py --isi-only --shard at split_seed 0 (fast path), HPC4 job 130155, cpu-845, commit 8442dfe, inputs from 00_build_interim.py --tumour-only (expression_hugo.parquet sha256 ef86847aab5fda72...), 6,293 s. The same configuration reproduces 09_run_pancancer.py bit for bit on the original inputs (ledger B2); 09_run_pancancer.py itself died on these inputs in the covariate baseline's SVD (job 130003, the D8 exposure).",
+  "n_patients": 7128,
+  "n_sites": 619,
+  "isi": 0.2937175047151571,
+  "lo": 0.2701046607032629,
+  "hi": 0.31494011780826736,
+  "reference_source": "results/pancancer_v3_stablesort/summary.json",
+  "reference": {
+    "isi": 0.29684911595367525,
+    "lo": 0.274920163364846,
+    "hi": 0.31893289976112255
+  },
+  "shift_from_reference": -0.0031316112385181283
+}

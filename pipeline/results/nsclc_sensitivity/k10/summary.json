@@ -1,0 +1,26 @@
+{
+  "primary_excess": {
+    "value": 0.31537650818039087,
+    "ci_lo": 0.26067379065322055,
+    "ci_hi": 0.37110273959154333,
+    "n": 16,
+    "method": "mean-immune-specific-excess-z-patient-clustered-bootstrap [null subsampled to 200 draws]"
+  },
+  "secondary_delta_mae": {
+    "value": 0.006515807267624248,
+    "ci_lo": 0.003686055067587585,
+    "ci_hi": 0.009421827206724754,
+    "n": 944,
+    "method": "paired-cluster-bootstrap"
+  },
+  "runtime_s": 5208.386810064316,
+  "notes": [
+    "legacy Venet null skipped by config (run_legacy_venet_null=False)",
+    "Pooled ISI CI: patient-clustered bootstrap, 1000/1000 usable draws, 944 complete-case patients resampled per draw (0 dropped), null subsampled to 200 draws per signature (of 1000)."
+  ],
+  "cohort": {
+    "n_patients": 944,
+    "patient_set_sha256": "54c7688a22df35b0ecce0a91fd13c151ed788fc7e37fbcd79f2b415dffa74b80",
+    "patient_set_sha256_note": "sha256 of the sorted unique patient ids, newline-joined"
+  }
+}

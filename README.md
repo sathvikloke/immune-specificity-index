@@ -52,14 +52,17 @@ definition.
 ```
 05-PRE-REGISTRATION.md   the protocol
 09-PAPER-DRAFT.md        the manuscript
+SUPPLEMENTARY-NOTE-1.md  Limitation 8's forensic account of the ordering defect
+SUPPLEMENTARY-NOTE-2.md  the sensitivity analyses in full
 14-SCIENCE-AUDIT.md      the internal audit, including everything that failed
 CITATION.cff             citation metadata
-LICENSE                  MIT, plus a note on data licensing
+LICENSE                  MIT, verbatim
+DATA-LICENSES.md         where each dataset comes from, under its own license
 pipeline/
   src/aacr27/            the library
-  scripts/               01-26, in dependency order
+  scripts/               00-34, in dependency order
   tests/                 the test suite
-  tools/                 detach helper
+  tools/                 detach helper, ssGSEA sort benchmark
   results/               frozen result JSON/CSV + PROVENANCE.json
   README.md              pipeline documentation -- start here
   reproduce.sh           one-command reproduction
@@ -78,19 +81,37 @@ cd pipeline && bash reproduce.sh --check
 ```
 
 `--check` verifies the environment, the frozen artifact hashes, the numeric
-claims in the documents and the full test suite. It takes about four minutes and
-exits 0. The full analysis run is a separate, much longer path — see
-`pipeline/README.md`, and note that its total wall clock is an **estimate that
-has never been measured end to end**.
+claims in the documents and the full test suite. **In this deposit it stops at
+the determinism check (exit 2)**, because that check and several tests read the
+analysis inputs, which are public but not redistributed here.
+`bash reproduce.sh` (without `--check`) first downloads every input from its public
+source, verifies each against the hash of the file the results were computed
+from, and builds the derived inputs; after that, `--check` exits 0. **Budget ten to
+twenty minutes:** it was measured end to end at 509 s on 2026-09-17 with only
+desktop applications running on the laptop, and at 1,283 s on 2026-09-16 with
+unrelated work running; the test suite is about 290 s of the former. An earlier
+"about four minutes" here was a real
+measurement that went stale, because it predated both the coverage stage and
+several growths of the test suite. The full analysis run is a separate, much
+longer path: from an empty data directory it was measured end to end at 8,751 s
+(2 h 26 min) on Linux/x86_64 with 8 CPUs on 2026-09-17, and reproduced both
+cohorts' corrected-ordering indices bit for bit. `pipeline/README.md` gives the
+stages.
 
-Every reported number is hashed in `pipeline/results/PROVENANCE.json` and
-mechanically compared against the documents that quote it, so a document and an
-artifact cannot silently disagree.
+The frozen artifacts are hashed in `pipeline/results/PROVENANCE.json`, and the
+numbers the documents quote are mechanically compared against those artifacts, so
+a document and an artifact cannot silently disagree **on a checked claim**. That
+check is deliberately not exhaustive, and the tool says so itself rather than
+leaving a reader to assume otherwise: `19_check_numbers.py --coverage` reports,
+per document, how many of its numeric literals are actually covered, and prints
+the caveat that any number outside its pattern tables is not verified.
 
 ## Two things to read honestly
 
-**Platform.** The reported values were produced on macOS 15 / arm64 with
-Python 3.13.9. The estimate is platform-dependent in its fourth digit; a
+**Platform.** The frozen primary results were produced on macOS 26.5.2 / arm64 with
+Python 3.13.9; the corrected-ordering pan-cancer run and several later
+sensitivity analyses were produced on Linux/x86_64 with Python 3.12.14. The
+estimate was platform-dependent in its second decimal; a
 non-stable sort in fold assignment meant two machines built different
 cross-validation partitions from byte-identical inputs. That is fixed, and both
 the pre-fix and post-fix numbers are reported rather than one replacing the
@@ -104,11 +125,13 @@ same property that keeps internal material out of it also means it carries no
 commit predating the results. The protocol's *content* is public; its *timestamp*
 is not independently verifiable from this repository alone. Stated plainly rather
 than implied, because a pre-registration whose timestamp cannot be checked should
-be read as self-attested.
+be read as self-attested. Two analysis changes made the day after filing (the
+outcome arm's stratification by cancer type and the bootstrap's complete-case
+mask) are recorded, with their reasons, in the protocol's Appendix A.
 
 ## License
 
-Code is MIT (`LICENSE`). The same file carries a **NOTE ON DATA**: the license
+Code is MIT (`LICENSE`). [`DATA-LICENSES.md`](DATA-LICENSES.md) is the **note on data**: the license
 covers the code only, no dataset is redistributed here, and each source is used
 under its own terms — Prov-GigaPath TCGA embeddings (CC-BY-4.0), MSigDB Hallmark
 v2024.1 (CC-BY-4.0), Xena TOIL expression, PanCanAtlas ABSOLUTE purity, TCGA-CDR,

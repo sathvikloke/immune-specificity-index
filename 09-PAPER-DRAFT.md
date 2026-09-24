@@ -1080,8 +1080,9 @@ permit.
 > snapshot into a temp directory, renders from it with no `data/` reachable, and
 > a companion test deletes the deposit to prove the check can fail.
 > After these changes a rebuild staged 173 files on 2026-09-07; as of
-> 2026-09-24 a rebuild stages **322 files**, against 173 when the deposit was
-> last published. The 149 added since are sessions 47 to 50's sensitivity runs
+> 2026-09-24 a rebuild stages **322 files**, and the deposit was republished at
+> that count the same day (commit `80b5535`); it had held the 173 since
+> 2026-09-08. The 149 added in between are sessions 47 to 50's sensitivity runs
 > (the corrected-ordering pan-cancer run, both 24-partition sweeps, the
 > tumor-only runs, the global-axis runs, the seven one-at-a-time NSCLC variants,
 > the third scorer, the reliability comparison), their derived records
@@ -1133,8 +1134,8 @@ permit.
 > before it, while the nine supplementary tables built (exit 0) — so the table
 > half was true and the figure half false.
 >
-> The author pushed at 18:08 CDT on 2026-09-08. The deposit is now commit
-> `2b3bb75`, **173 files, 1,827,428 bytes**, and matches a fresh build with **zero
+> The author pushed at 18:08 CDT on 2026-09-08. The deposit was then commit
+> `2b3bb75`, **173 files, 1,827,428 bytes**, and matched a fresh build with **zero
 > file-set difference and zero content drift**. What closes this is not the push
 > but the check on it: `22_build_public_snapshot.py --compare-live` fetches the
 > published tree and diffs it against a fresh build, and it **exits 0**. Then the
